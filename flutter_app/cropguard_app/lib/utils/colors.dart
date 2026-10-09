@@ -98,6 +98,12 @@ class AppShadows {
         offset: const Offset(0, 4),
       );
 
+  static BoxShadow get medium => BoxShadow(
+        color: const Color(0xFF00000030),
+        blurRadius: 14,
+        offset: const Offset(0, 6),
+      );
+
   static BoxShadow get elevated => BoxShadow(
         color: const Color(0xFF00000040),
         blurRadius: 16,

@@ -130,7 +130,7 @@ Our system processes baseline harvest volumes for maize, beans, Irish potatoes, 
                   body: '''
 By merging real-time Open-Meteo weather forecasts with historical loss patterns, our algorithm flags high-risk post-harvest zones before rainfall strikes.
 
-The risk formula calculates: (Rainfall × 0.40) + (Humidity × 0.30) + (Loss Rate × 0.30) — giving every district a live risk score updated every 6 hours.
+The risk formula calculates: (Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) + (Soil Moisture × 0.15) — fusing satellite-derived soil-moisture data and giving every district a live risk score updated every 6 hours.
 ''',
                   icon: Icons.psychology,
                   isEven: true,

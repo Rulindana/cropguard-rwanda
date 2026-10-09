@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/facility_model.dart';
 import 'screens/home_screen.dart';
 import 'screens/summary_screen.dart';
 import 'screens/district_detail_screen.dart';
@@ -56,7 +57,7 @@ class AppRouter {
   static void navigateToFacilities(
     BuildContext context, {
     required dynamic district,
-    required List<dynamic> facilities,
+    required List<Facility> facilities,
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(

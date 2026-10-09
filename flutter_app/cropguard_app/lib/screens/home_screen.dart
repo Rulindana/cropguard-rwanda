@@ -743,6 +743,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildAdvisoryRow('Rainfall Index', '${d.rainfallIndex.toStringAsFixed(1)} / 100'),
             _buildAdvisoryRow('Humidity Index', '${d.humidityIndex.toStringAsFixed(1)} / 100'),
             _buildAdvisoryRow('Loss Rate Index', '${d.lossRateIndex.toStringAsFixed(1)} / 100'),
+            _buildAdvisoryRow('Soil Moisture (Satellite)', '${d.soilMoistureIndex.toStringAsFixed(1)} / 100'),
+            _buildAdvisoryRow('Risk Trend', d.trendLabel),
             _buildAdvisoryRow('14-Day Rainfall', '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm'),
             _buildAdvisoryRow('Peak Humidity', '${d.maxHumidityPct.toStringAsFixed(0)}%'),
             _buildAdvisoryRow('Historical Loss Rate', '${d.historicalLossRatePct.toStringAsFixed(1)}%'),
@@ -751,7 +753,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildAdvisoryRow('Potatoes Harvest', NumberFormatter.tonsFull(d.irishPotatoesTons)),
             const SizedBox(height: 12),
             Text(
-              'Risk Formula: (Rainfall × 0.40) + (Humidity × 0.30) + (Loss Rate × 0.30)',
+              'Risk Formula: (Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) + (Soil Moisture × 0.15)',
               style: const TextStyle(
                 fontSize: 11,
                 fontStyle: FontStyle.italic,

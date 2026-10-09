@@ -14,8 +14,14 @@ class District {
   final double lossRateIndex;
   final double totalPrecipitation14dMm;
   final double maxHumidityPct;
+  final double soilMoistureIndex;
   final String advisory;
   final DateTime updatedAt;
+
+  /// Risk momentum vs the previous pipeline run (Criterion 3 trend layer).
+  final double riskDelta;
+  final String riskTrend; // rising | falling | stable | baseline
+  final double? previousRiskScore;
 
   District({
     required this.id,
@@ -31,8 +37,12 @@ class District {
     required this.lossRateIndex,
     required this.totalPrecipitation14dMm,
     required this.maxHumidityPct,
+    this.soilMoistureIndex = 0.0,
     required this.advisory,
     required this.updatedAt,
+    this.riskDelta = 0.0,
+    this.riskTrend = 'baseline',
+    this.previousRiskScore,
   });
 
   double get maizeTons => nirsBaseline['maize_tons'] ?? 0.0;
@@ -57,11 +67,43 @@ class District {
       totalPrecipitation14dMm:
           (data['total_precipitation_14d_mm'] as num?)?.toDouble() ?? 0.0,
       maxHumidityPct: (data['max_humidity_pct'] as num?)?.toDouble() ?? 0.0,
+      soilMoistureIndex:
+          (data['soil_moisture_index'] as num?)?.toDouble() ?? 0.0,
       advisory: data['advisory'] ?? '',
       updatedAt: data['updated_at'] != null
           ? DateTime.tryParse(data['updated_at']) ?? DateTime.now()
           : DateTime.now(),
+      riskDelta: (data['risk_delta'] as num?)?.toDouble() ?? 0.0,
+      riskTrend: data['risk_trend'] ?? 'baseline',
+      previousRiskScore: (data['previous_risk_score'] as num?)?.toDouble(),
     );
+  }
+
+  /// Momentum label for UI chips, e.g. "▲ +6.2 since last run".
+  String get trendLabel {
+    switch (riskTrend) {
+      case 'rising':
+        return '▲ +${riskDelta.toStringAsFixed(1)} since last run';
+      case 'falling':
+        return '▼ ${riskDelta.toStringAsFixed(1)} since last run';
+      case 'stable':
+        return '→ stable (${riskDelta >= 0 ? '+' : ''}${riskDelta.toStringAsFixed(1)})';
+      default:
+        return 'First reading';
+    }
+  }
+
+  Color get trendColor {
+    switch (riskTrend) {
+      case 'rising':
+        return const Color(0xFFDC2626);
+      case 'falling':
+        return const Color(0xFF16A34A);
+      case 'stable':
+        return const Color(0xFFF59E0B);
+      default:
+        return const Color(0xFF78909C);
+    }
   }
 
   Color get riskColor {

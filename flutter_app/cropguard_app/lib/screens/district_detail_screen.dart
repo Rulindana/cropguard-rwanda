@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/district_model.dart';
+import '../models/facility_model.dart';
+import '../services/alert_subscription_service.dart';
+import '../services/firebase_service.dart';
 import '../utils/colors.dart';
 import '../utils/formatters.dart';
+import 'dispatch_screen.dart';
 
 class DistrictDetailScreen extends StatelessWidget {
   final District district;
@@ -75,7 +79,7 @@ class DistrictDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Advisory
-            _buildAdvisoryCard(),
+            _buildAdvisoryCard(context),
           ],
         ),
       ),
@@ -215,6 +219,42 @@ class DistrictDetailScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+
+          // Risk momentum vs previous pipeline run (trend layer)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: district.trendColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: district.trendColor.withOpacity(0.4)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  district.riskTrend == 'rising'
+                      ? Icons.trending_up
+                      : district.riskTrend == 'falling'
+                          ? Icons.trending_down
+                          : district.riskTrend == 'stable'
+                              ? Icons.trending_flat
+                              : Icons.show_chart,
+                  size: 14,
+                  color: district.trendColor,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  district.trendLabel,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: district.trendColor,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -614,7 +654,7 @@ class DistrictDetailScreen extends StatelessWidget {
             _buildBreakdownRow(
               'Rainfall Index',
               district.rainfallIndex,
-              'Weight: 40%',
+              'Weight: 35%',
               AppColors.primary,
               'Evaluates 7-14 day precipitation during peak harvest',
             ),
@@ -622,7 +662,7 @@ class DistrictDetailScreen extends StatelessWidget {
             _buildBreakdownRow(
               'Humidity Index',
               district.humidityIndex,
-              'Weight: 30%',
+              'Weight: 25%',
               AppColors.secondary,
               'Measures RH above critical 75% threshold',
             ),
@@ -630,9 +670,17 @@ class DistrictDetailScreen extends StatelessWidget {
             _buildBreakdownRow(
               'Baseline Loss Rate',
               district.lossRateIndex,
-              'Weight: 30%',
+              'Weight: 25%',
               const Color(0xFF8B5CF6),
               'Historical vulnerability from NISR SAS data',
+            ),
+            const SizedBox(height: 12),
+            _buildBreakdownRow(
+              'Soil Moisture (Satellite)',
+              district.soilMoistureIndex,
+              'Weight: 15%',
+              const Color(0xFF2DD4BF),
+              'ERA5 land-surface soil moisture (Copernicus/Sentinel fusion)',
             ),
             const SizedBox(height: 16),
             const Divider(),
@@ -648,7 +696,8 @@ class DistrictDetailScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    '(Rainfall × 0.40) + (Humidity × 0.30) + (Loss Rate × 0.30) = ${district.riskScore.toStringAsFixed(1)}%',
+                    '(Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) '
+                    '+ (Soil Moisture × 0.15) = ${district.riskScore.toStringAsFixed(1)}%',
                     style: const TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
@@ -739,7 +788,7 @@ class DistrictDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdvisoryCard() {
+  Widget _buildAdvisoryCard(BuildContext context) {
     return Card(
       color: district.riskColor.withOpacity(0.05),
       shape: RoundedRectangleBorder(
@@ -818,10 +867,93 @@ class DistrictDetailScreen extends StatelessWidget {
                 text: 'Sun-drying permitted',
               ),
             ],
+            const SizedBox(height: 12),
+
+            // Innovation #2: one-tap facility dispatch matching
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => _openDispatchPlan(context),
+                style: FilledButton.styleFrom(
+                  backgroundColor: district.riskColor,
+                  foregroundColor: AppColors.textOnPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: const Icon(Icons.local_shipping_outlined, size: 18),
+                label: Text(
+                  district.riskLevel == 'red'
+                      ? 'Find nearest storage NOW'
+                      : 'View dispatch plan',
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Innovation #1: SMS/USSD alert opt-in (no internet needed)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _subscribeToSmsAlerts(context),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: BorderSide(
+                    color: district.riskColor.withOpacity(0.6),
+                  ),
+                  foregroundColor: district.riskColor,
+                ),
+                icon: const Icon(Icons.sms_outlined, size: 18),
+                label: const Text('Subscribe to SMS risk alerts'),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  /// Open the ranked facility dispatch plan (Innovation #2).
+  Future<void> _openDispatchPlan(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    List<Facility> facilities;
+    try {
+      facilities = await FacilityService().getFacilitiesOnce();
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Could not load facilities. Please try again.'),
+        ),
+      );
+      return;
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DispatchScreen(
+          district: district,
+          facilities: facilities,
+        ),
+      ),
+    );
+  }
+
+  /// Show the bilingual SMS alert opt-in dialog (Innovation #1).
+  Future<void> _subscribeToSmsAlerts(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final ok = await AlertSubscriptionService.showSubscribeDialog(
+      context,
+      districtId: district.id,
+      districtName: district.name,
+    );
+    if (ok) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Subscribed! You will receive SMS alerts for ${district.name}.',
+          ),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+    }
   }
 
   Widget _buildActionItem({
