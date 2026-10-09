@@ -1,0 +1,24 @@
+# Flutter
+**/build/
+**/.dart_tool/
+**/*.iml
+**/.idea/
+**/.vscode/
+**/.DS_Store
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+firebase_service_account.json
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/.venv/
+
+# Data
+data/risk_scores.json
+
+# OS
+.DS_Store
+Thumbs.db

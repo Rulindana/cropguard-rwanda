@@ -1,0 +1,175 @@
+# CropGuard AI 🇷🇼
+
+**Post-Harvest Risk Monitoring System for Rwanda**
+
+CropGuard AI is a data-driven mobile application built for the **NISR 2026 Big Data Hackathon** (Track 1: Agricultural Productivity). It protects smallholder farmers and agricultural planners against severe post-harvest losses caused by unseasonal rainfall, humidity spikes, and delayed collection logistics.
+
+## 🎯 The Problem
+
+In Rwanda, unseasonal rainfall during harvest periods causes significant post-harvest losses:
+- **20-35%** of crops lost to rot and aflatoxin contamination
+- Smallholder farmers lack real-time weather + risk data
+- Limited coordination between farmers and storage facilities
+
+## ✨ How It Works
+
+```
+[1. NISR SAS Data] ──> [2. Smart Processing] ──> [3. What Users See]
+  • District baselines    • Risk Score Formula     • Interactive Rwanda Map
+  • Historical loss rates • Weather Integration     • Post-Harvest Alerts
+  • Facility counts       • Facility Routing        • Storage Dispatch Advice
+```
+
+### Risk Scoring Formula
+
+```
+Post-Harvest Risk Score = (Rainfall Index × 0.40) + (Humidity Index × 0.30) + (Loss Rate × 0.30)
+```
+
+| Risk Level | Score Range | Action |
+|------------|-------------|--------|
+| 🟢 Green   | 0-39%       | Safe harvesting conditions |
+| 🟡 Yellow  | 40-69%      | Drying equipment needed within 48h |
+| 🔴 Red     | 70-100%     | Emergency storage dispatch required |
+
+## 📱 Features
+
+### For District Agricultural Planners
+- **Interactive Map**: Color-coded Rwanda map showing real-time risk levels for all 30 districts
+- **District Details**: Click any district to see harvest volumes, weather forecasts, and risk breakdown
+- **National Overview**: Summary dashboard with nationwide risk distribution and policy recommendations
+- **NST2 Alignment**: Recommendations tied to Rwanda's National Strategy for Transformation
+
+### For Extension Officers & Cooperative Leaders
+- **Facility Locator**: Find nearest drying grounds, silos, cold storage, and mobile dryers
+- **Contact Details**: Direct phone and email for facility managers
+- **Capacity Tracking**: See available vs. total capacity at each facility
+- **Actionable Alerts**: Clear advisory messages based on risk level
+
+## 🛠 Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Mobile App | Flutter (Android, iOS, Web) |
+| Backend | Firebase (Firestore, Auth) |
+| Weather API | Open-Meteo (no API key required) |
+| Data Source | NISR Seasonal Agricultural Survey (SAS) |
+| Maps | Flutter Map + OpenStreetMap tiles |
+| CI/CD | GitHub Actions (daily data sync) |
+
+## 📁 Project Structure
+
+```
+cropguard-rwanda/
+├── flutter_app/             # Flutter mobile application
+│   └── cropguard_app/
+│       ├── lib/
+│       │   ├── models/      # Data models (District, Facility, Summary)
+│       │   ├── screens/     # UI screens (Home, Detail, Summary, Facilities)
+│       │   ├── services/    # Firebase/Firestore services
+│       │   ├── widgets/     # Reusable UI components
+│       │   └── utils/       # Utilities, formatters, seed data
+│       └── pubspec.yaml
+│
+├── sync_pipeline/          # Python data sync pipeline
+│   ├── sync_nisr_data.py   # Main pipeline script
+│   └── requirements.txt    # Python dependencies
+│
+├── data/                   # Mock and processed data
+│   ├── nisr_sas_districts.json   # NISR baseline data (30 districts)
+│   ├── facilities.json           # Post-harvest facility catalog
+│   └── risk_scores.json         # Generated risk scores (output)
+│
+├── firestore_rules/        # Firestore security rules
+└── .github/workflows/      # GitHub Actions cron jobs
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK (3.7+)
+- Firebase project with Firestore enabled
+- Python 3.11+ (for sync pipeline)
+
+### Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/cropguard-rwanda.git
+   cd cropguard-rwanda
+   ```
+
+2. **Set up Firebase**
+   ```bash
+   cd flutter_app/cropguard_app
+   flutter pub get
+   # Download google-services.json from Firebase Console
+   # Place in android/app/ and ios/Runner/
+   flutterfire configure
+   ```
+
+3. **Seed initial data to Firestore**
+   - Place NISR data in `assets/data/`
+   - Run the seed utility or use the Python pipeline
+
+4. **Run the app**
+   ```bash
+   flutter run
+   ```
+
+5. **Set up automated data sync** (optional)
+   - Configure GitHub Actions secrets for Firebase credentials
+   - The workflow runs every 6 hours to fetch fresh weather data
+
+## 📊 Data Sources
+
+### NISR Seasonal Agricultural Survey (SAS)
+- Source: [statistics.gov.rw/data-sources/surveys/Seasonal-Agricultural-Survey](https://statistics.gov.rw/data-sources/surveys/Seasonal-Agricultural-Survey)
+- Data: District-level crop production, historical loss rates, cooperative coverage
+
+### Open-Meteo Weather API
+- Source: [open-meteo.com](https://open-meteo.com)
+- Data: 14-day forecasts for rainfall, humidity, temperature
+- No API key required
+
+### Facilities Data
+- Mock dataset included for demonstration
+- In production: connect to agricultural registry or cooperative database
+
+## 🔄 Automated Data Sync Pipeline
+
+The Python pipeline (`sync_pipeline/sync_nisr_data.py`) automates:
+
+1. **Fetch NISR Data**: Load district baseline statistics
+2. **Fetch Weather**: Query Open-Meteo for 14-day forecasts per district
+3. **Calculate Risk**: Apply the weighted risk formula
+4. **Push to Firestore**: Update the database for real-time app access
+5. **Schedule**: GitHub Actions cron runs every 6 hours
+
+```
+NISR Portal → Python Pipeline → Firestore → Flutter App
+     ↓              ↓              ↓           ↓
+  Weekly update  Live weather  Auto-sync   Real-time alerts
+```
+
+## 📈 Impact Metrics
+
+- **30 districts** covered across all 5 provinces
+- **21 facilities** cataloged (drying grounds, silos, cold storage, mobile dryers)
+- **4 crop types** tracked (maize, beans, Irish potatoes, cassava)
+- **Real-time** risk scores updated every 6 hours
+
+## 🏆 Hackathon Submission
+
+This project addresses:
+- **Tech Innovation (20 pts)**: Real-time automated data pipelines, live API integration
+- **Data Use & Methodology (20 pts)**: NISR official statistics + meteorological data fusion
+- **Tangible Impact (20 pts)**: Direct support for NST2 post-harvest loss reduction goals
+
+## 📄 License
+
+MIT License - Open source for agricultural development in Rwanda.
+
+---
+
+**Built for NISR 2026 Big Data Hackathon**

@@ -1,0 +1,38 @@
+name: CropGuard AI - Daily Data Sync
+
+on:
+  schedule:
+    # Run every 6 hours to fetch fresh weather data
+    - cron: "0 */6 * * *"
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r sync_pipeline/requirements.txt
+
+      - name: Run sync pipeline
+        env:
+          # Firebase credentials (optional - only needed if pushing to Firestore)
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python sync_pipeline/sync_nisr_data.py
+
+      - name: Upload risk scores artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: risk-scores
+          path: data/risk_scores.json
+          retention-days: 7

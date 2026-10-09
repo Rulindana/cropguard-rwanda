@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Districts collection - readable by all, writable by admin only
+    match /districts/{districtId} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && request.auth.token.admin == true;
+    }
+    
+    // Facilities collection - readable by all, writable by admin only
+    match /facilities/{facilityId} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && request.auth.token.admin == true;
+    }
+    
+    // Metadata collection - readable by all
+    match /metadata/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && request.auth.token.admin == true;
+    }
+    
+    // Default - deny all other operations
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
