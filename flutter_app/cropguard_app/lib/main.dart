@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/firebase_service.dart';
 import 'models/district_model.dart';
+import 'screens/landing_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/main_scaffold.dart';
 import 'screens/summary_screen.dart';
@@ -68,7 +69,14 @@ class CropGuardApp extends StatelessWidget {
           bodySmall: TextStyle(color: AppColors.textDim),
         ),
       ),
-      home: const MainNavigationScreen(),
+      onGenerateRoute: (settings) {
+        if (settings.name == '/dashboard') {
+          return MaterialPageRoute(builder: (_) => const MainNavigationScreen());
+        }
+        return MaterialPageRoute(builder: (_) => const LandingScreen());
+      },
+      initialRoute: '/',
+      home: const LandingScreen(),
     );
   }
 }
