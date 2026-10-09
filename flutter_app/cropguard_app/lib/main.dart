@@ -2,16 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/firebase_service.dart';
-import 'screens/home_screen.dart';
+import 'models/district_model.dart';
+import 'screens/dashboard_screen.dart';
+import 'screens/main_scaffold.dart';
 import 'screens/summary_screen.dart';
 import 'utils/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase
   await FirebaseService.initialize();
-
   runApp(const CropGuardApp());
 }
 
@@ -25,70 +24,48 @@ class CropGuardApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.dark().copyWith(
           primary: AppColors.primary,
           secondary: AppColors.secondary,
           surface: AppColors.surface,
-          error: AppColors.red,
+          error: AppColors.error,
+          onPrimary: AppColors.textOnPrimary,
+          onSecondary: AppColors.textOnPrimary,
+          onSurface: AppColors.textPrimary,
         ),
         scaffoldBackgroundColor: AppColors.background,
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textOnPrimary,
+          backgroundColor: Colors.transparent,
+          foregroundColor: AppColors.textPrimary,
           elevation: 0,
-          centerTitle: true,
         ),
         cardTheme: CardThemeData(
-          color: AppColors.surface,
+          color: Colors.transparent,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: AppColors.background,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.small),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.small),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.small),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: AppColors.primaryDark,
             foregroundColor: AppColors.textOnPrimary,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.small),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
           ),
         ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.primary,
-            side: const BorderSide(color: AppColors.primary),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.small),
-            ),
-          ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: AppColors.primary),
         ),
-        chipTheme: ChipThemeData(
-          backgroundColor: AppColors.background,
-          selectedColor: AppColors.primary.withOpacity(0.2),
-          labelStyle: const TextStyle(fontSize: 13),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.circular),
-          ),
+        dividerTheme: const DividerThemeData(color: AppColors.divider, thickness: 1),
+        iconTheme: const IconThemeData(color: AppColors.textSecondary),
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+          bodyLarge: TextStyle(color: AppColors.textPrimary),
+          bodyMedium: TextStyle(color: AppColors.textSecondary),
+          bodySmall: TextStyle(color: AppColors.textDim),
         ),
       ),
       home: const MainNavigationScreen(),
@@ -104,42 +81,41 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const SummaryScreen(),
-  ];
+  NavItem _currentNav = NavItem.dashboard;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.map),
-            selectedIcon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.policy_outlined),
-            selectedIcon: Icon(Icons.policy),
-            label: 'Overview',
-          ),
-        ],
-        backgroundColor: AppColors.surface,
-        elevation: 8,
-      ),
+    return ResponsiveScaffold(
+      currentNav: _currentNav,
+      onMenuToggle: () {},
+      child: _buildPage(),
+    );
+  }
+
+  Widget _buildPage() {
+    return StreamBuilder<List<District>>(
+      stream: DistrictService().getDistrictsStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+        }
+        final districts = snapshot.data ?? [];
+
+        if (districts.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.cloud_off, size: 48, color: AppColors.textDim),
+                const SizedBox(height: 16),
+                const Text('Loading district data...', style: TextStyle(color: AppColors.textSecondary)),
+              ],
+            ),
+          );
+        }
+
+        return DashboardScreen(districts: districts, facilities: []);
+      },
     );
   }
 }

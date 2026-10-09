@@ -2,6 +2,9 @@ import 'package:intl/intl.dart';
 
 class NumberFormatter {
   static String tons(double tons) {
+    if (tons >= 1000000) {
+      return '${(tons / 1000000).toStringAsFixed(1)}M tons';
+    }
     if (tons >= 1000) {
       return '${(tons / 1000).toStringAsFixed(1)}K tons';
     }
@@ -9,8 +12,11 @@ class NumberFormatter {
   }
 
   static String tonsFull(double tons) {
+    if (tons >= 1000000) {
+      return '${(tons / 1000000).toStringAsFixed(2)} million tons';
+    }
     if (tons >= 1000) {
-      return '${(tons / 1000).toStringAsFixed(2)} thousand tons';
+      return '${(tons / 1000).toStringAsFixed(1)} thousand tons';
     }
     return '${tons.toStringAsFixed(0)} tons';
   }

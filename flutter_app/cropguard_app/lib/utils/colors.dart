@@ -1,39 +1,81 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Risk level colors
-  static const Color green = Color(0xFF16A34A);
-  static const Color yellow = Color(0xFFF59E0B);
-  static const Color red = Color(0xFFDC2626);
+  // Backgrounds - dark slate/charcoal
+  static const Color background = Color(0xFF0B1617);
+  static const Color backgroundSecondary = Color(0xFF112225);
+  static const Color surface = Color(0xFF152629);
+  static const Color cardBackground = Color(0xFF1A3035);
+  static const Color cardHolographic = Color(0xFF0D1F23);
 
-  // App primary colors
-  static const Color primary = Color(0xFF059669);
-  static const Color primaryDark = Color(0xFF047857);
-  static const Color secondary = Color(0xFFD97706);
+  // Primary green accents
+  static const Color primary = Color(0xFF00E676);
+  static const Color primaryDark = Color(0xFF00C853);
+  static const Color primaryLight = Color(0xFF69F0AE);
+  static const Color primaryDim = Color(0xFF004D25);
 
-  // Background colors
-  static const Color background = Color(0xFFF9FAFB);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color cardBackground = Color(0xFFFFFFFF);
+  // Text
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFFB0BEC5);
+  static const Color textDim = Color(0xFF78909C);
+  static const Color textOnPrimary = Color(0xFF0B1617);
 
-  // Text colors
-  static const Color textPrimary = Color(0xFF111827);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textOnPrimary = Color(0xFFFFFFFF);
 
-  // Borders
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color divider = Color(0xFFF3F4F6);
 
-  // Province colors for map
-  static const Color northern = Color(0xFF3B82F6);
-  static const Color eastern = Color(0xFF10B981);
-  static const Color western = Color(0xFF8B5CF6);
-  static const Color southern = Color(0xFFEC4899);
-  static const Color kigali = Color(0xFFF97316);
+  // Alert colors
+  static const Color alertRed = Color(0xFFFF5252);
+  static const Color alertYellow = Color(0xFFFFB300);
+  static const Color alertGreen = Color(0xFF00E676);
+
+  // Risk colors
+  static const Color riskGreen = Color(0xFF00E676);
+  static const Color riskYellow = Color(0xFFFFB300);
+  static const Color riskRed = Color(0xFFFF5252);
+
+  // Backward compat
+  static const Color green = Color(0xFF00E676);
+  static const Color yellow = Color(0xFFFFB300);
+  static const Color red = Color(0xFFFF5252);
+
+  // Secondary
+  static const Color secondary = Color(0xFF00E676);
+  static const Color secondaryDark = Color(0xFF00C853);
+
+  // Holographic glow
+  static const Color holographicBorder = Color(0xFF00E676);
+  static const Color holographicGlow = Color(0x3300E676);
+
+  // Province colors
+  static const Color northern = Color(0xFF00E676);
+  static const Color eastern = Color(0xFF69F0AE);
+  static const Color western = Color(0xFF00BCD4);
+  static const Color southern = Color(0xFF7C4DFF);
+  static const Color kigali = Color(0xFFFFB300);
+
+  // Weather
+  static const Color weatherSunny = Color(0xFFFFD54F);
+  static const Color weatherCloudy = Color(0xFF90A4AE);
+  static const Color weatherRainy = Color(0xFF4FC3F7);
+
+  // Borders & dividers
+  static const Color border = Color(0xFF263338);
+  static const Color divider = Color(0xFF1E2D31);
+  static const Color inputBorder = Color(0xFF263338);
+
+  // Status
+  static const Color success = Color(0xFF00E676);
+  static const Color warning = Color(0xFFFFB300);
+  static const Color error = Color(0xFFFF5252);
+  static const Color info = Color(0xFF4FC3F7);
 }
 
 class AppRadius {
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 24.0;
+  static const double round = 999.0;
   static const double small = 8.0;
   static const double medium = 12.0;
   static const double large = 16.0;
@@ -42,21 +84,70 @@ class AppRadius {
 }
 
 class AppShadows {
-  static BoxShadow get small => const BoxShadow(
-        color: Color(0xFF00000008),
-        blurRadius: 4,
-        offset: Offset(0, 2),
+  // Holographic glow shadow
+  static BoxShadow get holographic => BoxShadow(
+        color: AppColors.holographicGlow,
+        blurRadius: 20,
+        spreadRadius: 2,
+        offset: const Offset(0, 0),
       );
 
-  static BoxShadow get medium => const BoxShadow(
-        color: Color(0xFF00000012),
-        blurRadius: 8,
-        offset: Offset(0, 4),
-      );
-
-  static BoxShadow get card => const BoxShadow(
-        color: Color(0xFF0000000A),
+  static BoxShadow get card => BoxShadow(
+        color: const Color(0xFF00000030),
         blurRadius: 12,
-        offset: Offset(0, 4),
+        offset: const Offset(0, 4),
       );
+
+  static BoxShadow get elevated => BoxShadow(
+        color: const Color(0xFF00000040),
+        blurRadius: 16,
+        offset: const Offset(0, 8),
+      );
+
+  static BoxShadow get glowGreen => BoxShadow(
+        color: AppColors.primary.withOpacity(0.3),
+        blurRadius: 16,
+        spreadRadius: 1,
+      );
+}
+
+class AppGradients {
+  static const LinearGradient cardGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF152629),
+      Color(0xFF112225),
+    ],
+    stops: [0.0, 1.0],
+  );
+
+  static const LinearGradient holographicGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF1A3035),
+      Color(0xFF0D1F23),
+    ],
+    stops: [0.0, 1.0],
+  );
+
+  static const LinearGradient greenGlowGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF00E676),
+      Color(0xFF00C853),
+    ],
+    stops: [0.0, 1.0],
+  );
+
+  static const RadialGradient holographicGlow = RadialGradient(
+    center: Alignment.topLeft,
+    colors: [
+      Color(0x2200E676),
+      Color(0x0000E676),
+    ],
+    stops: [0.0, 1.0],
+  );
 }
