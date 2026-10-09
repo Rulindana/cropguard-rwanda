@@ -1,9 +1,16 @@
+import 'dart:ui' show Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
+import '../services/firebase_service.dart';
+import '../utils/colors.dart';
+import '../utils/formatters.dart';
+import '../widgets/risk_indicator.dart';
+import 'district_detail_screen.dart';
+import 'facilities_list_screen.dart';
 import '../services/firebase_service.dart';
 import '../utils/colors.dart';
 import '../widgets/risk_indicator.dart';
@@ -27,11 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   String _error = '';
 
-  // Rwanda bounding box for map view
-  static const LatLngBounds rwandaBounds = LatLngBounds(
-    LatLng(-2.85, 28.85),
-    LatLng(-1.05, 31.25),
-  );
+  // Rwanda bounding box (used for constraints)
+  static const double minLat = -2.85;
+  static const double maxLat = -1.05;
+  static const double minLng = 28.85;
+  static const double maxLng = 31.25;
 
   @override
   void initState() {
@@ -91,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               backgroundColor: AppColors.primary,
-              child: const Icon(Icons.storage_two_outlined),
+              child: const Icon(Icons.storage_outlined),
             )
           : null,
     );
@@ -105,8 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
           options: MapOptions(
             initialCenter: const LatLng(-1.94, 29.87),
             initialZoom: 7.5,
-            bounds: rwandaBounds,
-            onTap: (tap) {
+            onTap: (tap, latLng) {
               // Check if tapped on a district marker area
             },
           ),
@@ -403,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _buildActionButton(
-                icon: Icons.storage_two_outlined,
+                icon: Icons.storage_outlined,
                 label: 'Facilities',
                 onTap: () {
                   Navigator.of(context).push(

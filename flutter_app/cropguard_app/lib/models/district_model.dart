@@ -1,3 +1,5 @@
+import 'dart:ui'; // For Color
+
 class District {
   final String id;
   final String name;

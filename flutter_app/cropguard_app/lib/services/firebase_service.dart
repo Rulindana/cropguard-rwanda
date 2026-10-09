@@ -35,7 +35,7 @@ class DistrictService {
   Future<District?> getDistrictById(String id) async {
     final doc = await _firestore.collection('districts').doc(id).get();
     if (doc.exists) {
-      return District.fromFirestore(doc.data(), doc.id);
+      return District.fromFirestore(doc.data()!, doc.id);
     }
     return null;
   }
@@ -47,7 +47,7 @@ class DistrictService {
         .snapshots()
         .map((doc) {
       if (doc.exists) {
-        return District.fromFirestore(doc.data(), doc.id);
+        return District.fromFirestore(doc.data()!, doc.id);
       }
       return null;
     });

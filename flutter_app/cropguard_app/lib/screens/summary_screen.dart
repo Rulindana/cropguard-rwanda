@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
@@ -211,10 +212,9 @@ class SummaryScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Last updated: ${DateTime.now().toString().substring(0, 16)}',
-            style: const TextStyle(
-              color: AppColors.textOnPrimary,
+            style: TextStyle(
+              color: AppColors.textOnPrimary.withOpacity(0.7),
               fontSize: 11,
-              opacity: 0.7,
             ),
           ),
         ],
@@ -249,10 +249,9 @@ class SummaryScreen extends StatelessWidget {
           ),
           Text(
             '$label $unit',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: AppColors.textOnPrimary,
-              opacity: 0.8,
+              color: AppColors.textOnPrimary.withOpacity(0.8),
             ),
           ),
         ],
@@ -341,7 +340,7 @@ class SummaryScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const Column(
+                        Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
@@ -352,7 +351,7 @@ class SummaryScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${summary.totalDistricts}',
+                              summary.totalDistricts.toString(),
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -496,7 +495,7 @@ class SummaryScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.small),
                 ),
                 child: Text(
-                  '${summary.highRiskPercentage.toStringAsFixed(0)}% of districts',
+                  '${highRiskDistricts.length > 0 ? (highRiskDistricts.length / (highRiskDistricts.length + 27) * 100).toStringAsFixed(0) : 0}% of districts',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.red,

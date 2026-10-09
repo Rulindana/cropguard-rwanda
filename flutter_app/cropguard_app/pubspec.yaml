@@ -26,6 +26,9 @@ dependencies:
   # HTTP for direct API calls (fallback)
   http: ^1.2.2
 
+  # URL launching for phone/email from facilities screen
+  url_launcher: ^6.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
