@@ -1,13 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../models/summary_model.dart';
+import '../firebase_options.dart';
 
 class FirebaseService {
   static Future<void> initialize() async {
-    await Firebase.initializeApp();
+    // Firebase is optional: without a valid config the app runs fully
+    // offline using the local seed data (no crash, no user-facing error).
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint('CropGuard: Firebase not configured, running offline: $e');
+    }
   }
 
   static FirebaseFirestore get firestore => FirebaseFirestore.instance;
