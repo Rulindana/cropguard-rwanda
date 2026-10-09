@@ -11,6 +11,20 @@ In Rwanda, unseasonal rainfall during harvest periods causes significant post-ha
 - Smallholder farmers lack real-time weather + risk data
 - Limited coordination between farmers and storage facilities
 
+## 🇷🇼 National Alignment: NST2 & Vision 2050
+
+| National priority | How CropGuard contributes |
+|---|---|
+| **NST2 — Pillar 2: Economic transformation / agriculture** | Directly targets the **post-harvest loss reduction** indicator: every district gets a 6-hourly risk score with a concrete action (dry within 48h / emergency storage dispatch) |
+| **NST2 — Agricultural productivity & market access** | Facility dispatch matching routes crops to drying grounds, silos, and cold storage before rot/aflatoxin sets in — protecting marketable surplus |
+| **NST2 — Evidence-based planning** | District/province dashboards + exportable policy brief give planners and MINAGRI an operational picture, updated every 6 hours |
+| **Vision 2050 — Pillar 5: Modernisation & prosperity** | A reusable, data-driven early-warning layer for a resilient national food system (open source, public-good tool) |
+| **Track 1 hint: post-harvest collection & storage** | ✅ Core problem |
+| **Track 1 hint: soil conservation & fertility** | ✅ Satellite soil-moisture fusion component |
+| **Track 1 hint: processing, value addition & export** | ✅ Reduced aflatoxin/rot = higher-grade, export-compliant produce |
+
+Full justification, personas, requirements, and maintenance ownership: see [`PRD.md`](PRD.md).
+
 ## ✨ How It Works
 
 ```
@@ -20,10 +34,11 @@ In Rwanda, unseasonal rainfall during harvest periods causes significant post-ha
   • Facility counts       • Facility Routing        • Storage Dispatch Advice
 ```
 
-### Risk Scoring Formula
+### Risk Scoring Formula (satellite-fused)
 
 ```
-Post-Harvest Risk Score = (Rainfall Index × 0.40) + (Humidity Index × 0.30) + (Loss Rate × 0.30)
+Post-Harvest Risk Score = (Rainfall Index × 0.35) + (Humidity Index × 0.25)
+                        + (Loss Rate × 0.25) + (Soil Moisture Index × 0.15)
 ```
 
 | Risk Level | Score Range | Action |
@@ -45,6 +60,36 @@ Post-Harvest Risk Score = (Rainfall Index × 0.40) + (Humidity Index × 0.30) + 
 - **Contact Details**: Direct phone and email for facility managers
 - **Capacity Tracking**: See available vs. total capacity at each facility
 - **Actionable Alerts**: Clear advisory messages based on risk level
+
+## 🏆 Top Innovations
+
+### 🥇 SMS/USSD Alerts — inclusivity beyond the smartphone
+- Bilingual (**Kinyarwanda + English**) risk alerts sent by SMS whenever a district
+  escalates to 🟡 or 🔴 — works on **any phone, no internet required**
+- Anti-spam: alerts fire on risk-level *changes*, not every 6-hourly run
+- Africa's Talking gateway with automatic dry-run outbox fallback
+  (`data/alerts_outbox.json`) so the flow is always demonstrable
+- USSD digest (`data/ussd_digest.json`) ready to publish behind a `*123#` menu
+- In-app opt-in: *Subscribe to SMS risk alerts* on every district detail page
+- Modules: `sync_pipeline/sms_alerts.py`, `lib/services/alert_subscription_service.dart`
+
+### 🥈 Facility Dispatch Matching — turning insight into last-mile action
+- Every district gets a ranked **dispatch plan**: top-3 nearest facilities with
+  free capacity, estimated travel time, capacity headroom, and a
+  distance/capacity composite match score
+- Priority tagging: `emergency` (red) / `recommended` (yellow) / `available` (green)
+- App side: *Find nearest storage NOW* button opens the dispatch screen with
+  one-tap call and reservation email to the facility manager
+- Modules: `sync_pipeline/dispatch_matcher.py`, `lib/services/dispatch_service.dart`,
+  `lib/screens/dispatch_screen.dart`
+
+### 🥉 Satellite Data Fusion — deeper methodology
+- 4th risk component: **volumetric soil moisture** from the ERA5/Copernicus
+  land-surface model (satellite-derived) fetched from Open-Meteo
+- Wet soil at harvest = wet crops in storage — catches rot risk that
+  rainfall-only models under-estimate; rainfall-derived fallback keeps the
+  pipeline resilient when the API is unavailable
+- Module: `sync_pipeline/satellite_fusion.py`
 
 ## 🛠 Tech Stack
 
@@ -73,11 +118,15 @@ cropguard-rwanda/
 │
 ├── sync_pipeline/          # Python data sync pipeline
 │   ├── sync_nisr_data.py   # Main pipeline script
+│   ├── satellite_fusion.py # 🥉 Satellite/soil-moisture fusion layer
+│   ├── dispatch_matcher.py # 🥈 Facility dispatch ranking
+│   ├── sms_alerts.py       # 🥇 SMS/USSD bilingual alerts
 │   └── requirements.txt    # Python dependencies
 │
 ├── data/                   # Mock and processed data
 │   ├── nisr_sas_districts.json   # NISR baseline data (30 districts)
 │   ├── facilities.json           # Post-harvest facility catalog
+│   ├── subscribers.json          # SMS alert subscribers (sample)
 │   └── risk_scores.json         # Generated risk scores (output)
 │
 ├── firestore_rules/        # Firestore security rules
@@ -141,10 +190,13 @@ cropguard-rwanda/
 The Python pipeline (`sync_pipeline/sync_nisr_data.py`) automates:
 
 1. **Fetch NISR Data**: Load district baseline statistics
-2. **Fetch Weather**: Query Open-Meteo for 14-day forecasts per district
-3. **Calculate Risk**: Apply the weighted risk formula
-4. **Push to Firestore**: Update the database for real-time app access
-5. **Schedule**: GitHub Actions cron runs every 6 hours
+2. **Fetch Weather + Satellite Soil Moisture**: Open-Meteo 14-day forecasts
+   and ERA5 land-surface soil moisture per district
+3. **Calculate Fused Risk**: Apply the weighted 4-component formula
+4. **Match Facilities**: Rank nearest facilities with free capacity (dispatch plan)
+5. **Push to Firestore + Send Alerts**: Update the database and dispatch
+   bilingual SMS/USSD alerts on risk-level changes
+6. **Schedule**: GitHub Actions cron runs every 6 hours
 
 ```
 NISR Portal → Python Pipeline → Firestore → Flutter App
@@ -161,9 +213,19 @@ NISR Portal → Python Pipeline → Firestore → Flutter App
 
 ## 🏆 Hackathon Submission
 
+### Evaluation criteria → evidence map
+
+| Criterion | Evidence in this repo |
+|---|---|
+| **1. Problem Understanding & Relevance (20)** | `PRD.md` (problem, personas, requirements); explicit NST2/Vision 2050 mapping above; Track 1 hint coverage table |
+| **2. Data Use & Methodology (20)** | NISR SAS baseline **+** Open-Meteo weather **+** ERA5/Copernicus satellite soil moisture; 4-component weighted formula; automated preprocessing with `data_quality.py` → `data/data_quality_report.json` (completeness, ranges, uniqueness, bbox checks); risk history/momentum via `risk_history.py` |
+| **3. Tech Innovation (20)** | Satellite data fusion; predictive trend/momentum detection; smart bilingual SMS/USSD alert system with escalation-only anti-spam; haversine dispatch-matching engine; 6-hourly GitHub Actions pipeline → Firestore |
+| **4. Usability & Design (20)** | Flutter app (Android + Web): interactive map, color-coded district detail, risk breakdown with formula, dispatch screen with one-tap call/email, scrollytelling landing page; 5/5 unit tests passing; `flutter analyze` clean |
+| **5. Tangible Impact (20)** | SMS/USSD reach (no smartphone/internet needed); facility dispatch plan with contacts & capacity; **exportable policy brief** (`scripts/generate_policy_brief.py` → `reports/`); open-source MIT licence with maintenance hand-off plan (PRD §8) |
+
 This project addresses:
-- **Tech Innovation (20 pts)**: Real-time automated data pipelines, live API integration
-- **Data Use & Methodology (20 pts)**: NISR official statistics + meteorological data fusion
+- **Tech Innovation (20 pts)**: Real-time automated data pipelines, live API integration, satellite fusion, trend detection
+- **Data Use & Methodology (20 pts)**: NISR official statistics + meteorological + satellite data fusion with automated quality reporting
 - **Tangible Impact (20 pts)**: Direct support for NST2 post-harvest loss reduction goals
 
 ## 📄 License
