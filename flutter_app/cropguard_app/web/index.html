@@ -1,46 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
+  <base href="/">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="CropGuard AI - Post-Harvest Risk Monitoring for Rwanda">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CropGuard AI">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="icons/Icon-192.png"/>
+  <!-- Circular favicon (forced circular via CSS) -->
+  <link rel="icon" type="image/png" href="icons/Icon-192.png">
+  <style>
+    /* Force favicon to appear circular */
+    link[rel="icon"] {
+      border-radius: 50% !important;
+      -webkit-mask-image: url('icons/Icon-192.png');
+      -webkit-mask-size: cover;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+    }
+    /* Circular touch icon for iOS */
+    link[rel="apple-touch-icon"] {
+      border-radius: 50%;
+    }
+  </style>
 
   <title>CropGuard AI</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="flutter-app-container" style="display: none;"></div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- NISR Powered By Footer (Web Only) -->
+  <div id="nisr-footer" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(11,22,37,0) 0%, rgba(11,22,37,0.95) 30%, rgba(11,22,37,1) 100%);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    border-top: 1px solid rgba(0,230,118,0.15);
+  ">
+    <span style="opacity:0.6;">Powered by</span>
+    <a href="https://statistics.gov.rw" target="_blank" rel="noopener noreferrer"
+       style="
+         color: rgba(0,230,118,0.8);
+         text-decoration: none;
+         font-weight: 600;
+         font-size: 11px;
+         transition: color 0.2s;
+       "
+       onmouseover="this.style.color='#00E676'"
+       onmouseout="this.style.color='rgba(0,230,118,0.8)'">
+      NISR
+    </a>
+    <span style="opacity:0.4;">|</span>
+    <a href="https://statistics.gov.rw" target="_blank" rel="noopener noreferrer"
+       style="
+         color: rgba(255,255,255,0.35);
+         text-decoration: none;
+         font-size: 10px;
+       "
+       onmouseover="this.style.color='rgba(255,255,255,0.7)'"
+       onmouseout="this.style.color='rgba(255,255,255,0.35)'">
+      statistics.gov.rw
+    </a>
+  </div>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
