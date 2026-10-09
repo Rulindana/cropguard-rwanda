@@ -1,0 +1,47 @@
+[
+  {
+    "id": "sub_01",
+    "name": "Jean Bosco Hakizimana",
+    "phone": "+250780000101",
+    "district_id": "dist_05",
+    "language": "rw",
+    "role": "farmer",
+    "opted_in_at": "2026-10-01T08:00:00Z"
+  },
+  {
+    "id": "sub_02",
+    "name": "Aline Uwase",
+    "phone": "+250780000102",
+    "district_id": "all",
+    "language": "en",
+    "role": "cooperative_leader",
+    "opted_in_at": "2026-10-01T08:05:00Z"
+  },
+  {
+    "id": "sub_03",
+    "name": "Emmanuel Nkurunziza",
+    "phone": "+250780000103",
+    "district_id": "dist_12",
+    "language": "rw",
+    "role": "extension_officer",
+    "opted_in_at": "2026-10-02T07:30:00Z"
+  },
+  {
+    "id": "sub_04",
+    "name": "Claudine Mukamana",
+    "phone": "+250780000104",
+    "district_id": "dist_20",
+    "language": "rw",
+    "role": "farmer",
+    "opted_in_at": "2026-10-03T06:45:00Z"
+  },
+  {
+    "id": "sub_05",
+    "name": "Patrick Rwema",
+    "phone": "+250780000105",
+    "district_id": "all",
+    "language": "en",
+    "role": "district_planner",
+    "opted_in_at": "2026-10-03T09:15:00Z"
+  }
+]

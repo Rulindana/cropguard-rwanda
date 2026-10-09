@@ -19,6 +19,13 @@ firebase_service_account.json
 # Data
 data/risk_scores.json
 
+# CropGuard alert runtime artifacts (regenerated each pipeline run)
+data/alerts_outbox.json
+data/alert_state.json
+data/ussd_digest.json
+data/risk_history.json
+data/data_quality_report.json
+
 # OS
 .DS_Store
 Thumbs.db
