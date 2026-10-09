@@ -7,6 +7,7 @@ import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../services/firebase_service.dart';
 import '../utils/colors.dart';
+import '../utils/rwa_map_data.dart';
 import '../utils/formatters.dart';
 import '../widgets/risk_indicator.dart';
 import 'district_detail_screen.dart';
@@ -34,6 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   String _error = '';
 
+  // Simplified Rwanda district polygons (filled by risk level)
+  List<RwaMapPolygon> _mapPolygons = const [];
+
   // Rwanda bounding box (used for constraints)
   static const double minLat = -2.85;
   static const double maxLat = -1.05;
@@ -58,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _isLoading = false;
         });
       }
+      await _loadMapPolygons();
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -68,6 +73,33 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Loads simplified Rwanda district polygons; each polygon is matched to
+  /// its [District] by normalized name and colored with the district's risk.
+  Future<void> _loadMapPolygons() async {
+    try {
+      _mapPolygons = await RwaMapPolygon.load();
+    } catch (e) {
+      print('CropGuard: failed to load district polygons: $e');
+      _mapPolygons = const [];
+    }
+  }
+
+  /// Colors simplified district polygons by risk level (no match = grey).
+  List<Polygon> _buildPolygonList() {
+    if (_mapPolygons.isEmpty) return const [];
+    final districtByKey = {for (final d in _districts) normalizeDistrictName(d.name): d};
+    return _mapPolygons.map((p) {
+      final district = districtByKey[normalizeDistrictName(p.name)];
+      return Polygon(
+        points: p.points,
+        color: district != null ? district.riskColor : Colors.grey.shade400,
+        borderColor: district != null ? Colors.white : Colors.grey.shade400,
+        borderStrokeWidth: district != null ? 1.5 : 1,
+      );
+    }).toList();
+  }
+
+  @override
   void _onDistrictTap(District district) {
     setState(() {
       _selectedDistrict = district;
@@ -121,6 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
               urlTemplate:
                   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.cropguard.cropguard_app',
+            ),
+            // Simplified Rwanda districts (colored by current risk level)
+            PolygonLayer(
+              polygons: _buildPolygonList(),
             ),
             // District markers
             MarkerLayer(

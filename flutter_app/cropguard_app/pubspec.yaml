@@ -40,3 +40,4 @@ flutter:
     - assets/icon/icon-1024.png
     - assets/icon/icon-512.png
     - assets/icon/icon-192.png
+    - assets/geo/rwa_adm2_simplified.geojson
