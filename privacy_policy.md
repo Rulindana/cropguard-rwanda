@@ -1,7 +1,7 @@
 # Privacy Policy — CropGuard AI
 
 **Effective date:** October 2026  
-**Operator:** CropGuard AI (NISR 2026 Big Data Hackathon submission)  
+**Operator:** CropGuard AI  
 **Contact:** [Insert operator contact email]
 
 ---

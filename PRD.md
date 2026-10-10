@@ -2,7 +2,7 @@
 ## CropGuard AI — Post-Harvest Risk Monitoring System for Rwanda
 
 **Version:** 1.0  
-**Track:** NISR 2026 Big Data Hackathon — Track 1: Agricultural Productivity  
+**Track:** Track 1: Agricultural Productivity  
 **Date:** October 2026  
 
 ---

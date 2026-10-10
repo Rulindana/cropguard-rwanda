@@ -2,7 +2,7 @@
 
 **Post-Harvest Risk Monitoring System for Rwanda**
 
-CropGuard AI is a data-driven mobile application built for the **NISR 2026 Big Data Hackathon** (Track 1: Agricultural Productivity). It protects smallholder farmers and agricultural planners against severe post-harvest losses caused by unseasonal rainfall, humidity spikes, and delayed collection logistics.
+CropGuard AI is a data-driven mobile application that protects smallholder farmers and agricultural planners against severe post-harvest losses caused by unseasonal rainfall, humidity spikes, and delayed collection logistics.
 
 ## 🎯 The Problem
 
@@ -211,28 +211,11 @@ NISR Portal → Python Pipeline → Firestore → Flutter App
 - **4 crop types** tracked (maize, beans, Irish potatoes, cassava)
 - **Real-time** risk scores updated every 6 hours
 
-## 🏆 Hackathon Submission
-
-### Evaluation criteria → evidence map
-
-| Criterion | Evidence in this repo |
-|---|---|
-| **1. Problem Understanding & Relevance (20)** | `PRD.md` (problem, personas, requirements); explicit NST2/Vision 2050 mapping above; Track 1 hint coverage table |
-| **2. Data Use & Methodology (20)** | NISR SAS baseline **+** Open-Meteo weather **+** ERA5/Copernicus satellite soil moisture; 4-component weighted formula; automated preprocessing with `data_quality.py` → `data/data_quality_report.json` (completeness, ranges, uniqueness, bbox checks); risk history/momentum via `risk_history.py` |
-| **3. Tech Innovation (20)** | Satellite data fusion; predictive trend/momentum detection; smart bilingual SMS/USSD alert system with escalation-only anti-spam; haversine dispatch-matching engine; 6-hourly GitHub Actions pipeline → Firestore |
-| **4. Usability & Design (20)** | Flutter app (Android + Web): interactive map, color-coded district detail, risk breakdown with formula, dispatch screen with one-tap call/email, scrollytelling landing page; 5/5 unit tests passing; `flutter analyze` clean |
-| **5. Tangible Impact (20)** | SMS/USSD reach (no smartphone/internet needed); facility dispatch plan with contacts & capacity; **exportable policy brief** (`scripts/generate_policy_brief.py` → `reports/`); open-source MIT licence with maintenance hand-off plan (PRD §8) |
-
-This project addresses:
-- **Tech Innovation (20 pts)**: Real-time automated data pipelines, live API integration, satellite fusion, trend detection
-- **Data Use & Methodology (20 pts)**: NISR official statistics + meteorological + satellite data fusion with automated quality reporting
-- **Tangible Impact (20 pts)**: Direct support for NST2 post-harvest loss reduction goals
-
 ## 📄 License
 
 MIT License - Open source for agricultural development in Rwanda.
 
 ---
 
-**Built for NISR 2026 Big Data Hackathon**
+**Built for Rwanda Agricultural Development**
 # cropguard-rwanda
