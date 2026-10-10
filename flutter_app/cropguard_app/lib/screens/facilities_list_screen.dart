@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../utils/colors.dart';
 import '../utils/formatters.dart';
+import '../utils/language_provider.dart';
+import '../utils/translations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FacilitiesListScreen extends StatefulWidget {
@@ -27,6 +30,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().strings;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.district.name} Facilities'),
@@ -44,7 +48,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
               color: _showMap ? AppColors.primary : AppColors.textOnPrimary,
             ),
             label: Text(
-              _showMap ? 'List View' : 'Map View',
+              _showMap ? lang.listView : lang.mapView,
               style: TextStyle(
                 color: _showMap ? AppColors.primary : AppColors.textOnPrimary,
               ),
@@ -52,7 +56,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
           ),
         ],
       ),
-      body: _showMap ? _buildMapView() : _buildListView(),
+      body: _showMap ? _buildMapView() : _buildListView(lang),
       floatingActionButton: widget.facilities.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () {
@@ -63,13 +67,13 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
               },
               backgroundColor: AppColors.primary,
               icon: const Icon(Icons.map),
-              label: const Text('View on Map'),
+              label: Text(lang.viewOnMap),
             )
           : null,
     );
   }
 
-  Widget _buildListView() {
+  Widget _buildListView(AppStrings lang) {
     if (widget.facilities.isEmpty) {
       return Center(
         child: Column(
@@ -82,7 +86,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No facilities found in ${widget.district.name}',
+              '${lang.noFacilitiesFound} in ${widget.district.name}',
               style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
@@ -108,6 +112,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
         final facility = widget.facilities[index];
         return _FacilityCard(
           facility: facility,
+          lang: lang,
           onTap: () => setState(() => _selectedFacility = facility),
           onCall: () => _makePhoneCall(facility.contactPhone),
           onEmail: () => _sendEmail(facility.contactEmail),
@@ -285,6 +290,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
   }
 
   Widget _buildSelectedFacilitySheet() {
+    final lang = context.watch<LanguageProvider>().strings;
     final f = _selectedFacility!;
     return Container(
       margin: const EdgeInsets.all(16),
@@ -367,7 +373,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _makePhoneCall(f.contactPhone),
                   icon: const Icon(Icons.phone, size: 18),
-                  label: const Text('Call'),
+                  label: Text(lang.call),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textOnPrimary,
@@ -380,7 +386,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () => _sendEmail(f.contactEmail),
                   icon: const Icon(Icons.email, size: 18),
-                  label: const Text('Email'),
+                  label: Text(lang.email),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: const BorderSide(color: AppColors.primary),
@@ -464,12 +470,14 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
 
 class _FacilityCard extends StatelessWidget {
   final Facility facility;
+  final AppStrings lang;
   final VoidCallback onTap;
   final VoidCallback onCall;
   final VoidCallback onEmail;
 
   const _FacilityCard({
     required this.facility,
+    required this.lang,
     required this.onTap,
     required this.onCall,
     required this.onEmail,
@@ -551,7 +559,7 @@ class _FacilityCard extends StatelessWidget {
                           color: Colors.orange.withOpacity(0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
@@ -561,7 +569,7 @@ class _FacilityCard extends StatelessWidget {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            'High usage',
+                            lang.highUsage,
                             style: TextStyle(
                               fontSize: 10,
                               color: Colors.orange,

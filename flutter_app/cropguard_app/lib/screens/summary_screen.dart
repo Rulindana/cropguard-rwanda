@@ -1,26 +1,28 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/summary_model.dart';
 import '../services/firebase_service.dart';
 import '../utils/colors.dart';
+import '../utils/language_provider.dart';
+import '../utils/translations.dart';
+import '../widgets/holographic_card.dart';
 
 class SummaryScreen extends StatelessWidget {
   const SummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('National Overview'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
-        elevation: 0,
-      ),
-      body: StreamBuilder<RiskSummary?>(
-        stream: SummaryService().getSummaryStream(),
-        builder: (context, summarySnapshot) {
+    final lang = context.watch<LanguageProvider>().strings;
+    // ✅ No Scaffold/AppBar here — SummaryScreen lives inside ResponsiveScaffold
+    // which already provides the header. Adding an AppBar here created a
+    // rogue back button that popped the whole scaffold.
+    return StreamBuilder<RiskSummary?>(
+      stream: SummaryService().getSummaryStream(),
+      builder: (context, summarySnapshot) {
           if (summarySnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -31,13 +33,13 @@ class SummaryScreen extends StatelessWidget {
             return _buildFromDistricts(context);
           }
 
-          return _buildSummaryUI(context, summary);
+          return _buildSummaryUI(context, summary, lang);
         },
-      ),
-    );
+      );
   }
 
   Widget _buildFromDistricts(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().strings;
     return StreamBuilder<List<District>>(
       stream: DistrictService().getDistrictsStream(),
       builder: (context, snapshot) {
@@ -66,12 +68,12 @@ class SummaryScreen extends StatelessWidget {
           avgRiskScore: avgRisk,
         );
 
-        return _buildSummaryUI(context, calcSummary);
+        return _buildSummaryUI(context, calcSummary, lang);
       },
     );
   }
 
-  Widget _buildSummaryUI(BuildContext context, RiskSummary summary) {
+  Widget _buildSummaryUI(BuildContext context, RiskSummary summary, AppStrings lang) {
     final highRiskDistricts = <District>[];
 
     return Scaffold(
@@ -98,25 +100,25 @@ class SummaryScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header stats
-                  _buildHeaderStats(summary),
+                  _buildHeaderStats(summary, lang),
                   const SizedBox(height: 24),
 
                   // Risk distribution chart
-                  _buildRiskDistribution(summary),
+                  _buildRiskDistribution(summary, lang),
                   const SizedBox(height: 24),
 
                   // High risk alert section
                   if (highRiskDistricts.isNotEmpty) ...[
-                    _buildHighRiskAlert(highRiskDistricts),
+                    _buildHighRiskAlert(highRiskDistricts, lang),
                     const SizedBox(height: 24),
                   ],
 
                   // Province breakdown
-                  _buildProvinceBreakdown(districtSnapshot.data ?? []),
+                  _buildProvinceBreakdown(districtSnapshot.data ?? [], lang),
                   const SizedBox(height: 24),
 
                   // Policy recommendations
-                  _buildPolicyRecommendations(summary),
+                  _buildPolicyRecommendations(summary, lang),
                 ],
               ),
             ),
@@ -126,7 +128,7 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderStats(RiskSummary summary) {
+  Widget _buildHeaderStats(RiskSummary summary, AppStrings lang) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -153,9 +155,9 @@ class SummaryScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'National Post-Harvest Risk Dashboard',
-            style: TextStyle(
+          Text(
+            lang.nationalDashboard,
+            style: const TextStyle(
               color: AppColors.textOnPrimary,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -166,9 +168,9 @@ class SummaryScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Total Districts',
+                  lang.totalDistricts,
                   '${summary.totalDistricts}',
-                  'Monitored',
+                  lang.monitored,
                   AppColors.textOnPrimary,
                   Icons.location_city,
                 ),
@@ -176,7 +178,7 @@ class SummaryScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  'Avg Risk Score',
+                  lang.avgRiskScore,
                   summary.avgRiskScore.toStringAsFixed(1),
                   '%',
                   AppColors.textOnPrimary,
@@ -190,7 +192,7 @@ class SummaryScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'At Risk',
+                  lang.atRisk,
                   summary.totalAtRisk.toString(),
                   'districts (Yellow + Red)',
                   Colors.amber.shade300,
@@ -200,7 +202,7 @@ class SummaryScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  'High Alert',
+                  lang.highAlert,
                   summary.redCount.toString(),
                   'districts (Red)',
                   Colors.red.shade300,
@@ -211,7 +213,7 @@ class SummaryScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Last updated: ${DateTime.now().toString().substring(0, 16)}',
+            '${lang.lastUpdated} ${DateTime.now().toString().substring(0, 16)}',
             style: TextStyle(
               color: AppColors.textOnPrimary.withOpacity(0.7),
               fontSize: 11,
@@ -259,7 +261,7 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRiskDistribution(RiskSummary summary) {
+  Widget _buildRiskDistribution(RiskSummary summary, AppStrings lang) {
     final total = summary.totalDistricts.toDouble();
     final greenPct = summary.greenCount / total;
     final yellowPct = summary.yellowCount / total;
@@ -271,9 +273,9 @@ class SummaryScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Risk Distribution',
-              style: TextStyle(
+            Text(
+              lang.riskDistribution,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -281,7 +283,7 @@ class SummaryScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '30 Districts - Real-time Classification',
+              lang.realTimeClassification,
               style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
@@ -454,7 +456,7 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHighRiskAlert(List<District> highRiskDistricts) {
+  Widget _buildHighRiskAlert(List<District> highRiskDistricts, AppStrings lang) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -475,9 +477,9 @@ class SummaryScreen extends StatelessWidget {
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'HIGH RISK DISTRICTS',
-                style: TextStyle(
+              Text(
+                lang.highRiskDistricts,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: AppColors.red,
@@ -564,7 +566,7 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProvinceBreakdown(List<District> districts) {
+  Widget _buildProvinceBreakdown(List<District> districts, AppStrings lang) {
     // Group by province
     final Map<String, List<District>> provinceMap = {};
     for (final d in districts) {
@@ -593,9 +595,9 @@ class SummaryScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Provincial Breakdown',
-              style: TextStyle(
+            Text(
+              lang.provincialBreakdown,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -709,7 +711,7 @@ class SummaryScreen extends StatelessWidget {
     return AppColors.green;
   }
 
-  Widget _buildPolicyRecommendations(RiskSummary summary) {
+  Widget _buildPolicyRecommendations(RiskSummary summary, AppStrings lang) {
     return Card(
       color: AppColors.primary.withOpacity(0.05),
       shape: RoundedRectangleBorder(
@@ -732,9 +734,9 @@ class SummaryScreen extends StatelessWidget {
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'POLICY RECOMMENDATIONS',
-                  style: TextStyle(
+                Text(
+                  lang.policyRecommendations,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
@@ -773,7 +775,7 @@ class SummaryScreen extends StatelessWidget {
             if (summary.greenCount == summary.totalDistricts) ...[
               _buildRecommendation(
                 icon: Icons.check_circle,
-                title: 'Standard Operations',
+                title: lang.standardOperations,
                 description:
                     'All districts show low risk. Continue routine harvesting and sun-drying protocols. '
                     'Monitor weather forecasts daily.',
@@ -783,13 +785,16 @@ class SummaryScreen extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 8),
             Text(
-              'NST2 Alignment: Post-harvest loss reduction',
+              lang.nst2Alignment,
               style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.textSecondary,
                 fontStyle: FontStyle.italic,
               ),
             ),
+            const SizedBox(height: 20),
+            // ✅ Innovation 2: Download Policy Brief
+            _DownloadPolicyBriefButton(),
           ],
         ),
       ),
@@ -830,6 +835,105 @@ class SummaryScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ── Innovation 2: Download Policy Brief ──────────────────────────────────────
+
+class _DownloadPolicyBriefButton extends StatefulWidget {
+  @override
+  State<_DownloadPolicyBriefButton> createState() =>
+      _DownloadPolicyBriefButtonState();
+}
+
+class _DownloadPolicyBriefButtonState
+    extends State<_DownloadPolicyBriefButton> {
+  bool _loading = false;
+
+  Future<void> _download() async {
+    setState(() => _loading = true);
+    try {
+      final content =
+          await rootBundle.loadString('assets/data/policy_brief.md');
+      // Copy to clipboard — works on all platforms including web
+      await Clipboard.setData(ClipboardData(text: content));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                '✅ Policy brief copied to clipboard — paste into any text editor to save'),
+            backgroundColor: AppColors.primary,
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Download failed: $e'),
+          backgroundColor: AppColors.alertRed,
+        ));
+      }
+    }
+    if (mounted) setState(() => _loading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return HolographicCard(
+      accentColor: AppColors.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(children: [
+              Icon(Icons.description_outlined,
+                  color: AppColors.primary, size: 18),
+              SizedBox(width: 8),
+              Text('Policy Brief Export',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary)),
+            ]),
+            const SizedBox(height: 6),
+            const Text(
+              'Export national risk brief for MINAGRI planners and development partners',
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _loading ? null : _download,
+                icon: _loading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFF0B1617)))
+                    : const Icon(Icons.download, size: 18),
+                label: Text(
+                    _loading ? 'Preparing...' : 'Download Policy Brief'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: const Color(0xFF0B1617),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  textStyle: const TextStyle(
+                      fontWeight: FontWeight.w800, fontSize: 14),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

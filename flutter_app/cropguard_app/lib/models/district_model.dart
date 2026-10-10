@@ -45,11 +45,32 @@ class District {
     this.previousRiskScore,
   });
 
-  double get maizeTons => nirsBaseline['maize_tons'] ?? 0.0;
-  double get beansTons => nirsBaseline['beans_tons'] ?? 0.0;
-  double get irishPotatoesTons => nirsBaseline['irish_potatoes_tons'] ?? 0.0;
-  double get cassavaTons => nirsBaseline['cassava_tons'] ?? 0.0;
-  double get historicalLossRatePct => nirsBaseline['historical_loss_rate_pct'] ?? 0.0;
+  double get maizeTons => (nirsBaseline['maize_tons'] as num?)?.toDouble() ?? 0.0;
+  double get beansTons => (nirsBaseline['beans_tons'] as num?)?.toDouble() ?? 0.0;
+  double get irishPotatoesTons => (nirsBaseline['irish_potatoes_tons'] as num?)?.toDouble() ?? 0.0;
+  double get cassavaTons => (nirsBaseline['cassava_tons'] as num?)?.toDouble() ?? 0.0;
+  double get sorghumTons => (nirsBaseline['sorghum_tons'] as num?)?.toDouble() ?? 0.0;
+  double get wheatTons => (nirsBaseline['wheat_tons'] as num?)?.toDouble() ?? 0.0;
+  double get groundnutsTons => (nirsBaseline['groundnuts_tons'] as num?)?.toDouble() ?? 0.0;
+  double get sweetPotatoTons => (nirsBaseline['sweet_potato_tons'] as num?)?.toDouble() ?? 0.0;
+  double get peasTons => (nirsBaseline['peas_tons'] as num?)?.toDouble() ?? 0.0;
+  double get historicalLossRatePct => (nirsBaseline['historical_loss_rate_pct'] as num?)?.toDouble() ?? 0.0;
+
+  /// Returns all crops with non-zero tonnage for this district
+  List<Map<String, dynamic>> get crops {
+    final all = [
+      {'icon': '🌽', 'name': 'Maize',        'name_rw': 'Ibigori',     'name_fr': 'Maïs',           'tons': maizeTons},
+      {'icon': '🫘', 'name': 'Beans',         'name_rw': 'Ibishyimbo',  'name_fr': 'Haricots',        'tons': beansTons},
+      {'icon': '🥔', 'name': 'Irish Potato',  'name_rw': 'Ibirayi',     'name_fr': 'Pomme de Terre',  'tons': irishPotatoesTons},
+      {'icon': '🌿', 'name': 'Cassava',       'name_rw': 'Imyumbati',   'name_fr': 'Manioc',          'tons': cassavaTons},
+      {'icon': '🌾', 'name': 'Sorghum',       'name_rw': 'Amasaka',     'name_fr': 'Sorgho',          'tons': sorghumTons},
+      {'icon': '🌾', 'name': 'Wheat',         'name_rw': 'Ingano',      'name_fr': 'Blé',             'tons': wheatTons},
+      {'icon': '🥜', 'name': 'Groundnuts',    'name_rw': 'Amandarashara','name_fr': 'Arachides',      'tons': groundnutsTons},
+      {'icon': '🍠', 'name': 'Sweet Potato',  'name_rw': 'Ibijumba',    'name_fr': 'Patate Douce',    'tons': sweetPotatoTons},
+      {'icon': '🟢', 'name': 'Peas',          'name_rw': 'Amashaza',    'name_fr': 'Pois',            'tons': peasTons},
+    ];
+    return all.where((c) => (c['tons'] as double) > 0).toList();
+  }
 
   factory District.fromFirestore(Map<String, dynamic> data, String id) {
     return District(
@@ -127,6 +148,18 @@ class District {
       case 'green':
       default:
         return '🟢';
+    }
+  }
+
+  String get riskLabel {
+    switch (riskLevel) {
+      case 'red':
+        return 'High Risk';
+      case 'yellow':
+        return 'Moderate Risk';
+      case 'green':
+      default:
+        return 'Low Risk';
     }
   }
 }

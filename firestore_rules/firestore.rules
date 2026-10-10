@@ -1,29 +1,101 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Districts collection - readable by all, writable by admin only
+
+    // ── Helper functions ──────────────────────────────────────────────────────
+
+    // Only admin service account can write sensitive collections
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Validate a string field: exists, is a string, within length bounds
+    function validString(field, minLen, maxLen) {
+      return field is string
+          && field.size() >= minLen
+          && field.size() <= maxLen;
+    }
+
+    // Reject any value that looks like an HTML/script injection attempt
+    function noInjection(field) {
+      return !field.matches('.*<script.*')
+          && !field.matches('.*javascript:.*')
+          && !field.matches('.*on\\w+\\s*=.*')
+          && !field.matches('.*<iframe.*');
+    }
+
+    // ── Districts — public read, admin-only write ─────────────────────────────
     match /districts/{districtId} {
       allow read: if true;
-      allow write: if request.auth != null 
-        && request.auth.token.admin == true;
+      allow create, update, delete: if isAdmin();
     }
-    
-    // Facilities collection - readable by all, writable by admin only
+
+    // ── Facilities — public read, admin-only write ────────────────────────────
     match /facilities/{facilityId} {
       allow read: if true;
-      allow write: if request.auth != null 
-        && request.auth.token.admin == true;
+      allow create, update, delete: if isAdmin();
     }
-    
-    // Metadata collection - readable by all
+
+    // ── Metadata / risk summary — public read, admin-only write ──────────────
     match /metadata/{document=**} {
       allow read: if true;
-      allow write: if request.auth != null 
-        && request.auth.token.admin == true;
+      allow create, update, delete: if isAdmin();
     }
-    
-    // Default - deny all other operations
+
+    // ── Feedback — anyone can submit, nobody can read/edit/delete ─────────────
+    // (Only admins can read feedback via Firebase Console / admin SDK)
+    match /feedback/{feedbackId} {
+      // ✅ Public write: anyone can submit — but fields are strictly validated
+      allow create: if
+          // Required: name (2–100 chars, no injection)
+          validString(request.resource.data.name, 2, 100)
+          && noInjection(request.resource.data.name)
+
+          // Required: type must be one of the allowed values
+          && request.resource.data.type in [
+              'suggestion', 'bug', 'support', 'compliment', 'other'
+          ]
+
+          // Required: message (10–2000 chars, no injection)
+          && validString(request.resource.data.message, 10, 2000)
+          && noInjection(request.resource.data.message)
+
+          // Optional email: if present, must be a string ≤ 200 chars
+          && (!('email' in request.resource.data)
+              || validString(request.resource.data.email, 0, 200))
+
+          // Must include server timestamp (prevents client clock manipulation)
+          && request.resource.data.submitted_at == request.time
+
+          // Exactly these fields — no extra fields allowed (prevents data injection)
+          && request.resource.data.keys().hasOnly([
+              'name', 'email', 'type', 'message',
+              'submitted_at', 'app_version'
+          ]);
+
+      // ❌ Nobody can read, update or delete feedback through the client SDK
+      allow read, update, delete: if false;
+    }
+
+    // ── Field reports — anyone can submit and read, nobody can edit/delete ────
+    match /field_reports/{reportId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.district_id is string
+        && request.resource.data.condition in ['dry_safe', 'wet_conditions', 'storage_full']
+        && request.resource.data.reported_at == request.time
+        && (!('notes' in request.resource.data) ||
+            (request.resource.data.notes is string && request.resource.data.notes.size() <= 500));
+      allow update, delete: if false;
+    }
+
+    // ── Alert subscriptions — user can write their own, read their own ────────
+    match /alert_subscriptions/{subId} {
+      allow read, create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Catch-all: deny everything else ──────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

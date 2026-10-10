@@ -1,19 +1,17 @@
-import 'dart:ui' show Color;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../services/firebase_service.dart';
 import '../utils/colors.dart';
-import '../utils/rwa_map_data.dart';
 import '../utils/formatters.dart';
-import '../widgets/risk_indicator.dart';
-import 'district_detail_screen.dart';
-import 'facilities_list_screen.dart';
-import '../services/firebase_service.dart';
-import '../utils/colors.dart';
+import '../utils/language_provider.dart';
+import '../utils/rwa_map_data.dart';
+import '../utils/translations.dart';
 import '../widgets/risk_indicator.dart';
 import 'district_detail_screen.dart';
 import 'facilities_list_screen.dart';
@@ -34,15 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   District? _selectedDistrict;
   bool _isLoading = true;
   String _error = '';
-
-  // Simplified Rwanda district polygons (filled by risk level)
   List<RwaMapPolygon> _mapPolygons = const [];
 
-  // Rwanda bounding box (used for constraints)
-  static const double minLat = -2.85;
-  static const double maxLat = -1.05;
-  static const double minLng = 28.85;
-  static const double maxLng = 31.25;
+  // Real weather data
+  Map<String, dynamic>? _weather;
+  bool _weatherLoading = false;
 
   @override
   void initState() {
@@ -54,486 +48,761 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final districts = await _districtService.getDistrictsOnce();
       final facilities = await _facilityService.getFacilitiesOnce();
-
       if (mounted) {
         setState(() {
-          _districts = districts;
+          _districts = districts..sort((a, b) => a.name.compareTo(b.name));
           _facilities = facilities;
           _isLoading = false;
         });
       }
-      await _loadMapPolygons();
+      await Future.wait([_loadMapPolygons(), _fetchWeather(-1.9441, 30.0619)]);
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load data: ${e.toString()}';
+          _error = 'Failed to load data: $e';
           _isLoading = false;
         });
       }
     }
   }
 
-  /// Loads simplified Rwanda district polygons; each polygon is matched to
-  /// its [District] by normalized name and colored with the district's risk.
   Future<void> _loadMapPolygons() async {
     try {
-      _mapPolygons = await RwaMapPolygon.load();
-    } catch (e) {
-      print('CropGuard: failed to load district polygons: $e');
-      _mapPolygons = const [];
+      final polygons = await RwaMapPolygon.load();
+      if (mounted) setState(() => _mapPolygons = polygons);
+    } catch (_) {}
+  }
+
+  /// Fetch real weather from Open-Meteo for a given lat/lng
+  Future<void> _fetchWeather(double lat, double lng) async {
+    if (_weatherLoading) return;
+    setState(() => _weatherLoading = true);
+    try {
+      final url = Uri.parse(
+        'https://api.open-meteo.com/v1/forecast'
+        '?latitude=$lat&longitude=$lng'
+        '&current=temperature_2m,relative_humidity_2m,'
+        'precipitation,wind_speed_10m,weather_code'
+        '&wind_speed_unit=kmh&timezone=Africa%2FKigali',
+      );
+      final resp = await http.get(url).timeout(const Duration(seconds: 8));
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body);
+        if (mounted) setState(() => _weather = data['current']);
+      }
+    } catch (_) {
+      // Keep static fallback if API fails
+    } finally {
+      if (mounted) setState(() => _weatherLoading = false);
     }
   }
 
-  /// Colors simplified district polygons by risk level (no match = grey).
   List<Polygon> _buildPolygonList() {
     if (_mapPolygons.isEmpty) return const [];
-    final districtByKey = {for (final d in _districts) normalizeDistrictName(d.name): d};
+    final byKey = {
+      for (final d in _districts) normalizeDistrictName(d.name): d
+    };
+    final hasSelection = _selectedDistrict != null;
+
     return _mapPolygons.map((p) {
-      final district = districtByKey[normalizeDistrictName(p.name)];
+      final d = byKey[normalizeDistrictName(p.name)];
+      final isSelected = _selectedDistrict != null &&
+          normalizeDistrictName(_selectedDistrict!.name) ==
+              normalizeDistrictName(p.name);
+
+      Color fill;
+      Color border;
+      double borderWidth;
+
+      if (hasSelection && !isSelected) {
+        // ✅ ALL non-selected districts → greyed out
+        fill = Colors.grey.withOpacity(0.22);
+        border = Colors.white.withOpacity(0.25);
+        borderWidth = 0.8;
+      } else {
+        // No selection active OR this is the selected district → show full risk color
+        if (d == null) {
+          fill = Colors.grey.withOpacity(0.3);
+          border = Colors.white.withOpacity(0.4);
+          borderWidth = 1.0;
+        } else {
+          switch (d.riskLevel) {
+            case 'red':
+              fill = const Color(0xFFDC2626)
+                  .withOpacity(isSelected ? 0.95 : 0.65);
+              break;
+            case 'yellow':
+              fill = const Color(0xFFF59E0B)
+                  .withOpacity(isSelected ? 0.95 : 0.60);
+              break;
+            default:
+              fill = const Color(0xFF16A34A)
+                  .withOpacity(isSelected ? 0.95 : 0.55);
+          }
+          border = isSelected
+              ? Colors.white
+              : Colors.white.withOpacity(0.55);
+          borderWidth = isSelected ? 3.0 : 1.2;
+        }
+      }
+
       return Polygon(
         points: p.points,
-        color: district != null ? district.riskColor : Colors.grey.shade400,
-        borderColor: district != null ? Colors.white : Colors.grey.shade400,
-        borderStrokeWidth: district != null ? 1.5 : 1,
+        color: fill,
+        borderColor: border,
+        borderStrokeWidth: borderWidth,
       );
     }).toList();
   }
 
-  @override
   void _onDistrictTap(District district) {
     setState(() {
-      _selectedDistrict = district;
+      // Tap same district again → deselect (all colors come back)
+      if (_selectedDistrict?.id == district.id) {
+        _selectedDistrict = null;
+      } else {
+        _selectedDistrict = district;
+        _fetchWeather(district.centroidLat, district.centroidLng);
+      }
     });
+  }
+
+  String _weatherDesc(int? code) {
+    if (code == null) return 'Partly Cloudy';
+    if (code == 0) return 'Clear Sky';
+    if (code <= 3) return 'Partly Cloudy';
+    if (code <= 48) return 'Foggy';
+    if (code <= 67) return 'Drizzle / Rain';
+    if (code <= 77) return 'Snow';
+    if (code <= 82) return 'Rain Showers';
+    if (code <= 99) return 'Thunderstorm';
+    return 'Partly Cloudy';
+  }
+
+  String _weatherDescRw(int? code) {
+    if (code == null) return 'Ibicu bike';
+    if (code == 0) return 'Izuba rirahije';
+    if (code <= 3) return 'Ibicu bike';
+    if (code <= 48) return 'Igihu';
+    if (code <= 67) return 'Imvura';
+    if (code <= 77) return 'Theluji';
+    if (code <= 82) return 'Imvura nyinshi';
+    if (code <= 99) return 'Inkuba';
+    return 'Ibicu bike';
+  }
+
+  String _weatherDescFr(int? code) {
+    if (code == null) return 'Partiellement Nuageux';
+    if (code == 0) return 'Ciel Dégagé';
+    if (code <= 3) return 'Partiellement Nuageux';
+    if (code <= 48) return 'Brouillard';
+    if (code <= 67) return 'Pluie';
+    if (code <= 77) return 'Neige';
+    if (code <= 82) return 'Averses';
+    if (code <= 99) return 'Orage';
+    return 'Partiellement Nuageux';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty
-              ? Center(child: Text(_error))
-              : _buildMapWithPanel(),
-      floatingActionButton: _selectedDistrict != null
-          ? FloatingActionButton(
-              heroTag: 'facilities',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => FacilitiesListScreen(
-                      district: _selectedDistrict!,
-                      facilities: _facilities
-                          .where((f) => f.district == _selectedDistrict!.name)
-                          .toList(),
-                    ),
-                  ),
-                );
-              },
-              backgroundColor: AppColors.primary,
-              child: const Icon(Icons.storage_outlined),
-            )
-          : null,
-    );
+    final lang = context.watch<LanguageProvider>().strings;
+    final isDesktop = MediaQuery.of(context).size.width > 800;
+
+    if (_isLoading) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary));
+    }
+    if (_error.isNotEmpty) {
+      return Center(child: Text(_error));
+    }
+
+    if (isDesktop) {
+      return _buildDesktopLayout(lang);
+    }
+    return _buildMobileLayout(lang);
   }
 
-  Widget _buildMapWithPanel() {
-    return Stack(
+  // ── DESKTOP: map center + left district list + right detail panel ──────────
+  Widget _buildDesktopLayout(AppStrings lang) {
+    return Row(
       children: [
-        // Map
-        FlutterMap(
-          options: MapOptions(
-            initialCenter: const LatLng(-1.94, 29.87),
-            initialZoom: 7.5,
-            onTap: (tap, latLng) {
-              // Check if tapped on a district marker area
-            },
+        // LEFT: scrollable district list
+        Container(
+          width: 200,
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            border: Border(
+                right: BorderSide(color: AppColors.border, width: 1)),
           ),
-          children: [
-            TileLayer(
-              urlTemplate:
-                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.cropguard.cropguard_app',
-            ),
-            // Simplified Rwanda districts (colored by current risk level)
-            PolygonLayer(
-              polygons: _buildPolygonList(),
-            ),
-            // District markers
-            MarkerLayer(
-              markers: _districts.map((d) {
-                return Marker(
-                  point: LatLng(d.centroidLat, d.centroidLng),
-                  width: 40,
-                  height: 40,
-                  child: GestureDetector(
-                    onTap: () => _onDistrictTap(d),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: d.riskColor,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.5,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  lang.languageCode == 'rw'
+                      ? 'Tuduce 30'
+                      : lang.languageCode == 'fr'
+                          ? '30 Districts'
+                          : '30 Districts',
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary),
+                ),
+              ),
+              const Divider(height: 1, color: AppColors.border),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _districts.length,
+                  itemBuilder: (context, i) {
+                    final d = _districts[i];
+                    final isSelected = _selectedDistrict?.id == d.id;
+                    return InkWell(
+                      onTap: () => _onDistrictTap(d),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary.withOpacity(0.15)
+                              : Colors.transparent,
+                          border: isSelected
+                              ? const Border(
+                                  left: BorderSide(
+                                      color: AppColors.primary,
+                                      width: 3))
+                              : null,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: d.riskColor.withOpacity(0.4),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          d.riskIcon,
-                          style: const TextStyle(fontSize: 18),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                  color: d.riskColor,
+                                  shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                d.name,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // CENTER: full-height map
+        Expanded(
+          child: Stack(
+            children: [
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(-1.9403, 29.8739),
+                  initialZoom: 8.8,
+                  minZoom: 7.5,
+                  maxZoom: 16.0,
+                  // Tap on empty area → deselect district (all colors come back)
+                  onTap: (_, __) => setState(() => _selectedDistrict = null),
+                  // Restrict pan to Rwanda bounds
+                  cameraConstraint: CameraConstraint.containCenter(
+                    bounds: LatLngBounds(
+                      LatLng(-2.85, 28.85),
+                      LatLng(-1.05, 31.25),
                     ),
                   ),
-                );
-              }).toList(),
-            ),
-            // Selected district highlight
-            if (_selectedDistrict != null)
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: LatLng(
-                      _selectedDistrict!.centroidLat,
-                      _selectedDistrict!.centroidLng,
-                    ),
-                    width: 56,
-                    height: 56,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 12,
-                            spreadRadius: 2,
+                ),
+                children: [
+                  TileLayer(
+                    // ✅ ESRI Satellite imagery — free, no API key required
+                    urlTemplate:
+                        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    userAgentPackageName: 'com.cropguard.cropguard_app',
+                    maxNativeZoom: 19,
+                    maxZoom: 19,
+                  ),
+                  PolygonLayer(polygons: _buildPolygonList()),
+                  MarkerLayer(
+                    markers: _districts.map((d) {
+                      final isSelected = _selectedDistrict?.id == d.id;
+                      // Build crops tooltip text
+                      final cropList = d.crops.take(4)
+                          .map((c) => '${c['icon']} ${c['name']}: ${NumberFormatter.tons(c['tons'] as double)}')
+                          .join('\n');
+                      return Marker(
+                        point: LatLng(d.centroidLat, d.centroidLng),
+                        width: isSelected ? 48 : 36,
+                        height: isSelected ? 48 : 36,
+                        child: GestureDetector(
+                          onTap: () => _onDistrictTap(d),
+                          child: Tooltip(
+                            message: '${d.name}\nRisk: ${d.riskScore.toStringAsFixed(0)}%\n$cropList',
+                            preferBelow: false,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: d.riskColor.withOpacity(0.9),
+                                border: Border.all(
+                                    color: Colors.white,
+                                    width: isSelected ? 3 : 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: d.riskColor.withOpacity(0.5),
+                                    blurRadius: isSelected ? 12 : 6,
+                                    spreadRadius: isSelected ? 3 : 1,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(d.riskIcon,
+                                    style: TextStyle(
+                                        fontSize: isSelected ? 20 : 15)),
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: AppColors.primary,
-                        size: 32,
-                      ),
-                    ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
-          ],
+              // Legend
+              Positioned(
+                bottom: 16,
+                left: 16,
+                child: _MapLegend(lang: lang),
+              ),
+            ],
+          ),
         ),
 
-        // Bottom detail panel
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: _selectedDistrict != null
-              ? _buildDetailPanel()
-              : _buildDistrictSelector(),
-        ),
-
-        // Loading indicator overlay
-        if (_isLoading)
-          const Positioned(
-            top: 16,
-            right: 16,
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(strokeWidth: 2),
+        // RIGHT: district detail panel
+        if (_selectedDistrict != null)
+          Container(
+            width: 300,
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                  left: BorderSide(color: AppColors.border, width: 1)),
             ),
+            child: _buildDetailPanel(_selectedDistrict!, lang),
           ),
       ],
     );
   }
 
-  Widget _buildDistrictSelector() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        boxShadow: [AppShadows.card],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Select a District',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              IconButton(
-                onPressed: _loadData,
-                icon: const Icon(Icons.refresh),
-                color: AppColors.primary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 48,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _districts.length,
-              itemBuilder: (context, index) {
-                final d = _districts[index];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(d.name),
-                    selected: _selectedDistrict?.id == d.id,
-                    onSelected: (_) => _onDistrictTap(d),
-                    backgroundColor: AppColors.background,
-                    selectedColor: d.riskColor.withOpacity(0.2),
-                    checkmarkColor: d.riskColor,
-                    side: BorderSide(
-                      color: d.riskColor.withOpacity(0.3),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailPanel() {
-    final d = _selectedDistrict!;
-    return Draggable(
-      // ignore: deprecated_member_use
-      childWhenDragging: Container(
-        height: 0,
-        color: Colors.transparent,
-      ),
-      feedback: Material(
-        elevation: 8,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.large),
-            boxShadow: [AppShadows.medium],
-          ),
-          width: MediaQuery.of(context).size.width - 32,
-          child: _buildPanelContent(d),
-        ),
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.large),
-          boxShadow: [AppShadows.card],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            const Align(
-              alignment: Alignment.centerRight,
-              child: Icon(
-                Icons.drag_indicator,
-                color: AppColors.textSecondary,
-                size: 20,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildPanelContent(d),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPanelContent(District d) {
+  // ── MOBILE: map top, district selector below ──────────────────────────────
+  Widget _buildMobileLayout(AppStrings lang) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
-        // Header
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: d.riskColor.withOpacity(0.15),
-              ),
-              child: Text(
-                d.riskIcon,
-                style: const TextStyle(fontSize: 24),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    d.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+        // Map — tall
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.55,
+          child: Stack(
+            children: [
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(-1.9403, 29.8739),
+                  initialZoom: 8.0,
+                  minZoom: 7.5,
+                  maxZoom: 16.0,
+                  // Tap on empty area → deselect district
+                  onTap: (_, __) => setState(() => _selectedDistrict = null),
+                  cameraConstraint: CameraConstraint.containCenter(
+                    bounds: LatLngBounds(
+                      LatLng(-2.85, 28.85),
+                      LatLng(-1.05, 31.25),
                     ),
                   ),
-                  Text(
-                    d.province,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
+                ),
+                children: [
+                  TileLayer(
+                    // ✅ ESRI Satellite imagery
+                    urlTemplate:
+                        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    userAgentPackageName: 'com.cropguard.cropguard_app',
+                    maxNativeZoom: 19,
+                    maxZoom: 19,
+                  ),
+                  PolygonLayer(polygons: _buildPolygonList()),
+                  MarkerLayer(
+                    markers: _districts.map((d) {
+                      return Marker(
+                        point: LatLng(d.centroidLat, d.centroidLng),
+                        width: 36,
+                        height: 36,
+                        child: GestureDetector(
+                          onTap: () => _onDistrictTap(d),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: d.riskColor.withOpacity(0.9),
+                              border: Border.all(
+                                  color: Colors.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: d.riskColor.withOpacity(0.5),
+                                    blurRadius: 6)
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(d.riskIcon,
+                                  style: const TextStyle(fontSize: 15)),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
-            ),
-            RiskIndicator(level: d.riskLevel),
-          ],
-        ),
-        const SizedBox(height: 16),
-        const Divider(),
-        const SizedBox(height: 12),
-
-        // Risk score gauge
-        _buildRiskScoreCard(d),
-
-        const SizedBox(height: 12),
-
-        // Crop volumes
-        _buildCropVolumesCard(d),
-
-        const SizedBox(height: 12),
-
-        // Weather summary
-        _buildWeatherCard(d),
-
-        const SizedBox(height: 16),
-
-        // Action buttons
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.info_outline,
-                label: 'Advisory',
-                onTap: () => _showAdvisoryDialog(d),
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: _MapLegend(lang: lang),
               ),
+            ],
+          ),
+        ),
+
+        // District list + detail
+        Expanded(
+          child: _selectedDistrict != null
+              ? SingleChildScrollView(
+                  child:
+                      _buildDetailPanel(_selectedDistrict!, lang))
+              : _buildDistrictListMobile(lang),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDistrictListMobile(AppStrings lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            lang.languageCode == 'rw'
+                ? 'Hitamo Akarere'
+                : lang.languageCode == 'fr'
+                    ? 'Sélectionner un District'
+                    : 'Select a District',
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _districts.length,
+            itemBuilder: (context, i) {
+              final d = _districts[i];
+              return ListTile(
+                dense: true,
+                leading: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                      color: d.riskColor, shape: BoxShape.circle),
+                ),
+                title: Text(d.name,
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.textPrimary)),
+                trailing: Text(
+                  '${d.riskScore.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: d.riskColor),
+                ),
+                onTap: () => _onDistrictTap(d),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── DETAIL PANEL ─────────────────────────────────────────────────────────
+  Widget _buildDetailPanel(District d, AppStrings lang) {
+    final code = _weather?['weather_code'] as int?;
+    final temp =
+        (_weather?['temperature_2m'] as num?)?.toStringAsFixed(0) ??
+            '22';
+    final humidity =
+        (_weather?['relative_humidity_2m'] as num?)?.toStringAsFixed(0) ??
+            '${d.maxHumidityPct.toStringAsFixed(0)}';
+    final precip =
+        (_weather?['precipitation'] as num?)?.toStringAsFixed(1) ??
+            '0.0';
+    final wind =
+        (_weather?['wind_speed_10m'] as num?)?.toStringAsFixed(0) ??
+            '12';
+    final desc = lang.languageCode == 'rw'
+        ? _weatherDescRw(code)
+        : lang.languageCode == 'fr'
+            ? _weatherDescFr(code)
+            : _weatherDesc(code);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row
+          Row(
+            children: [
+              Text(d.riskIcon, style: const TextStyle(fontSize: 28)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(d.name,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary)),
+                    Text(d.province,
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
+              // Close button
+              IconButton(
+                icon: const Icon(Icons.close,
+                    color: AppColors.textSecondary, size: 20),
+                onPressed: () =>
+                    setState(() => _selectedDistrict = null),
+              ),
+            ],
+          ),
+
+          const Divider(color: AppColors.divider),
+
+          // Real weather row
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.storage_outlined,
-                label: 'Facilities',
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
+            child: Row(
+              children: [
+                const Icon(Icons.cloud,
+                    color: AppColors.weatherCloudy, size: 28),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('$temp°C',
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary)),
+                      Text(desc,
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textSecondary)),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('💧 $humidity%',
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary)),
+                    Text('🌧 $precip mm',
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary)),
+                    Text('💨 $wind km/h',
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Risk score
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: d.riskColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: d.riskColor.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        lang.languageCode == 'rw'
+                            ? 'Amanota y\'Ingaruka'
+                            : lang.languageCode == 'fr'
+                                ? 'Score de Risque'
+                                : 'Risk Score',
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary),
+                      ),
+                      Text('${d.riskScore.toStringAsFixed(0)}%',
+                          style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: d.riskColor)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: CircularProgressIndicator(
+                    value: d.riskScore / 100,
+                    strokeWidth: 5,
+                    backgroundColor: Colors.grey.shade700,
+                    valueColor: AlwaysStoppedAnimation(d.riskColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Crop volumes
+          Text(
+            lang.languageCode == 'rw'
+                ? 'Umusaruro Uteganijwe'
+                : lang.languageCode == 'fr'
+                    ? 'Volume de Récolte'
+                    : 'Expected Harvest',
+            style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              _cropChip('🌽',
+                  lang.languageCode == 'rw' ? 'Ibigori' : lang.languageCode == 'fr' ? 'Maïs' : 'Maize',
+                  d.maizeTons),
+              _cropChip('🫘',
+                  lang.languageCode == 'rw' ? 'Ibishyimbo' : lang.languageCode == 'fr' ? 'Haricots' : 'Beans',
+                  d.beansTons),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              _cropChip('🥔',
+                  lang.languageCode == 'rw' ? 'Ibirayi' : lang.languageCode == 'fr' ? 'Pommes' : 'Potato',
+                  d.irishPotatoesTons),
+              _cropChip('🌿',
+                  lang.languageCode == 'rw' ? 'Imyumbati' : lang.languageCode == 'fr' ? 'Manioc' : 'Cassava',
+                  d.cassavaTons),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Action buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _showAdvisoryDialog(context, d, lang),
+                  icon: const Icon(Icons.info_outline, size: 16),
+                  label: Text(lang.languageCode == 'rw'
+                      ? 'Inama'
+                      : lang.languageCode == 'fr'
+                          ? 'Conseil'
+                          : 'Advisory'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: d.riskColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
                       builder: (_) => FacilitiesListScreen(
                         district: d,
                         facilities: _facilities
                             .where((f) => f.district == d.name)
                             .toList(),
                       ),
-                    ),
-                  );
-                },
+                    ));
+                  },
+                  icon: const Icon(Icons.storage_outlined, size: 16),
+                  label: Text(lang.navFacilities),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    side: BorderSide(color: d.riskColor),
+                    foregroundColor: d.riskColor,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRiskScoreCard(District d) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: d.riskColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        border: Border.all(
-          color: d.riskColor.withOpacity(0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Risk Score',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${d.riskScore.toStringAsFixed(0)}%',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: d.riskColor,
-                  ),
-                ),
-                Text(
-                  d.advisory.split(' - ').last,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+            ],
           ),
-          const SizedBox(width: 12),
-          // Mini gauge visualization
+
+          const SizedBox(height: 8),
+
+          // View full detail button
           SizedBox(
-            width: 50,
-            height: 50,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                CircularProgressIndicator(
-                  value: d.riskScore / 100,
-                  strokeWidth: 6,
-                  backgroundColor: Colors.grey.shade200,
-                  valueColor: AlwaysStoppedAnimation(d.riskColor),
-                ),
-                Text(
-                  '${d.riskScore.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: d.riskColor,
-                  ),
-                ),
-              ],
+            width: double.infinity,
+            child: TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => DistrictDetailScreen(district: d),
+                ));
+              },
+              icon: const Icon(Icons.open_in_new, size: 14),
+              label: Text(lang.languageCode == 'rw'
+                  ? 'Reba Byose'
+                  : lang.languageCode == 'fr'
+                      ? 'Voir Tout'
+                      : 'View Full Detail'),
+              style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary),
             ),
           ),
         ],
@@ -541,94 +810,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCropVolumesCard(District d) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Expected Harvest Volume',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildCropChip(
-                  icon: '🌽',
-                  label: 'Maize',
-                  value: d.maizeTons,
-                ),
-                const SizedBox(width: 8),
-                _buildCropChip(
-                  icon: '🫘',
-                  label: 'Beans',
-                  value: d.beansTons,
-                ),
-                const SizedBox(width: 8),
-                _buildCropChip(
-                  icon: '🥔',
-                  label: 'Potatoes',
-                  value: d.irishPotatoesTons,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildCropChip(
-                  icon: '🌿',
-                  label: 'Cassava',
-                  value: d.cassavaTons,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Historical loss: ${d.historicalLossRatePct.toStringAsFixed(1)}%',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCropChip({
-    required String icon,
-    required String label,
-    required double value,
-  }) {
+  Widget _cropChip(String icon, String label, double tons) {
     return Expanded(
       child: Container(
+        margin: const EdgeInsets.only(right: 4),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: AppColors.background,
-          borderRadius: BorderRadius.circular(AppRadius.small),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 14)),
+            Text(icon, style: const TextStyle(fontSize: 13)),
             const SizedBox(width: 4),
-            Text(
-              '$label: ',
-              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-            ),
-            Text(
-              NumberFormatter.tons(value),
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+            Expanded(
+              child: Text(
+                '$label: ${NumberFormatter.tons(tons)}',
+                style: const TextStyle(
+                    fontSize: 10, color: AppColors.textSecondary),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -637,197 +837,178 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildWeatherCard(District d) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            _buildWeatherItem(
-              icon: '🌧️',
-              label: 'Rain (14d)',
-              value: '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm',
-            ),
-            const SizedBox(width: 12),
-            _buildWeatherItem(
-              icon: '💧',
-              label: 'Max Humidity',
-              value: '${d.maxHumidityPct.toStringAsFixed(0)}%',
-            ),
-            const SizedBox(width: 12),
-            _buildWeatherItem(
-              icon: '📊',
-              label: 'Rain Index',
-              value: d.rainfallIndex.toStringAsFixed(0),
-            ),
-            const SizedBox(width: 12),
-            _buildWeatherItem(
-              icon: '🌡️',
-              label: 'Humidity Index',
-              value: d.humidityIndex.toStringAsFixed(0),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWeatherItem({
-    required String icon,
-    required String label,
-    required String value,
-  }) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.medium),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(AppRadius.medium),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.primary, size: 20),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAdvisoryDialog(District d) {
+  // ✅ Fixed: takes BuildContext explicitly so dialog always closes correctly
+  void _showAdvisoryDialog(
+      BuildContext context, District d, AppStrings lang) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            Text(d.riskIcon),
+            Text(d.riskIcon, style: const TextStyle(fontSize: 20)),
             const SizedBox(width: 8),
-            Text('Risk Advisory: ${d.name}'),
+            Expanded(
+              child: Text(
+                lang.languageCode == 'rw'
+                    ? 'Inama y\'Ingaruka: ${d.name}'
+                    : lang.languageCode == 'fr'
+                        ? 'Conseil de Risque: ${d.name}'
+                        : 'Risk Advisory: ${d.name}',
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary),
+              ),
+            ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: d.riskColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppRadius.small),
-                border: Border.all(color: d.riskColor.withOpacity(0.3)),
-              ),
-              child: Text(
-                d.advisory,
-                style: TextStyle(
-                  color: d.riskColor,
-                  fontWeight: FontWeight.w500,
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: d.riskColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: d.riskColor.withOpacity(0.3)),
                 ),
+                child: Text(d.advisory,
+                    style: TextStyle(
+                        color: d.riskColor,
+                        fontWeight: FontWeight.w500)),
               ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Detailed Assessment',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+              const SizedBox(height: 12),
+              Text(
+                lang.languageCode == 'rw'
+                    ? 'Isuzuma Ryimbitse'
+                    : lang.languageCode == 'fr'
+                        ? 'Évaluation Détaillée'
+                        : 'Detailed Assessment',
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary),
               ),
-            ),
-            const SizedBox(height: 8),
-            _buildAdvisoryRow('Rainfall Index', '${d.rainfallIndex.toStringAsFixed(1)} / 100'),
-            _buildAdvisoryRow('Humidity Index', '${d.humidityIndex.toStringAsFixed(1)} / 100'),
-            _buildAdvisoryRow('Loss Rate Index', '${d.lossRateIndex.toStringAsFixed(1)} / 100'),
-            _buildAdvisoryRow('Soil Moisture (Satellite)', '${d.soilMoistureIndex.toStringAsFixed(1)} / 100'),
-            _buildAdvisoryRow('Risk Trend', d.trendLabel),
-            _buildAdvisoryRow('14-Day Rainfall', '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm'),
-            _buildAdvisoryRow('Peak Humidity', '${d.maxHumidityPct.toStringAsFixed(0)}%'),
-            _buildAdvisoryRow('Historical Loss Rate', '${d.historicalLossRatePct.toStringAsFixed(1)}%'),
-            _buildAdvisoryRow('Maize Harvest', NumberFormatter.tonsFull(d.maizeTons)),
-            _buildAdvisoryRow('Beans Harvest', NumberFormatter.tonsFull(d.beansTons)),
-            _buildAdvisoryRow('Potatoes Harvest', NumberFormatter.tonsFull(d.irishPotatoesTons)),
-            const SizedBox(height: 12),
-            Text(
-              'Risk Formula: (Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) + (Soil Moisture × 0.15)',
-              style: const TextStyle(
-                fontSize: 11,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Indice y\'Imvura' : lang.languageCode == 'fr' ? 'Indice Pluie' : 'Rainfall Index',
+                  '${d.rainfallIndex.toStringAsFixed(1)} / 100'),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Indice y\'Ubuhehere' : lang.languageCode == 'fr' ? 'Indice Humidité' : 'Humidity Index',
+                  '${d.humidityIndex.toStringAsFixed(1)} / 100'),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Indice y\'Gutakaza' : lang.languageCode == 'fr' ? 'Indice Perte' : 'Loss Rate Index',
+                  '${d.lossRateIndex.toStringAsFixed(1)} / 100'),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Ubunyihu bw\'Ubutaka' : lang.languageCode == 'fr' ? 'Humidité Sol' : 'Soil Moisture',
+                  '${d.soilMoistureIndex.toStringAsFixed(1)} / 100'),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Imvura (iminsi 14)' : lang.languageCode == 'fr' ? 'Pluie (14j)' : '14-Day Rainfall',
+                  '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm'),
+              _advisoryRow(
+                  lang.languageCode == 'rw' ? 'Ubuhehere Bwisumbuye' : lang.languageCode == 'fr' ? 'Humidité Max' : 'Peak Humidity',
+                  '${d.maxHumidityPct.toStringAsFixed(0)}%'),
+            ],
+          ),
         ),
         actions: [
+          // ✅ Fixed: uses dialogContext so it always closes
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              lang.languageCode == 'rw'
+                  ? 'Funga'
+                  : lang.languageCode == 'fr'
+                      ? 'Fermer'
+                      : 'Close',
+              style: const TextStyle(color: AppColors.primary),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAdvisoryRow(String label, String value) {
+  Widget _advisoryRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 12, color: AppColors.textSecondary)),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary)),
         ],
       ),
+    );
+  }
+}
+
+// ── MAP LEGEND ────────────────────────────────────────────────────────────────
+
+class _MapLegend extends StatelessWidget {
+  final AppStrings lang;
+  const _MapLegend({required this.lang});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xDD0B1617),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _LegendRow(
+              color: const Color(0xFF16A34A), label: lang.mapLowRisk),
+          const SizedBox(height: 4),
+          _LegendRow(
+              color: const Color(0xFFF59E0B),
+              label: lang.mapModerateRisk),
+          const SizedBox(height: 4),
+          _LegendRow(
+              color: const Color(0xFFDC2626),
+              label: lang.mapHighRisk),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegendRow extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendRow({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+            width: 10,
+            height: 10,
+            decoration:
+                BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 6),
+        Text(label,
+            style: const TextStyle(fontSize: 11, color: Colors.white70)),
+      ],
     );
   }
 }

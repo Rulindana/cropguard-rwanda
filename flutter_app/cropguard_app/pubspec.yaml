@@ -37,7 +37,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icon/icon-1024.png
-    - assets/icon/icon-512.png
-    - assets/icon/icon-192.png
+    - assets/icon/logo.png
     - assets/geo/rwa_adm2_simplified.geojson
+    - assets/data/risk_scores.json
+    - assets/data/risk_history.json
+    - assets/data/policy_brief.md
+    - assets/data/facilities.json
+    - assets/data/nisr_sas_districts.json

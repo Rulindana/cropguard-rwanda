@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../models/summary_model.dart';
@@ -38,17 +40,76 @@ class FirebaseService {
 class DistrictService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Load districts from bundled risk_scores.json (offline fallback).
+  /// risk_scores.json uses different key names than Firestore, so we remap them.
+  static Future<List<District>> _loadLocalDistricts() async {
+    try {
+      final jsonString =
+          await rootBundle.loadString('assets/data/risk_scores.json');
+      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      final List<dynamic> districts = data['districts'] ?? [];
+      return districts.map((raw) {
+        final d = raw as Map<String, dynamic>;
+        final risk = d['risk'] as Map<String, dynamic>? ?? {};
+        final weather = d['weather'] as Map<String, dynamic>? ?? {};
+        final nb = d['nirs_baseline'] as Map<String, dynamic>? ?? {};
+        final riskTrend = d['risk_trend'] as Map<String, dynamic>? ?? {};
+        // NOTE: JSON uses 'level' not 'risk_level'
+        final mapped = <String, dynamic>{
+          'name': d['district_name'] ?? d['name'] ?? '',
+          'province': d['province'] ?? '',
+          'centroid_lat': d['centroid_lat'] ?? 0.0,
+          'centroid_lng': d['centroid_lng'] ?? 0.0,
+          'nirs_baseline': nb,
+          'risk_score': (risk['risk_score'] as num?)?.toDouble() ?? 0.0,
+          'risk_level': risk['level'] ?? risk['risk_level'] ?? 'green',
+          'rainfall_index': (risk['rainfall_index'] as num?)?.toDouble() ?? 0.0,
+          'humidity_index': (risk['humidity_index'] as num?)?.toDouble() ?? 0.0,
+          'loss_rate_index': (risk['loss_rate_index'] as num?)?.toDouble() ?? 0.0,
+          'total_precipitation_14d_mm':
+              (weather['total_precipitation_14d_mm'] as num?)?.toDouble() ?? 0.0,
+          'max_humidity_pct':
+              (weather['max_humidity_pct'] as num?)?.toDouble() ?? 0.0,
+          'soil_moisture_index':
+              (risk['soil_moisture_index'] as num?)?.toDouble() ?? 0.0,
+          'advisory': d['advisory'] ?? '',
+          'updated_at': d['updated_at'] ?? DateTime.now().toIso8601String(),
+          'risk_delta': (riskTrend['risk_delta'] as num?)?.toDouble() ?? 0.0,
+          'risk_trend': riskTrend['trend'] ?? riskTrend['risk_trend'] ?? 'baseline',
+          'previous_risk_score':
+              (riskTrend['previous_risk_score'] as num?)?.toDouble(),
+        };
+        final id = d['district_id'] ?? d['id'] ?? mapped['name'];
+        return District.fromFirestore(mapped, id as String);
+      }).toList();
+    } catch (e) {
+      debugPrint('CropGuard: failed to load local districts: $e');
+      return [];
+    }
+  }
+
   Stream<List<District>> getDistrictsStream() {
     return _firestore
         .collection('districts')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => District.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .asyncMap((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        return _loadLocalDistricts();
+      }
+      return snapshot.docs
+          .map((doc) => District.fromFirestore(doc.data(), doc.id))
+          .toList();
+    });
   }
+
+  /// Load districts from bundled JSON immediately (no network needed).
+  Future<List<District>> getDistrictsLocal() => _loadLocalDistricts();
 
   Future<List<District>> getDistrictsOnce() async {
     final snapshot = await _firestore.collection('districts').get();
+    if (snapshot.docs.isEmpty) {
+      return _loadLocalDistricts();
+    }
     return snapshot.docs
         .map((doc) => District.fromFirestore(doc.data(), doc.id))
         .toList();
@@ -78,6 +139,24 @@ class DistrictService {
 
 class FacilityService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Load facilities from bundled JSON immediately (no network needed).
+  static Future<List<Facility>> _loadLocalFacilities() async {
+    try {
+      final jsonString = await rootBundle.loadString('assets/data/facilities.json');
+      final List<dynamic> list = jsonDecode(jsonString) as List<dynamic>;
+      return list.map((raw) {
+        final d = raw as Map<String, dynamic>;
+        final id = d['id'] ?? d['name'] ?? '';
+        return Facility.fromFirestore(d, id as String);
+      }).toList();
+    } catch (e) {
+      debugPrint('CropGuard: failed to load local facilities: $e');
+      return [];
+    }
+  }
+
+  Future<List<Facility>> getFacilitiesLocal() => _loadLocalFacilities();
 
   Stream<List<Facility>> getFacilitiesStream() {
     return _firestore

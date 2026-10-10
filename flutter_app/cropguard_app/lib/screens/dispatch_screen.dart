@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../services/dispatch_service.dart';
 import '../utils/colors.dart';
+import '../utils/language_provider.dart';
+import '../utils/translations.dart';
 
 /// Innovation #2: Facility Dispatch Matching screen.
 ///
@@ -23,6 +26,7 @@ class DispatchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().strings;
     final matches = DispatchService.rank(
       district: district,
       facilities: facilities,
@@ -30,7 +34,7 @@ class DispatchScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dispatch Plan - ${district.name}'),
+        title: Text('${lang.dispatchPlan} - ${district.name}'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
         leading: IconButton(
@@ -39,14 +43,14 @@ class DispatchScreen extends StatelessWidget {
         ),
       ),
       body: matches.isEmpty
-          ? _buildEmptyState()
+          ? _buildEmptyState(lang.noFacilityFound, lang.contactDistrictOffice)
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 _buildPriorityBanner(),
                 const SizedBox(height: 16),
                 for (var i = 0; i < matches.length; i++) ...[
-                  _buildMatchCard(context, matches[i], rank: i + 1),
+                  _buildMatchCard(context, matches[i], rank: i + 1, lang: lang),
                   const SizedBox(height: 12),
                 ],
               ],
@@ -54,30 +58,30 @@ class DispatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(String noFacilityMsg, String contactMsg) {
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.inventory_2_outlined,
               size: 64,
               color: AppColors.textSecondary,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'No facility with free capacity found nearby',
-              style: TextStyle(
+              noFacilityMsg,
+              style: const TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Contact the district agricultural office directly',
-              style: TextStyle(
+              contactMsg,
+              style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textDim,
               ),
@@ -136,7 +140,7 @@ class DispatchScreen extends StatelessWidget {
   }
 
   Widget _buildMatchCard(BuildContext context, DispatchMatch match,
-      {required int rank}) {
+      {required int rank, required AppStrings lang}) {
     final facility = match.facility;
     final isEmergency = match.priority == 'emergency';
     final accentColor = isEmergency
@@ -248,7 +252,7 @@ class DispatchScreen extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () => _makeEmail(facility),
                     icon: const Icon(Icons.mail_outline, size: 16),
-                    label: const Text('Reserve'),
+                    label: Text(lang.reserve),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       side: const BorderSide(color: AppColors.textSecondary),
