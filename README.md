@@ -235,3 +235,4 @@ MIT License - Open source for agricultural development in Rwanda.
 ---
 
 **Built for NISR 2026 Big Data Hackathon**
+# cropguard-rwanda

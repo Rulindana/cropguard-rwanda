@@ -4,17 +4,16 @@ import 'package:firebase_core/firebase_core.dart';
 
 /// Default Firebase configuration for web.
 ///
-/// Placeholder values are used so the project builds out of the box.
-/// Replace them with your project's web SDK config (project: nisr-b06b6) by
-/// running: flutterfire configure
+/// Production config for project nisr-b06b6 (copied from the Firebase Web
+/// console). Replace via `flutterfire configure` if the project changes.
 const FirebaseOptions web = FirebaseOptions(
-  apiKey: '',
-  appId: '',
-  messagingSenderId: '',
-  projectId: '',
-  authDomain: '',
-  storageBucket: '',
-  measurementId: '',
+  apiKey: 'AIzaSyAGmqQfvWTGZfRSEd3oMB0Lhl-iGUJ76',
+  authDomain: 'nisr-b06b6.firebaseapp.com',
+  projectId: 'nisr-b06b6',
+  storageBucket: 'nisr-b06b6.firebasestorage.app',
+  messagingSenderId: '741567324628',
+  appId: '1:741567324628:web:50d00b28f343014447f641',
+  measurementId: 'G-KZ536EGN76',
 );
 
 /// Default firebase options for the current platform.

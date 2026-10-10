@@ -5,7 +5,19 @@ import 'package:flutter/material.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../models/summary_model.dart';
-import '../firebase_options.dart';
+
+/// Production Firebase config for project nisr-b06b6 (copied from the Firebase
+/// Web console). Kept in this service so dart2js can resolve it at compile
+/// time without relying on app-root generated files.
+const FirebaseOptions _webConfig = FirebaseOptions(
+  apiKey: 'AIzaSyAGmqQfvWTGZfRSEd3oMB0Lhl-iGUJ76',
+  authDomain: 'nisr-b06b6.firebaseapp.com',
+  projectId: 'nisr-b06b6',
+  storageBucket: 'nisr-b06b6.firebasestorage.app',
+  messagingSenderId: '741567324628',
+  appId: '1:741567324628:web:50d00b28f343014447f641',
+  measurementId: 'G-KZ536EGN76',
+);
 
 class FirebaseService {
   static Future<void> initialize() async {
@@ -13,7 +25,7 @@ class FirebaseService {
     // offline using the local seed data (no crash, no user-facing error).
     try {
       await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
+        options: _webConfig,
       );
     } catch (e) {
       debugPrint('CropGuard: Firebase not configured, running offline: $e');
