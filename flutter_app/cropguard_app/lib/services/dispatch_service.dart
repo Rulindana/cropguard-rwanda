@@ -30,16 +30,24 @@ class DispatchService {
   static const int handlingMinutes = 10;
 
   /// Great-circle distance between two points in kilometres.
-  static double haversineKm(double lat1, double lng1, double lat2, double lng2) {
+  static double haversineKm(
+    double lat1,
+    double lng1,
+    double lat2,
+    double lng2,
+  ) {
     const earthRadiusKm = 6371.0;
     final phi1 = lat1 * math.pi / 180.0;
     final phi2 = lat2 * math.pi / 180.0;
     final dPhi = (lat2 - lat1) * math.pi / 180.0;
     final dLambda = (lng2 - lng1) * math.pi / 180.0;
 
-    final a = math.sin(dPhi / 2) * math.sin(dPhi / 2) +
-        math.cos(phi1) * math.cos(phi2) *
-            math.sin(dLambda / 2) * math.sin(dLambda / 2);
+    final a =
+        math.sin(dPhi / 2) * math.sin(dPhi / 2) +
+        math.cos(phi1) *
+            math.cos(phi2) *
+            math.sin(dLambda / 2) *
+            math.sin(dLambda / 2);
     return 2 * earthRadiusKm * math.asin(math.sqrt(a));
   }
 
@@ -77,21 +85,24 @@ class DispatchService {
         facility.lat,
         facility.lng,
       );
-      final capacityRatio = facility.capacityTons > 0
-          ? facility.availableCapacityTons / facility.capacityTons
-          : 0.0;
+      final capacityRatio =
+          facility.capacityTons > 0
+              ? facility.availableCapacityTons / facility.capacityTons
+              : 0.0;
 
       // Composite score (higher is better): near + lots of free space
       final proximity = (1.0 - math.min(distanceKm, 120.0) / 120.0) * 60.0;
       final score = math.max(0.0, proximity + capacityRatio * 40.0);
 
-      matches.add(DispatchMatch(
-        facility: facility,
-        distanceKm: distanceKm,
-        etaMinutes: estimateTravelMinutes(distanceKm),
-        matchScore: score,
-        priority: priority,
-      ));
+      matches.add(
+        DispatchMatch(
+          facility: facility,
+          distanceKm: distanceKm,
+          etaMinutes: estimateTravelMinutes(distanceKm),
+          matchScore: score,
+          priority: priority,
+        ),
+      );
     }
 
     matches.sort((a, b) => b.matchScore.compareTo(a.matchScore));

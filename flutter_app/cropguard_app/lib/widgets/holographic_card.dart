@@ -19,9 +19,8 @@ class HolographicCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isAlert
-        ? AppColors.alertRed
-        : (accentColor ?? AppColors.primary);
+    final borderColor =
+        isAlert ? AppColors.alertRed : (accentColor ?? AppColors.primary);
 
     return Material(
       color: Colors.transparent,
@@ -33,10 +32,7 @@ class HolographicCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: AppGradients.holographicGradient,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(
-              color: borderColor.withOpacity(0.4),
-              width: 1.5,
-            ),
+            border: Border.all(color: borderColor.withOpacity(0.4), width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: borderColor.withOpacity(0.2),
@@ -85,11 +81,7 @@ class HolographicAlertCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
 
-  const HolographicAlertCard({
-    super.key,
-    required this.child,
-    this.onTap,
-  });
+  const HolographicAlertCard({super.key, required this.child, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -104,10 +96,7 @@ class HolographicAlertCard extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF2D1515),
-                const Color(0xFF1A0A0A),
-              ],
+              colors: [const Color(0xFF2D1515), const Color(0xFF1A0A0A)],
             ),
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
@@ -129,10 +118,7 @@ class HolographicAlertCard extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: Container(
-                  height: 3,
-                  color: AppColors.alertRed,
-                ),
+                child: Container(height: 3, color: AppColors.alertRed),
               ),
               child,
             ],

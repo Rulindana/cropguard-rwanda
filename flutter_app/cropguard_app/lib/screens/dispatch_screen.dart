@@ -42,19 +42,28 @@ class DispatchScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: matches.isEmpty
-          ? _buildEmptyState(lang.noFacilityFound, lang.contactDistrictOffice)
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildPriorityBanner(),
-                const SizedBox(height: 16),
-                for (var i = 0; i < matches.length; i++) ...[
-                  _buildMatchCard(context, matches[i], rank: i + 1, lang: lang),
-                  const SizedBox(height: 12),
+      body:
+          matches.isEmpty
+              ? _buildEmptyState(
+                lang.noFacilityFound,
+                lang.contactDistrictOffice,
+              )
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _buildPriorityBanner(),
+                  const SizedBox(height: 16),
+                  for (var i = 0; i < matches.length; i++) ...[
+                    _buildMatchCard(
+                      context,
+                      matches[i],
+                      rank: i + 1,
+                      lang: lang,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ],
-              ],
-            ),
+              ),
     );
   }
 
@@ -65,27 +74,11 @@ class DispatchScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.inventory_2_outlined,
-              size: 64,
-              color: AppColors.textSecondary,
-            ),
+            const Icon(Icons.inventory_2_outlined, size: 64),
             const SizedBox(height: 16),
-            Text(
-              noFacilityMsg,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            Text(noFacilityMsg, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 8),
-            Text(
-              contactMsg,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textDim,
-              ),
-            ),
+            Text(contactMsg, style: const TextStyle(fontSize: 13)),
           ],
         ),
       ),
@@ -97,10 +90,11 @@ class DispatchScreen extends StatelessWidget {
     final isRecommended = district.riskLevel == 'yellow';
     final color = district.riskColor;
 
-    final message = isEmergency
-        ? 'EMERGENCY: ${district.riskScore.toStringAsFixed(0)}% risk - '
-            'dispatch crops to the nearest facility NOW'
-        : isRecommended
+    final message =
+        isEmergency
+            ? 'EMERGENCY: ${district.riskScore.toStringAsFixed(0)}% risk - '
+                'dispatch crops to the nearest facility NOW'
+            : isRecommended
             ? 'CAUTION: ${district.riskScore.toStringAsFixed(0)}% risk - '
                 'schedule dispatch within 48 hours'
             : 'LOW RISK: ${district.riskScore.toStringAsFixed(0)}% - '
@@ -119,8 +113,8 @@ class DispatchScreen extends StatelessWidget {
             isEmergency
                 ? Icons.warning_amber
                 : isRecommended
-                    ? Icons.schedule
-                    : Icons.check_circle_outline,
+                ? Icons.schedule
+                : Icons.check_circle_outline,
             color: color,
           ),
           const SizedBox(width: 10),
@@ -139,13 +133,18 @@ class DispatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchCard(BuildContext context, DispatchMatch match,
-      {required int rank, required AppStrings lang}) {
+  Widget _buildMatchCard(
+    BuildContext context,
+    DispatchMatch match, {
+    required int rank,
+    required AppStrings lang,
+  }) {
     final facility = match.facility;
     final isEmergency = match.priority == 'emergency';
-    final accentColor = isEmergency
-        ? AppColors.alertRed
-        : match.priority == 'recommended'
+    final accentColor =
+        isEmergency
+            ? AppColors.alertRed
+            : match.priority == 'recommended'
             ? AppColors.alertYellow
             : AppColors.primary;
 
@@ -176,10 +175,7 @@ class DispatchScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Text(
-                  facility.typeIcon,
-                  style: const TextStyle(fontSize: 18),
-                ),
+                Text(facility.typeIcon, style: const TextStyle(fontSize: 18)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -187,13 +183,14 @@ class DispatchScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: accentColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
@@ -213,7 +210,10 @@ class DispatchScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildChip(Icons.near_me, '${match.distanceKm.toStringAsFixed(1)} km'),
+                _buildChip(
+                  Icons.near_me,
+                  '${match.distanceKm.toStringAsFixed(1)} km',
+                ),
                 const SizedBox(width: 8),
                 _buildChip(Icons.directions_car, '~${match.etaMinutes} min'),
                 const SizedBox(width: 8),
@@ -227,10 +227,7 @@ class DispatchScreen extends StatelessWidget {
             Text(
               '${facility.typeLabel} - ${facility.operationalHours} - '
               'Match ${match.matchScore.toStringAsFixed(0)}/100',
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(fontSize: 11),
             ),
             const SizedBox(height: 10),
             Row(
@@ -255,7 +252,7 @@ class DispatchScreen extends StatelessWidget {
                     label: Text(lang.reserve),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      side: const BorderSide(color: AppColors.textSecondary),
+                      side: const BorderSide(),
                       foregroundColor: AppColors.textSecondary,
                     ),
                   ),
@@ -279,15 +276,9 @@ class DispatchScreen extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: AppColors.textSecondary),
+          Icon(icon, size: 12),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          Text(label, style: const TextStyle(fontSize: 11)),
         ],
       ),
     );
@@ -302,7 +293,8 @@ class DispatchScreen extends StatelessWidget {
 
   Future<void> _makeEmail(Facility facility) async {
     final subject = Uri.encodeComponent(
-        'Storage reservation - ${facility.district} district');
+      'Storage reservation - ${facility.district} district',
+    );
     final body = Uri.encodeComponent(
       'Hello ${facility.contactName},\n\n'
       'I would like to reserve storage/drying capacity at '

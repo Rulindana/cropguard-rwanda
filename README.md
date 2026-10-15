@@ -1,221 +1,236 @@
 # CropGuard AI 🇷🇼
 
-**Post-Harvest Risk Monitoring System for Rwanda**
+**Post-Harvest Risk Monitoring System for Rwanda**  
+*NISR Big Data Hackathon 2026 — Track 1: Agricultural Productivity*
 
-CropGuard AI is a data-driven mobile application that protects smallholder farmers and agricultural planners against severe post-harvest losses caused by unseasonal rainfall, humidity spikes, and delayed collection logistics.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-nisr--b06b6.web.app-brightgreen)](https://nisr-b06b6.web.app)
+[![Flutter](https://img.shields.io/badge/Flutter-3.7%2B-blue)](https://flutter.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%2B%20Hosting-orange)](https://firebase.google.com)
+
+---
 
 ## 🎯 The Problem
 
-In Rwanda, unseasonal rainfall during harvest periods causes significant post-harvest losses:
-- **20-35%** of crops lost to rot and aflatoxin contamination
+In Rwanda, unseasonal rainfall during harvest periods causes devastating post-harvest losses:
+- **20–35%** of crops lost to rot and aflatoxin contamination annually
 - Smallholder farmers lack real-time weather + risk data
-- Limited coordination between farmers and storage facilities
+- Poor coordination between farmers and post-harvest storage facilities
+- District planners have no centralized early-warning dashboard
+
+---
 
 ## 🇷🇼 National Alignment: NST2 & Vision 2050
 
-| National priority | How CropGuard contributes |
+| National Priority | How CropGuard Contributes |
 |---|---|
-| **NST2 — Pillar 2: Economic transformation / agriculture** | Directly targets the **post-harvest loss reduction** indicator: every district gets a 6-hourly risk score with a concrete action (dry within 48h / emergency storage dispatch) |
-| **NST2 — Agricultural productivity & market access** | Facility dispatch matching routes crops to drying grounds, silos, and cold storage before rot/aflatoxin sets in — protecting marketable surplus |
-| **NST2 — Evidence-based planning** | District/province dashboards + exportable policy brief give planners and MINAGRI an operational picture, updated every 6 hours |
-| **Vision 2050 — Pillar 5: Modernisation & prosperity** | A reusable, data-driven early-warning layer for a resilient national food system (open source, public-good tool) |
-| **Track 1 hint: post-harvest collection & storage** | ✅ Core problem |
-| **Track 1 hint: soil conservation & fertility** | ✅ Satellite soil-moisture fusion component |
-| **Track 1 hint: processing, value addition & export** | ✅ Reduced aflatoxin/rot = higher-grade, export-compliant produce |
+| **NST2 — Post-harvest loss reduction** | 30 districts get 6-hourly risk scores + actionable storage dispatch |
+| **NST2 — Agricultural productivity** | Facility routing connects farmers to drying grounds & silos before rot sets in |
+| **NST2 — Evidence-based planning** | District dashboards + policy brief for MINAGRI planners |
+| **Vision 2050 — Digital transformation** | AI-powered multilingual mobile app (EN/RW/FR) |
+| **Track 1 — Post-harvest collection & storage** | ✅ Core problem solved |
+| **Track 1 — Soil conservation & fertility** | ✅ Satellite soil-moisture fusion component |
+| **Track 1 — Processing, value addition & export** | ✅ Reduced aflatoxin = export-compliant produce |
 
-Full justification, personas, requirements, and maintenance ownership: see [`PRD.md`](PRD.md).
+---
 
 ## ✨ How It Works
 
 ```
-[1. NISR SAS Data] ──> [2. Smart Processing] ──> [3. What Users See]
-  • District baselines    • Risk Score Formula     • Interactive Rwanda Map
-  • Historical loss rates • Weather Integration     • Post-Harvest Alerts
-  • Facility counts       • Facility Routing        • Storage Dispatch Advice
+[1. NISR SAS Data]     ──▶  [2. AI Processing]        ──▶  [3. What Users See]
+  • 2013–2025 SAS data       • Risk Score Formula           • Interactive Rwanda Map
+  • District baselines       • Weather Integration          • Post-Harvest Alerts
+  • Historical loss rates    • AI Disease Scanner           • Storage Dispatch Plan
+  • Facility catalog         • GPS Location Detection       • Crop Disease Results
 ```
 
 ### Risk Scoring Formula (satellite-fused)
 
 ```
 Post-Harvest Risk Score = (Rainfall Index × 0.35) + (Humidity Index × 0.25)
-                        + (Loss Rate × 0.25) + (Soil Moisture Index × 0.15)
+                        + (Loss Rate Index × 0.25) + (Soil Moisture Index × 0.15)
 ```
 
-| Risk Level | Score Range | Action |
-|------------|-------------|--------|
-| 🟢 Green   | 0-39%       | Safe harvesting conditions |
-| 🟡 Yellow  | 40-69%      | Drying equipment needed within 48h |
-| 🔴 Red     | 70-100%     | Emergency storage dispatch required |
+| Risk Level | Score | Action |
+|------------|-------|--------|
+| 🟢 Green   | 0–39% | Safe harvesting conditions |
+| 🟡 Yellow  | 40–69% | Drying equipment needed within 48h |
+| 🔴 Red     | 70–100% | Emergency storage dispatch required |
 
-## 📱 Features
+---
 
-### For District Agricultural Planners
-- **Interactive Map**: Color-coded Rwanda map showing real-time risk levels for all 30 districts
-- **District Details**: Click any district to see harvest volumes, weather forecasts, and risk breakdown
-- **National Overview**: Summary dashboard with nationwide risk distribution and policy recommendations
-- **NST2 Alignment**: Recommendations tied to Rwanda's National Strategy for Transformation
+## 📱 Features (v3.0)
 
-### For Extension Officers & Cooperative Leaders
-- **Facility Locator**: Find nearest drying grounds, silos, cold storage, and mobile dryers
-- **Contact Details**: Direct phone and email for facility managers
-- **Capacity Tracking**: See available vs. total capacity at each facility
-- **Actionable Alerts**: Clear advisory messages based on risk level
+### 🗺️ Interactive Risk Map
+- Color-coded Rwanda map — all 30 districts in real-time
+- Tap a district to see harvest volumes, weather, risk breakdown
+- Map collapses when district is selected so detail is fully visible
+- Animated map collapse/expand with smooth 350ms transition
+
+### 🌡️ Real Location Weather
+- GPS-based location detection — shows YOUR district's weather, not Musanze
+- Requests location permission once, remembers it permanently
+- Falls back gracefully if GPS is denied
+
+### 🔬 AI Crop Disease Scanner
+- Take or upload a photo of a plant leaf
+- AI validates the image is actually a plant (rejects bibles, documents, etc.)
+- Pixel-level green/brown color analysis for plant detection
+- Identifies 15 diseases across 8 crops (maize, beans, cassava, potato, banana, tomato, wheat, coffee)
+- Full treatment steps, prevention tips, confidence score
+- Camera and gallery permission asked only once (remembered permanently)
+
+### 🏪 Storage Facility Finder
+- Ranked dispatch plan: nearest facilities with free capacity
+- Always loads from local data when Firestore is unavailable
+- One-tap call or email to facility manager
+- Map view + list view
+
+### 📢 SMS/USSD Alerts
+- Bilingual (Kinyarwanda + English) risk alerts
+- Works on any phone — no internet required
+- In-app subscription per district
+
+### 🌐 Multilingual (EN / RW / FR)
+- Every string translated — no hardcoded English left
+- Risk indicators, tips, scan steps, field report — all 3 languages
+- Switch language live with EN/RW/FR toggle
+
+### 👥 Credits / Team
+- All 3 team members with photos
+- ISHIMWERYAYO Jean Damour photo now showing
+
+---
 
 ## 🏆 Top Innovations
 
-### 🥇 SMS/USSD Alerts — inclusivity beyond the smartphone
-- Bilingual (**Kinyarwanda + English**) risk alerts sent by SMS whenever a district
-  escalates to 🟡 or 🔴 — works on **any phone, no internet required**
-- Anti-spam: alerts fire on risk-level *changes*, not every 6-hourly run
-- Africa's Talking gateway with automatic dry-run outbox fallback
-  (`data/alerts_outbox.json`) so the flow is always demonstrable
-- USSD digest (`data/ussd_digest.json`) ready to publish behind a `*123#` menu
-- In-app opt-in: *Subscribe to SMS risk alerts* on every district detail page
-- Modules: `sync_pipeline/sms_alerts.py`, `lib/services/alert_subscription_service.dart`
+### 🥇 AI Plant Disease Scanner with Validation
+- Image pixel analysis to reject non-plant photos before AI runs
+- 15 diseases across Rwanda's main crops with full treatment guides
+- Confidence scoring, alternative diagnoses, prevention tips
 
-### 🥈 Facility Dispatch Matching — turning insight into last-mile action
-- Every district gets a ranked **dispatch plan**: top-3 nearest facilities with
-  free capacity, estimated travel time, capacity headroom, and a
-  distance/capacity composite match score
-- Priority tagging: `emergency` (red) / `recommended` (yellow) / `available` (green)
-- App side: *Find nearest storage NOW* button opens the dispatch screen with
-  one-tap call and reservation email to the facility manager
-- Modules: `sync_pipeline/dispatch_matcher.py`, `lib/services/dispatch_service.dart`,
-  `lib/screens/dispatch_screen.dart`
+### 🥈 Facility Dispatch Matching
+- Ranked dispatch plan per district: nearest storage with free capacity
+- Distance + capacity composite match score
+- One-tap call/reserve — emergency/recommended/available priority tags
 
-### 🥉 Satellite Data Fusion — deeper methodology
-- 4th risk component: **volumetric soil moisture** from the ERA5/Copernicus
-  land-surface model (satellite-derived) fetched from Open-Meteo
-- Wet soil at harvest = wet crops in storage — catches rot risk that
-  rainfall-only models under-estimate; rainfall-derived fallback keeps the
-  pipeline resilient when the API is unavailable
-- Module: `sync_pipeline/satellite_fusion.py`
+### 🥉 Satellite Data Fusion
+- 4th risk component: volumetric soil moisture from ERA5/Copernicus
+- Catches rot risk that rainfall-only models under-estimate
+
+---
 
 ## 🛠 Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Mobile App | Flutter (Android, iOS, Web) |
-| Backend | Firebase (Firestore, Auth) |
-| Weather API | Open-Meteo (no API key required) |
-| Data Source | NISR Seasonal Agricultural Survey (SAS) |
-| Maps | Flutter Map + OpenStreetMap tiles |
-| CI/CD | GitHub Actions (daily data sync) |
+| Mobile & Web App | Flutter 3.7+ (Android, iOS, Web) |
+| Backend | Firebase Firestore + Hosting |
+| Weather | Open-Meteo API (no key needed) |
+| Data | NISR SAS 2013–2025 (12 years) |
+| Maps | Flutter Map + ESRI Satellite Imagery |
+| Location | Geolocator (GPS) |
+| AI Scanner | Dart image analysis + DiseaseDatabase |
+| Alerts | Africa's Talking SMS Gateway |
+| CI/CD | GitHub Actions (6-hourly sync) |
+
+---
 
 ## 📁 Project Structure
 
 ```
 cropguard-rwanda/
-├── flutter_app/             # Flutter mobile application
+├── flutter_app/
 │   └── cropguard_app/
 │       ├── lib/
-│       │   ├── models/      # Data models (District, Facility, Summary)
-│       │   ├── screens/     # UI screens (Home, Detail, Summary, Facilities)
-│       │   ├── services/    # Firebase/Firestore services
-│       │   ├── widgets/     # Reusable UI components
-│       │   └── utils/       # Utilities, formatters, seed data
-│       └── pubspec.yaml
+│       │   ├── models/         # District, Facility, Disease models
+│       │   ├── screens/        # All app screens
+│       │   ├── services/       # Firebase, dispatch, alert services
+│       │   ├── utils/          # Translations (EN/RW/FR), theme, GPS
+│       │   └── widgets/        # Reusable components
+│       └── assets/
+│           ├── data/           # NISR district + facility JSON
+│           ├── geo/            # Rwanda GeoJSON boundaries
+│           └── icon/           # Team photos, logos
 │
-├── sync_pipeline/          # Python data sync pipeline
-│   ├── sync_nisr_data.py   # Main pipeline script
-│   ├── satellite_fusion.py # 🥉 Satellite/soil-moisture fusion layer
-│   ├── dispatch_matcher.py # 🥈 Facility dispatch ranking
-│   ├── sms_alerts.py       # 🥇 SMS/USSD bilingual alerts
-│   └── requirements.txt    # Python dependencies
+├── sync_pipeline/
+│   ├── sync_nisr_data.py       # Main 6-hourly pipeline
+│   ├── satellite_fusion.py     # Soil moisture from ERA5
+│   ├── dispatch_matcher.py     # Facility ranking algorithm
+│   └── sms_alerts.py           # Bilingual SMS/USSD dispatch
 │
-├── data/                   # Mock and processed data
-│   ├── nisr_sas_districts.json   # NISR baseline data (30 districts)
-│   ├── facilities.json           # Post-harvest facility catalog
-│   ├── subscribers.json          # SMS alert subscribers (sample)
-│   └── risk_scores.json         # Generated risk scores (output)
+├── datas/                      # NISR SAS source data (2013–2025)
+│   ├── 2013/ … 2025/           # Annual survey PDFs + tables
+│   └── extracted_production.json
 │
-├── firestore_rules/        # Firestore security rules
-└── .github/workflows/      # GitHub Actions cron jobs
+├── data/                       # Processed output data
+│   ├── risk_scores.json        # 30-district risk scores
+│   ├── facilities.json         # 21 post-harvest facilities
+│   └── alerts_outbox.json      # SMS alert queue
+│
+└── .github/workflows/          # Automated sync pipeline
 ```
+
+---
+
+## 📊 Data Sources
+
+| Source | Years | Usage |
+|--------|-------|-------|
+| NISR Seasonal Agricultural Survey (SAS) | 2013–2025 | District baselines, crop volumes, loss rates |
+| Open-Meteo Weather API | Live | 14-day rainfall, humidity, temperature per district |
+| ERA5/Copernicus Satellite | Live | Soil moisture volumetric data |
+| Africa's Talking | Live | SMS/USSD alert delivery |
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK (3.7+)
-- Firebase project with Firestore enabled
+- Flutter SDK 3.7+
+- Firebase project (Firestore + Hosting)
 - Python 3.11+ (for sync pipeline)
 
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/cropguard-rwanda.git
-   cd cropguard-rwanda
-   ```
-
-2. **Set up Firebase**
-   ```bash
-   cd flutter_app/cropguard_app
-   flutter pub get
-   # Download google-services.json from Firebase Console
-   # Place in android/app/ and ios/Runner/
-   flutterfire configure
-   ```
-
-3. **Seed initial data to Firestore**
-   - Place NISR data in `assets/data/`
-   - Run the seed utility or use the Python pipeline
-
-4. **Run the app**
-   ```bash
-   flutter run
-   ```
-
-5. **Set up automated data sync** (optional)
-   - Configure GitHub Actions secrets for Firebase credentials
-   - The workflow runs every 6 hours to fetch fresh weather data
-
-## 📊 Data Sources
-
-### NISR Seasonal Agricultural Survey (SAS)
-- Source: [statistics.gov.rw/data-sources/surveys/Seasonal-Agricultural-Survey](https://statistics.gov.rw/data-sources/surveys/Seasonal-Agricultural-Survey)
-- Data: District-level crop production, historical loss rates, cooperative coverage
-
-### Open-Meteo Weather API
-- Source: [open-meteo.com](https://open-meteo.com)
-- Data: 14-day forecasts for rainfall, humidity, temperature
-- No API key required
-
-### Facilities Data
-- Mock dataset included for demonstration
-- In production: connect to agricultural registry or cooperative database
-
-## 🔄 Automated Data Sync Pipeline
-
-The Python pipeline (`sync_pipeline/sync_nisr_data.py`) automates:
-
-1. **Fetch NISR Data**: Load district baseline statistics
-2. **Fetch Weather + Satellite Soil Moisture**: Open-Meteo 14-day forecasts
-   and ERA5 land-surface soil moisture per district
-3. **Calculate Fused Risk**: Apply the weighted 4-component formula
-4. **Match Facilities**: Rank nearest facilities with free capacity (dispatch plan)
-5. **Push to Firestore + Send Alerts**: Update the database and dispatch
-   bilingual SMS/USSD alerts on risk-level changes
-6. **Schedule**: GitHub Actions cron runs every 6 hours
-
-```
-NISR Portal → Python Pipeline → Firestore → Flutter App
-     ↓              ↓              ↓           ↓
-  Weekly update  Live weather  Auto-sync   Real-time alerts
+### Run the App
+```bash
+git clone https://github.com/your-username/cropguard-rwanda.git
+cd cropguard-rwanda/flutter_app/cropguard_app
+flutter pub get
+flutter run
 ```
 
-## 📈 Impact Metrics
+### Web Demo
+🌐 **https://nisr-b06b6.web.app**
 
-- **30 districts** covered across all 5 provinces
-- **21 facilities** cataloged (drying grounds, silos, cold storage, mobile dryers)
-- **4 crop types** tracked (maize, beans, Irish potatoes, cassava)
-- **Real-time** risk scores updated every 6 hours
-
-## 📄 License
-
-MIT License - Open source for agricultural development in Rwanda.
+### Android APK
+📱 **CropGuard_Rwanda_v3.0.apk** — in the root of this repository
 
 ---
 
-**Built for Rwanda Agricultural Development**
-# cropguard-rwanda
+## 📈 Impact Metrics
+
+- **30 districts** monitored across all 5 provinces
+- **21 facilities** cataloged (drying grounds, silos, cold storage, mobile dryers)
+- **8 crops** with AI disease detection (15 diseases)
+- **12 years** of NISR SAS data integrated (2013–2025)
+- **3 languages** — English, Kinyarwanda, French
+- **6-hourly** automated risk score updates
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|------|------|
+| RULINDANA SIMBI Honoré Tesny | Lead Developer & System Architect |
+| IRAKIZA Moïse | UI/UX Designer & Frontend Engineer |
+| ISHIMWERYAYO Jean Damour | Data Analyst & Agricultural Specialist |
+
+---
+
+## 📄 License
+
+MIT License — Open source for agricultural development in Rwanda.
+
+---
+
+*© 2026 CropGuard AI — NISR Big Data Hackathon*

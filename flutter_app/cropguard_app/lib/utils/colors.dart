@@ -13,9 +13,11 @@ class AppColors {
   static const Color surface = Color(0xFF152629);
   static const Color cardBackground = Color(0xFF1A3035);
   static const Color cardHolographic = Color(0xFF0D1F23);
+  // NOTE: textPrimary/textSecondary are dark-theme values.
+  // In light mode use AppColors.text(context) / AppColors.textSub(context)
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0BEC5);
-  static const Color textDim = Color(0xFF78909C);
+  static const Color textSecondary = Color(0xFFE0E8EA); // near-white in dark
+  static const Color textDim = Color(0xFFB8C8CC); // lighter grey in dark
   static const Color textOnPrimary = Color(0xFF0B1617);
   static const Color border = Color(0xFF263338);
   static const Color divider = Color(0xFF1E2D31);
@@ -25,11 +27,13 @@ class AppColors {
   static const Color lightBackground = Color(0xFFF0F7F4);
   static const Color lightBackgroundSecondary = Color(0xFFFFFFFF);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightTextPrimary = Color(0xFF0B2010);
-  static const Color lightTextSecondary = Color(0xFF37474F);
-  static const Color lightTextDim = Color(0xFF78909C);
-  static const Color lightBorder = Color(0xFFE0E0E0);
-  static const Color lightDivider = Color(0xFFEEEEEE);
+  static const Color lightTextPrimary = Color(0xFF050E08); // near-black
+  static const Color lightTextSecondary = Color(
+    0xFF111E15,
+  ); // dark — fully readable
+  static const Color lightTextDim = Color(0xFF1F3326); // dark green-black
+  static const Color lightBorder = Color(0xFFCCDDD4);
+  static const Color lightDivider = Color(0xFFE5EDE8);
 
   // ── Dynamic colors (read from context) ───────────────────────
   static Color bg(BuildContext context) =>
@@ -84,7 +88,6 @@ class AppColors {
   static const Color info = Color(0xFF4FC3F7);
 }
 
-
 class AppRadius {
   static const double xs = 4.0;
   static const double sm = 8.0;
@@ -102,74 +105,62 @@ class AppRadius {
 class AppShadows {
   // Holographic glow shadow
   static BoxShadow get holographic => BoxShadow(
-        color: AppColors.holographicGlow,
-        blurRadius: 20,
-        spreadRadius: 2,
-        offset: const Offset(0, 0),
-      );
+    color: AppColors.holographicGlow,
+    blurRadius: 20,
+    spreadRadius: 2,
+    offset: const Offset(0, 0),
+  );
 
   static BoxShadow get card => BoxShadow(
-        color: const Color(0xFF00000030),
-        blurRadius: 12,
-        offset: const Offset(0, 4),
-      );
+    color: const Color(0xFF00000030),
+    blurRadius: 12,
+    offset: const Offset(0, 4),
+  );
 
   static BoxShadow get medium => BoxShadow(
-        color: const Color(0xFF00000030),
-        blurRadius: 14,
-        offset: const Offset(0, 6),
-      );
+    color: const Color(0xFF00000030),
+    blurRadius: 14,
+    offset: const Offset(0, 6),
+  );
 
   static BoxShadow get elevated => BoxShadow(
-        color: const Color(0xFF00000040),
-        blurRadius: 16,
-        offset: const Offset(0, 8),
-      );
+    color: const Color(0xFF00000040),
+    blurRadius: 16,
+    offset: const Offset(0, 8),
+  );
 
   static BoxShadow get glowGreen => BoxShadow(
-        color: AppColors.primary.withOpacity(0.3),
-        blurRadius: 16,
-        spreadRadius: 1,
-      );
+    color: AppColors.primary.withOpacity(0.3),
+    blurRadius: 16,
+    spreadRadius: 1,
+  );
 }
 
 class AppGradients {
   static const LinearGradient cardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF152629),
-      Color(0xFF112225),
-    ],
+    colors: [Color(0xFF152629), Color(0xFF112225)],
     stops: [0.0, 1.0],
   );
 
   static const LinearGradient holographicGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF1A3035),
-      Color(0xFF0D1F23),
-    ],
+    colors: [Color(0xFF1A3035), Color(0xFF0D1F23)],
     stops: [0.0, 1.0],
   );
 
   static const LinearGradient greenGlowGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF00E676),
-      Color(0xFF00C853),
-    ],
+    colors: [Color(0xFF00E676), Color(0xFF00C853)],
     stops: [0.0, 1.0],
   );
 
   static const RadialGradient holographicGlow = RadialGradient(
     center: Alignment.topLeft,
-    colors: [
-      Color(0x2200E676),
-      Color(0x0000E676),
-    ],
+    colors: [Color(0x2200E676), Color(0x0000E676)],
     stops: [0.0, 1.0],
   );
 }

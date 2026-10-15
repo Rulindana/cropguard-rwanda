@@ -100,13 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Polygon> _buildPolygonList() {
     if (_mapPolygons.isEmpty) return const [];
     final byKey = {
-      for (final d in _districts) normalizeDistrictName(d.name): d
+      for (final d in _districts) normalizeDistrictName(d.name): d,
     };
     final hasSelection = _selectedDistrict != null;
 
     return _mapPolygons.map((p) {
       final d = byKey[normalizeDistrictName(p.name)];
-      final isSelected = _selectedDistrict != null &&
+      final isSelected =
+          _selectedDistrict != null &&
           normalizeDistrictName(_selectedDistrict!.name) ==
               normalizeDistrictName(p.name);
 
@@ -128,20 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           switch (d.riskLevel) {
             case 'red':
-              fill = const Color(0xFFDC2626)
-                  .withOpacity(isSelected ? 0.95 : 0.65);
+              fill = const Color(
+                0xFFDC2626,
+              ).withOpacity(isSelected ? 0.95 : 0.65);
               break;
             case 'yellow':
-              fill = const Color(0xFFF59E0B)
-                  .withOpacity(isSelected ? 0.95 : 0.60);
+              fill = const Color(
+                0xFFF59E0B,
+              ).withOpacity(isSelected ? 0.95 : 0.60);
               break;
             default:
-              fill = const Color(0xFF16A34A)
-                  .withOpacity(isSelected ? 0.95 : 0.55);
+              fill = const Color(
+                0xFF16A34A,
+              ).withOpacity(isSelected ? 0.95 : 0.55);
           }
-          border = isSelected
-              ? Colors.white
-              : Colors.white.withOpacity(0.55);
+          border = isSelected ? Colors.white : Colors.white.withOpacity(0.55);
           borderWidth = isSelected ? 3.0 : 1.2;
         }
       }
@@ -210,7 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (_isLoading) {
       return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary));
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
     }
     if (_error.isNotEmpty) {
       return Center(child: Text(_error));
@@ -232,22 +235,16 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: const BoxDecoration(
             color: AppColors.surface,
             border: Border(
-                right: BorderSide(color: AppColors.border, width: 1)),
+              right: BorderSide(color: AppColors.border, width: 1),
+            ),
           ),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 child: Text(
-                  lang.languageCode == 'rw'
-                      ? 'Tuduce 30'
-                      : lang.languageCode == 'fr'
-                          ? '30 Districts'
-                          : '30 Districts',
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary),
+                  lang.thirtyDistricts,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
               const Divider(height: 1, color: AppColors.border),
@@ -262,17 +259,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primary.withOpacity(0.15)
-                              : Colors.transparent,
-                          border: isSelected
-                              ? const Border(
-                                  left: BorderSide(
+                          color:
+                              isSelected
+                                  ? AppColors.primary.withOpacity(0.15)
+                                  : Colors.transparent,
+                          border:
+                              isSelected
+                                  ? const Border(
+                                    left: BorderSide(
                                       color: AppColors.primary,
-                                      width: 3))
-                              : null,
+                                      width: 3,
+                                    ),
+                                  )
+                                  : null,
                         ),
                         child: Row(
                           children: [
@@ -280,8 +283,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 10,
                               height: 10,
                               decoration: BoxDecoration(
-                                  color: d.riskColor,
-                                  shape: BoxShape.circle),
+                                color: d.riskColor,
+                                shape: BoxShape.circle,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -289,12 +293,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 d.name,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.textSecondary,
+                                  fontWeight:
+                                      isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                  color:
+                                      isSelected
+                                          ? AppColors.primary
+                                          : AppColors.textSecondary,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -341,55 +347,61 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   PolygonLayer(polygons: _buildPolygonList()),
                   MarkerLayer(
-                    markers: _districts.map((d) {
-                      final isSelected = _selectedDistrict?.id == d.id;
-                      // Build crops tooltip text
-                      final cropList = d.crops.take(4)
-                          .map((c) => '${c['icon']} ${c['name']}: ${NumberFormatter.tons(c['tons'] as double)}')
-                          .join('\n');
-                      return Marker(
-                        point: LatLng(d.centroidLat, d.centroidLng),
-                        width: isSelected ? 48 : 36,
-                        height: isSelected ? 48 : 36,
-                        child: GestureDetector(
-                          onTap: () => _onDistrictTap(d),
-                          child: Tooltip(
-                            message: '${d.name}\nRisk: ${d.riskScore.toStringAsFixed(0)}%\n$cropList',
-                            preferBelow: false,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: d.riskColor.withOpacity(0.9),
-                                border: Border.all(
-                                    color: Colors.white,
-                                    width: isSelected ? 3 : 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: d.riskColor.withOpacity(0.5),
-                                    blurRadius: isSelected ? 12 : 6,
-                                    spreadRadius: isSelected ? 3 : 1,
+                    markers:
+                        _districts.map((d) {
+                          final isSelected = _selectedDistrict?.id == d.id;
+                          // Build crops tooltip text
+                          final cropList = d.crops
+                              .take(4)
+                              .map(
+                                (c) =>
+                                    '${c['icon']} ${c['name']}: ${NumberFormatter.tons(c['tons'] as double)}',
+                              )
+                              .join('\n');
+                          return Marker(
+                            point: LatLng(d.centroidLat, d.centroidLng),
+                            width: isSelected ? 48 : 36,
+                            height: isSelected ? 48 : 36,
+                            child: GestureDetector(
+                              onTap: () => _onDistrictTap(d),
+                              child: Tooltip(
+                                message:
+                                    '${d.name}\nRisk: ${d.riskScore.toStringAsFixed(0)}%\n$cropList',
+                                preferBelow: false,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: d.riskColor.withOpacity(0.9),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: isSelected ? 3 : 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: d.riskColor.withOpacity(0.5),
+                                        blurRadius: isSelected ? 12 : 6,
+                                        spreadRadius: isSelected ? 3 : 1,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(d.riskIcon,
-                                    style: TextStyle(
-                                        fontSize: isSelected ? 20 : 15)),
+                                  child: Center(
+                                    child: Text(
+                                      d.riskIcon,
+                                      style: TextStyle(
+                                        fontSize: isSelected ? 20 : 15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                   ),
                 ],
               ),
               // Legend
-              Positioned(
-                bottom: 16,
-                left: 16,
-                child: _MapLegend(lang: lang),
-              ),
+              Positioned(bottom: 16, left: 16, child: _MapLegend(lang: lang)),
             ],
           ),
         ),
@@ -401,7 +413,8 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: const BoxDecoration(
               color: AppColors.surface,
               border: Border(
-                  left: BorderSide(color: AppColors.border, width: 1)),
+                left: BorderSide(color: AppColors.border, width: 1),
+              ),
             ),
             child: _buildDetailPanel(_selectedDistrict!, lang),
           ),
@@ -411,11 +424,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── MOBILE: map top, district selector below ──────────────────────────────
   Widget _buildMobileLayout(AppStrings lang) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    // Collapse map to 220px when a district is selected so the detail panel is fully visible
+    final mapHeight = _selectedDistrict != null ? 220.0 : screenHeight * 0.55;
+
     return Column(
       children: [
-        // Map — tall
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.55,
+        // Map — collapses when district selected
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeInOut,
+          height: mapHeight,
           child: Stack(
             children: [
               FlutterMap(
@@ -444,52 +463,82 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   PolygonLayer(polygons: _buildPolygonList()),
                   MarkerLayer(
-                    markers: _districts.map((d) {
-                      return Marker(
-                        point: LatLng(d.centroidLat, d.centroidLng),
-                        width: 36,
-                        height: 36,
-                        child: GestureDetector(
-                          onTap: () => _onDistrictTap(d),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: d.riskColor.withOpacity(0.9),
-                              border: Border.all(
-                                  color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: d.riskColor.withOpacity(0.5),
-                                    blurRadius: 6)
-                              ],
+                    markers:
+                        _districts.map((d) {
+                          return Marker(
+                            point: LatLng(d.centroidLat, d.centroidLng),
+                            width: 36,
+                            height: 36,
+                            child: GestureDetector(
+                              onTap: () => _onDistrictTap(d),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: d.riskColor.withOpacity(0.9),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: d.riskColor.withOpacity(0.5),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    d.riskIcon,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Center(
-                              child: Text(d.riskIcon,
-                                  style: const TextStyle(fontSize: 15)),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                   ),
                 ],
               ),
-              Positioned(
-                bottom: 12,
-                left: 12,
-                child: _MapLegend(lang: lang),
-              ),
+              Positioned(bottom: 12, left: 12, child: _MapLegend(lang: lang)),
+              // Expand/collapse hint button when district is selected
+              if (_selectedDistrict != null)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _selectedDistrict = null),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.expand, color: Colors.white, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            lang.languageCode == 'rw' ? 'Garagaza ikarita' : lang.languageCode == 'fr' ? 'Agrandir carte' : 'Expand map',
+                            style: const TextStyle(color: Colors.white, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
 
         // District list + detail
         Expanded(
-          child: _selectedDistrict != null
-              ? SingleChildScrollView(
-                  child:
-                      _buildDetailPanel(_selectedDistrict!, lang))
-              : _buildDistrictListMobile(lang),
+          child:
+              _selectedDistrict != null
+                  ? SingleChildScrollView(
+                    child: _buildDetailPanel(_selectedDistrict!, lang),
+                  )
+                  : _buildDistrictListMobile(lang),
         ),
       ],
     );
@@ -502,15 +551,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.all(12),
           child: Text(
-            lang.languageCode == 'rw'
-                ? 'Hitamo Akarere'
-                : lang.languageCode == 'fr'
-                    ? 'Sélectionner un District'
-                    : 'Select a District',
-            style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
+            lang.selectDistrict,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ),
         Expanded(
@@ -524,17 +566,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
-                      color: d.riskColor, shape: BoxShape.circle),
+                    color: d.riskColor,
+                    shape: BoxShape.circle,
+                  ),
                 ),
-                title: Text(d.name,
-                    style: const TextStyle(
-                        fontSize: 13, color: AppColors.textPrimary)),
+                title: Text(d.name, style: TextStyle(fontSize: 13)),
                 trailing: Text(
                   '${d.riskScore.toStringAsFixed(0)}%',
                   style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: d.riskColor),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: d.riskColor,
+                  ),
                 ),
                 onTap: () => _onDistrictTap(d),
               );
@@ -549,20 +592,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDetailPanel(District d, AppStrings lang) {
     final code = _weather?['weather_code'] as int?;
     final temp =
-        (_weather?['temperature_2m'] as num?)?.toStringAsFixed(0) ??
-            '22';
+        (_weather?['temperature_2m'] as num?)?.toStringAsFixed(0) ?? '22';
     final humidity =
         (_weather?['relative_humidity_2m'] as num?)?.toStringAsFixed(0) ??
-            '${d.maxHumidityPct.toStringAsFixed(0)}';
+        '${d.maxHumidityPct.toStringAsFixed(0)}';
     final precip =
-        (_weather?['precipitation'] as num?)?.toStringAsFixed(1) ??
-            '0.0';
+        (_weather?['precipitation'] as num?)?.toStringAsFixed(1) ?? '0.0';
     final wind =
-        (_weather?['wind_speed_10m'] as num?)?.toStringAsFixed(0) ??
-            '12';
-    final desc = lang.languageCode == 'rw'
-        ? _weatherDescRw(code)
-        : lang.languageCode == 'fr'
+        (_weather?['wind_speed_10m'] as num?)?.toStringAsFixed(0) ?? '12';
+    final desc =
+        lang.languageCode == 'rw'
+            ? _weatherDescRw(code)
+            : lang.languageCode == 'fr'
             ? _weatherDescFr(code)
             : _weatherDesc(code);
 
@@ -580,24 +621,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(d.name,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary)),
-                    Text(d.province,
-                        style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary)),
+                    Text(
+                      d.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(d.province, style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
               // Close button
               IconButton(
-                icon: const Icon(Icons.close,
-                    color: AppColors.textSecondary, size: 20),
-                onPressed: () =>
-                    setState(() => _selectedDistrict = null),
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => setState(() => _selectedDistrict = null),
               ),
             ],
           ),
@@ -613,40 +651,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.cloud,
-                    color: AppColors.weatherCloudy, size: 28),
+                const Icon(
+                  Icons.cloud,
+                  color: AppColors.weatherCloudy,
+                  size: 28,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('$temp°C',
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary)),
-                      Text(desc,
-                          style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.textSecondary)),
+                      Text(
+                        '$temp°C',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      Text(desc, style: TextStyle(fontSize: 11)),
                     ],
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('💧 $humidity%',
-                        style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary)),
-                    Text('🌧 $precip mm',
-                        style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary)),
-                    Text('💨 $wind km/h',
-                        style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary)),
+                    Text('💧 $humidity%', style: TextStyle(fontSize: 11)),
+                    Text('🌧 $precip mm', style: TextStyle(fontSize: 11)),
+                    Text('💨 $wind km/h', style: TextStyle(fontSize: 11)),
                   ],
                 ),
               ],
@@ -670,20 +702,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        lang.languageCode == 'rw'
-                            ? 'Amanota y\'Ingaruka'
-                            : lang.languageCode == 'fr'
-                                ? 'Score de Risque'
-                                : 'Risk Score',
-                        style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary),
+                        lang.riskScore,
+                        style: TextStyle(fontSize: 11),
                       ),
-                      Text('${d.riskScore.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: d.riskColor)),
+                      Text(
+                        '${d.riskScore.toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: d.riskColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -705,36 +734,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Crop volumes
           Text(
-            lang.languageCode == 'rw'
-                ? 'Umusaruro Uteganijwe'
-                : lang.languageCode == 'fr'
-                    ? 'Volume de Récolte'
-                    : 'Expected Harvest',
-            style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
+            lang.expectedHarvestVol,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           Row(
             children: [
-              _cropChip('🌽',
-                  lang.languageCode == 'rw' ? 'Ibigori' : lang.languageCode == 'fr' ? 'Maïs' : 'Maize',
-                  d.maizeTons),
-              _cropChip('🫘',
-                  lang.languageCode == 'rw' ? 'Ibishyimbo' : lang.languageCode == 'fr' ? 'Haricots' : 'Beans',
-                  d.beansTons),
+              _cropChip(
+                '🌽',
+                lang.languageCode == 'rw'
+                    ? 'Ibigori'
+                    : lang.languageCode == 'fr'
+                    ? 'Maïs'
+                    : 'Maize',
+                d.maizeTons,
+              ),
+              _cropChip(
+                '🫘',
+                lang.languageCode == 'rw'
+                    ? 'Ibishyimbo'
+                    : lang.languageCode == 'fr'
+                    ? 'Haricots'
+                    : 'Beans',
+                d.beansTons,
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Row(
             children: [
-              _cropChip('🥔',
-                  lang.languageCode == 'rw' ? 'Ibirayi' : lang.languageCode == 'fr' ? 'Pommes' : 'Potato',
-                  d.irishPotatoesTons),
-              _cropChip('🌿',
-                  lang.languageCode == 'rw' ? 'Imyumbati' : lang.languageCode == 'fr' ? 'Manioc' : 'Cassava',
-                  d.cassavaTons),
+              _cropChip(
+                '🥔',
+                lang.languageCode == 'rw'
+                    ? 'Ibirayi'
+                    : lang.languageCode == 'fr'
+                    ? 'Pommes'
+                    : 'Potato',
+                d.irishPotatoesTons,
+              ),
+              _cropChip(
+                '🌿',
+                lang.languageCode == 'rw'
+                    ? 'Imyumbati'
+                    : lang.languageCode == 'fr'
+                    ? 'Manioc'
+                    : 'Cassava',
+                d.cassavaTons,
+              ),
             ],
           ),
 
@@ -747,11 +793,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _showAdvisoryDialog(context, d, lang),
                   icon: const Icon(Icons.info_outline, size: 16),
-                  label: Text(lang.languageCode == 'rw'
-                      ? 'Inama'
-                      : lang.languageCode == 'fr'
-                          ? 'Conseil'
-                          : 'Advisory'),
+                  label: Text(
+                    lang.languageCode == 'rw'
+                        ? 'Inama'
+                        : lang.languageCode == 'fr'
+                        ? 'Conseil'
+                        : 'Advisory',
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: d.riskColor,
                     foregroundColor: Colors.white,
@@ -763,14 +811,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => FacilitiesListScreen(
-                        district: d,
-                        facilities: _facilities
-                            .where((f) => f.district == d.name)
-                            .toList(),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder:
+                            (_) => FacilitiesListScreen(
+                              district: d,
+                              facilities:
+                                  _facilities
+                                      .where((f) => f.district == d.name)
+                                      .toList(),
+                            ),
                       ),
-                    ));
+                    );
                   },
                   icon: const Icon(Icons.storage_outlined, size: 16),
                   label: Text(lang.navFacilities),
@@ -791,18 +843,21 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             child: TextButton.icon(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => DistrictDetailScreen(district: d),
-                ));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => DistrictDetailScreen(district: d),
+                  ),
+                );
               },
               icon: const Icon(Icons.open_in_new, size: 14),
-              label: Text(lang.languageCode == 'rw'
-                  ? 'Reba Byose'
-                  : lang.languageCode == 'fr'
-                      ? 'Voir Tout'
-                      : 'View Full Detail'),
-              style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary),
+              label: Text(
+                lang.languageCode == 'rw'
+                    ? 'Reba Byose'
+                    : lang.languageCode == 'fr'
+                    ? 'Voir Tout'
+                    : 'View Full Detail',
+              ),
+              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
             ),
           ),
         ],
@@ -826,8 +881,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Text(
                 '$label: ${NumberFormatter.tons(tons)}',
-                style: const TextStyle(
-                    fontSize: 10, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 10),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -838,100 +892,124 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ✅ Fixed: takes BuildContext explicitly so dialog always closes correctly
-  void _showAdvisoryDialog(
-      BuildContext context, District d, AppStrings lang) {
+  void _showAdvisoryDialog(BuildContext context, District d, AppStrings lang) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Text(d.riskIcon, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                lang.languageCode == 'rw'
-                    ? 'Inama y\'Ingaruka: ${d.name}'
-                    : lang.languageCode == 'fr'
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Text(d.riskIcon, style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    lang.languageCode == 'rw'
+                        ? 'Inama y\'Ingaruka: ${d.name}'
+                        : lang.languageCode == 'fr'
                         ? 'Conseil de Risque: ${d.name}'
                         : 'Risk Advisory: ${d.name}',
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: d.riskColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: d.riskColor.withOpacity(0.3)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                child: Text(d.advisory,
-                    style: TextStyle(
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: d.riskColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: d.riskColor.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      d.advisory,
+                      style: TextStyle(
                         color: d.riskColor,
-                        fontWeight: FontWeight.w500)),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                lang.languageCode == 'rw'
-                    ? 'Isuzuma Ryimbitse'
-                    : lang.languageCode == 'fr'
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    lang.languageCode == 'rw'
+                        ? 'Isuzuma Ryimbitse'
+                        : lang.languageCode == 'fr'
                         ? 'Évaluation Détaillée'
                         : 'Detailed Assessment',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  _advisoryRow(
+                    lang.languageCode == 'rw'
+                        ? 'Indice y\'Imvura'
+                        : lang.languageCode == 'fr'
+                        ? 'Indice Pluie'
+                        : 'Rainfall Index',
+                    '${d.rainfallIndex.toStringAsFixed(1)} / 100',
+                  ),
+                  _advisoryRow(
+                    lang.languageCode == 'rw'
+                        ? 'Indice y\'Ubuhehere'
+                        : lang.languageCode == 'fr'
+                        ? 'Indice Humidité'
+                        : 'Humidity Index',
+                    '${d.humidityIndex.toStringAsFixed(1)} / 100',
+                  ),
+                  _advisoryRow(
+                    lang.languageCode == 'rw'
+                        ? 'Indice y\'Gutakaza'
+                        : lang.languageCode == 'fr'
+                        ? 'Indice Perte'
+                        : 'Loss Rate Index',
+                    '${d.lossRateIndex.toStringAsFixed(1)} / 100',
+                  ),
+                  _advisoryRow(
+                    lang.languageCode == 'rw'
+                        ? 'Ubunyihu bw\'Ubutaka'
+                        : lang.languageCode == 'fr'
+                        ? 'Humidité Sol'
+                        : 'Soil Moisture',
+                    '${d.soilMoistureIndex.toStringAsFixed(1)} / 100',
+                  ),
+                  _advisoryRow(
+                    lang.rainfall14d,
+                    '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm',
+                  ),
+                  _advisoryRow(
+                    lang.languageCode == 'rw'
+                        ? 'Ubuhehere Bwisumbuye'
+                        : lang.languageCode == 'fr'
+                        ? 'Humidité Max'
+                        : 'Peak Humidity',
+                    '${d.maxHumidityPct.toStringAsFixed(0)}%',
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Indice y\'Imvura' : lang.languageCode == 'fr' ? 'Indice Pluie' : 'Rainfall Index',
-                  '${d.rainfallIndex.toStringAsFixed(1)} / 100'),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Indice y\'Ubuhehere' : lang.languageCode == 'fr' ? 'Indice Humidité' : 'Humidity Index',
-                  '${d.humidityIndex.toStringAsFixed(1)} / 100'),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Indice y\'Gutakaza' : lang.languageCode == 'fr' ? 'Indice Perte' : 'Loss Rate Index',
-                  '${d.lossRateIndex.toStringAsFixed(1)} / 100'),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Ubunyihu bw\'Ubutaka' : lang.languageCode == 'fr' ? 'Humidité Sol' : 'Soil Moisture',
-                  '${d.soilMoistureIndex.toStringAsFixed(1)} / 100'),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Imvura (iminsi 14)' : lang.languageCode == 'fr' ? 'Pluie (14j)' : '14-Day Rainfall',
-                  '${d.totalPrecipitation14dMm.toStringAsFixed(1)} mm'),
-              _advisoryRow(
-                  lang.languageCode == 'rw' ? 'Ubuhehere Bwisumbuye' : lang.languageCode == 'fr' ? 'Humidité Max' : 'Peak Humidity',
-                  '${d.maxHumidityPct.toStringAsFixed(0)}%'),
-            ],
-          ),
-        ),
-        actions: [
-          // ✅ Fixed: uses dialogContext so it always closes
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              lang.languageCode == 'rw'
-                  ? 'Funga'
-                  : lang.languageCode == 'fr'
+            ),
+            actions: [
+              // ✅ Fixed: uses dialogContext so it always closes
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(
+                  lang.languageCode == 'rw'
+                      ? 'Funga'
+                      : lang.languageCode == 'fr'
                       ? 'Fermer'
                       : 'Close',
-              style: const TextStyle(color: AppColors.primary),
-            ),
+                  style: const TextStyle(color: AppColors.primary),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -941,14 +1019,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary)),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
+          Text(label, style: TextStyle(fontSize: 12)),
+          Text(
+            value,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -974,16 +1049,14 @@ class _MapLegend extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _LegendRow(
-              color: const Color(0xFF16A34A), label: lang.mapLowRisk),
+          _LegendRow(color: const Color(0xFF16A34A), label: lang.mapLowRisk),
           const SizedBox(height: 4),
           _LegendRow(
-              color: const Color(0xFFF59E0B),
-              label: lang.mapModerateRisk),
+            color: const Color(0xFFF59E0B),
+            label: lang.mapModerateRisk,
+          ),
           const SizedBox(height: 4),
-          _LegendRow(
-              color: const Color(0xFFDC2626),
-              label: lang.mapHighRisk),
+          _LegendRow(color: const Color(0xFFDC2626), label: lang.mapHighRisk),
         ],
       ),
     );
@@ -1001,13 +1074,15 @@ class _LegendRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-            width: 10,
-            height: 10,
-            decoration:
-                BoxDecoration(color: color, shape: BoxShape.circle)),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 6),
-        Text(label,
-            style: const TextStyle(fontSize: 11, color: Colors.white70)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: Colors.white70),
+        ),
       ],
     );
   }

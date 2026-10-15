@@ -26,9 +26,7 @@ class FirebaseService {
     // Firebase is optional: without a valid config the app runs fully
     // offline using the local seed data (no crash, no user-facing error).
     try {
-      await Firebase.initializeApp(
-        options: _webConfig,
-      );
+      await Firebase.initializeApp(options: _webConfig);
     } catch (e) {
       debugPrint('CropGuard: Firebase not configured, running offline: $e');
     }
@@ -44,8 +42,9 @@ class DistrictService {
   /// risk_scores.json uses different key names than Firestore, so we remap them.
   static Future<List<District>> _loadLocalDistricts() async {
     try {
-      final jsonString =
-          await rootBundle.loadString('assets/data/risk_scores.json');
+      final jsonString = await rootBundle.loadString(
+        'assets/data/risk_scores.json',
+      );
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
       final List<dynamic> districts = data['districts'] ?? [];
       return districts.map((raw) {
@@ -53,8 +52,33 @@ class DistrictService {
         final risk = d['risk'] as Map<String, dynamic>? ?? {};
         final weather = d['weather'] as Map<String, dynamic>? ?? {};
         final nb = d['nirs_baseline'] as Map<String, dynamic>? ?? {};
-        final riskTrend = d['risk_trend'] as Map<String, dynamic>? ?? {};
-        // NOTE: JSON uses 'level' not 'risk_level'
+
+        // risk_trend can be a flat String OR a Map{trend, risk_delta, previous_risk_score}
+        final rtRaw = d['risk_trend'];
+        String riskTrendStr = 'baseline';
+        double riskDelta = 0.0;
+        double? prevScore;
+        if (rtRaw is String) {
+          riskTrendStr = rtRaw;
+          riskDelta = (d['risk_delta'] as num?)?.toDouble() ?? 0.0;
+          prevScore = (d['previous_risk_score'] as num?)?.toDouble();
+        } else if (rtRaw is Map) {
+          final rt = rtRaw as Map<String, dynamic>;
+          riskTrendStr = rt['trend'] ?? rt['risk_trend'] ?? 'baseline';
+          riskDelta = (rt['risk_delta'] as num?)?.toDouble() ?? 0.0;
+          prevScore = (rt['previous_risk_score'] as num?)?.toDouble();
+        }
+
+        // precipitation & humidity: try risk{} first (newer format), fall back to weather{}
+        final precip =
+            (risk['total_precipitation_14d_mm'] as num?)?.toDouble() ??
+            (weather['total_precipitation_14d_mm'] as num?)?.toDouble() ??
+            0.0;
+        final maxHumid =
+            (risk['max_humidity_pct'] as num?)?.toDouble() ??
+            (weather['max_humidity_pct'] as num?)?.toDouble() ??
+            0.0;
+
         final mapped = <String, dynamic>{
           'name': d['district_name'] ?? d['name'] ?? '',
           'province': d['province'] ?? '',
@@ -65,19 +89,17 @@ class DistrictService {
           'risk_level': risk['level'] ?? risk['risk_level'] ?? 'green',
           'rainfall_index': (risk['rainfall_index'] as num?)?.toDouble() ?? 0.0,
           'humidity_index': (risk['humidity_index'] as num?)?.toDouble() ?? 0.0,
-          'loss_rate_index': (risk['loss_rate_index'] as num?)?.toDouble() ?? 0.0,
-          'total_precipitation_14d_mm':
-              (weather['total_precipitation_14d_mm'] as num?)?.toDouble() ?? 0.0,
-          'max_humidity_pct':
-              (weather['max_humidity_pct'] as num?)?.toDouble() ?? 0.0,
+          'loss_rate_index':
+              (risk['loss_rate_index'] as num?)?.toDouble() ?? 0.0,
           'soil_moisture_index':
               (risk['soil_moisture_index'] as num?)?.toDouble() ?? 0.0,
+          'total_precipitation_14d_mm': precip,
+          'max_humidity_pct': maxHumid,
           'advisory': d['advisory'] ?? '',
           'updated_at': d['updated_at'] ?? DateTime.now().toIso8601String(),
-          'risk_delta': (riskTrend['risk_delta'] as num?)?.toDouble() ?? 0.0,
-          'risk_trend': riskTrend['trend'] ?? riskTrend['risk_trend'] ?? 'baseline',
-          'previous_risk_score':
-              (riskTrend['previous_risk_score'] as num?)?.toDouble(),
+          'risk_delta': riskDelta,
+          'risk_trend': riskTrendStr,
+          'previous_risk_score': prevScore,
         };
         final id = d['district_id'] ?? d['id'] ?? mapped['name'];
         return District.fromFirestore(mapped, id as String);
@@ -89,10 +111,9 @@ class DistrictService {
   }
 
   Stream<List<District>> getDistrictsStream() {
-    return _firestore
-        .collection('districts')
-        .snapshots()
-        .asyncMap((snapshot) async {
+    return _firestore.collection('districts').snapshots().asyncMap((
+      snapshot,
+    ) async {
       if (snapshot.docs.isEmpty) {
         return _loadLocalDistricts();
       }
@@ -124,11 +145,7 @@ class DistrictService {
   }
 
   Stream<District?> watchDistrictById(String id) {
-    return _firestore
-        .collection('districts')
-        .doc(id)
-        .snapshots()
-        .map((doc) {
+    return _firestore.collection('districts').doc(id).snapshots().map((doc) {
       if (doc.exists) {
         return District.fromFirestore(doc.data()!, doc.id);
       }
@@ -143,7 +160,9 @@ class FacilityService {
   /// Load facilities from bundled JSON immediately (no network needed).
   static Future<List<Facility>> _loadLocalFacilities() async {
     try {
-      final jsonString = await rootBundle.loadString('assets/data/facilities.json');
+      final jsonString = await rootBundle.loadString(
+        'assets/data/facilities.json',
+      );
       final List<dynamic> list = jsonDecode(jsonString) as List<dynamic>;
       return list.map((raw) {
         final d = raw as Map<String, dynamic>;
@@ -162,25 +181,50 @@ class FacilityService {
     return _firestore
         .collection('facilities')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .asyncMap((snapshot) async {
+          if (snapshot.docs.isNotEmpty) {
+            return snapshot.docs
+                .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
+                .toList();
+          }
+          return _loadLocalFacilities();
+        });
   }
 
   Future<List<Facility>> getFacilitiesOnce() async {
-    final snapshot = await _firestore.collection('facilities').get();
-    return snapshot.docs
-        .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
-        .toList();
+    try {
+      final snapshot = await _firestore.collection('facilities').get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs
+            .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('CropGuard: Firestore facilities fetch failed, using local: $e');
+    }
+    // Fall back to bundled local JSON
+    return _loadLocalFacilities();
   }
 
   Future<List<Facility>> getFacilitiesByDistrict(String districtName) async {
-    final snapshot = await _firestore
-        .collection('facilities')
-        .where('district', isEqualTo: districtName)
-        .get();
-    return snapshot.docs
-        .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
+    try {
+      final snapshot =
+          await _firestore
+              .collection('facilities')
+              .where('district', isEqualTo: districtName)
+              .get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs
+            .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('CropGuard: Firestore facilities by district failed, using local: $e');
+    }
+    // Fall back to local JSON and filter by district name
+    final all = await _loadLocalFacilities();
+    return all
+        .where((f) => f.district.toLowerCase() == districtName.toLowerCase())
         .toList();
   }
 
@@ -189,9 +233,12 @@ class FacilityService {
         .collection('facilities')
         .where('district', isEqualTo: districtName)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => Facility.fromFirestore(doc.data(), doc.id))
+                  .toList(),
+        );
   }
 }
 
@@ -204,15 +251,16 @@ class SummaryService {
         .doc('risk_summary')
         .snapshots()
         .map((doc) {
-      if (doc.exists) {
-        return RiskSummary.fromFirestore(doc.data()!);
-      }
-      return null;
-    });
+          if (doc.exists) {
+            return RiskSummary.fromFirestore(doc.data()!);
+          }
+          return null;
+        });
   }
 
   Future<RiskSummary?> getSummaryOnce() async {
-    final doc = await _firestore.collection('metadata').doc('risk_summary').get();
+    final doc =
+        await _firestore.collection('metadata').doc('risk_summary').get();
     if (doc.exists) {
       return RiskSummary.fromFirestore(doc.data()!);
     }
@@ -247,6 +295,8 @@ class SeedService {
     }
     await facilitiesBatch.commit();
 
-    debugPrint('Seeded ${districts.length} districts and ${facilities.length} facilities');
+    debugPrint(
+      'Seeded ${districts.length} districts and ${facilities.length} facilities',
+    );
   }
 }

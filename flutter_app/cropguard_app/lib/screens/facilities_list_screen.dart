@@ -33,7 +33,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
     final lang = context.watch<LanguageProvider>().strings;
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.district.name} Facilities'),
+        title: Text('${widget.district.name} ${lang.facilitiesTitle}'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
         leading: IconButton(
@@ -41,6 +41,11 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.center_focus_strong),
+            onPressed: _getMyLocation,
+            tooltip: 'My location',
+          ),
           TextButton.icon(
             onPressed: () => setState(() => _showMap = !_showMap),
             icon: Icon(
@@ -57,19 +62,31 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
         ],
       ),
       body: _showMap ? _buildMapView() : _buildListView(lang),
-      floatingActionButton: widget.facilities.isNotEmpty
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                setState(() {
-                  _selectedFacility = widget.facilities.first;
-                  _showMap = true;
-                });
-              },
-              backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.map),
-              label: Text(lang.viewOnMap),
-            )
-          : null,
+      floatingActionButton:
+          widget.facilities.isNotEmpty
+              ? FloatingActionButton.extended(
+                  onPressed: () {
+                    setState(() {
+                      _selectedFacility = widget.facilities.first;
+                      _showMap = true;
+                    });
+                  },
+                  backgroundColor: AppColors.primary,
+                  icon: const Icon(Icons.map),
+                  label: Text(lang.viewOnMap),
+                )
+              : null,
+    );
+  }
+
+  Future<void> _getMyLocation() async {
+    final lang = context.read<LanguageProvider>().strings;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(lang.showingAllFacilities),
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 
@@ -79,26 +96,16 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.storage_outlined,
-              size: 64,
-              color: AppColors.textSecondary,
-            ),
+            const Icon(Icons.storage_outlined, size: 64),
             const SizedBox(height: 16),
             Text(
               '${lang.noFacilitiesFound} in ${widget.district.name}',
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
             Text(
               'Check back later or contact the district agricultural office',
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(fontSize: 13),
             ),
           ],
         ),
@@ -110,13 +117,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
       itemCount: widget.facilities.length,
       itemBuilder: (context, index) {
         final facility = widget.facilities[index];
-        return _FacilityCard(
-          facility: facility,
-          lang: lang,
-          onTap: () => setState(() => _selectedFacility = facility),
-          onCall: () => _makePhoneCall(facility.contactPhone),
-          onEmail: () => _sendEmail(facility.contactEmail),
-        );
+        return _buildFacilityCard(facility, lang);
       },
     );
   }
@@ -132,119 +133,58 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
             children: [
               _buildLegendChip(
                 icon: '☀️',
-                label: 'Drying Ground',
-                color: AppColors.primary,
+                label: 'Available',
+                color: Colors.green,
               ),
               const SizedBox(width: 8),
               _buildLegendChip(
-                icon: '🏛️',
-                label: 'Silo',
-                color: AppColors.secondary,
-              ),
-              const SizedBox(width: 8),
-              _buildLegendChip(
-                icon: '❄️',
-                label: 'Cold Storage',
-                color: Colors.blue,
-              ),
-              const SizedBox(width: 8),
-              _buildLegendChip(
-                icon: '🚛',
-                label: 'Mobile Dryer',
+                icon: '📦',
+                label: 'Partial',
                 color: Colors.orange,
               ),
-              const Spacer(),
-              IconButton(
-                onPressed: () => setState(() => _showMap = false),
-                icon: const Icon(Icons.list),
-                color: AppColors.textSecondary,
-                tooltip: 'Back to list',
+              const SizedBox(width: 8),
+              _buildLegendChip(
+                icon: '⚠️',
+                label: 'Full',
+                color: Colors.red,
               ),
             ],
           ),
         ),
-        // Map
         Expanded(
           child: FlutterMap(
-            options: MapOptions(
-              initialCenter: LatLng(
-                widget.district.centroidLat,
-                widget.district.centroidLng,
-              ),
+            options: const MapOptions(
+              initialCenter: LatLng(-1.9446, 30.0615),
               initialZoom: 10,
+              minZoom: 3,
+              maxZoom: 15,
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.cropguard.cropguard_app',
+                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.cropguard.app',
               ),
-              // District center marker
               MarkerLayer(
-                markers: [
-                  Marker(
-                    point: LatLng(
-                      widget.district.centroidLat,
-                      widget.district.centroidLng,
-                    ),
-                    width: 48,
-                    height: 48,
+                markers: widget.facilities.map((facility) {
+                  final lat = facility.lat;
+                  final lng = facility.lng;
+                  return Marker(
+                    point: LatLng(lat, lng),
+                    width: 30,
+                    height: 30,
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.primary.withOpacity(0.2),
-                        border: Border.all(
-                          color: AppColors.primary,
-                          width: 2,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.location_on,
-                        color: AppColors.primary,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              // Facility markers
-              MarkerLayer(
-                markers: widget.facilities.map((f) {
-                  final isSelected = _selectedFacility?.id == f.id;
-                  return Marker(
-                    point: LatLng(f.lat, f.lng),
-                    width: isSelected ? 56 : 44,
-                    height: isSelected ? 56 : 44,
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedFacility = f),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelected
-                              ? AppColors.primary
-                              : _getFacilityColor(f.type).withOpacity(0.9),
-                          border: Border.all(
-                            color: Colors.white,
-                            width: isSelected ? 3 : 2,
+                        color: _getFacilityColor(facility.availableCapacityTons, facility.capacityTons),
+                        border: Border.all(color: Colors.white, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.withOpacity(0.4),
+                            blurRadius: 4,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (isSelected
-                                      ? AppColors.primary
-                                      : _getFacilityColor(f.type))
-                                  .withOpacity(0.4),
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            f.typeIcon,
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
+                        ],
                       ),
+                      child: const Icon(Icons.storage, size: 16, color: Colors.white),
                     ),
                   );
                 }).toList(),
@@ -252,267 +192,92 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
             ],
           ),
         ),
-        // Selected facility detail
-        if (_selectedFacility != null)
-          _buildSelectedFacilitySheet(),
+        Container(
+          padding: const EdgeInsets.all(12),
+          color: AppColors.surface,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${widget.facilities.length} facilities in ${widget.district.name}',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildLegendChip({
-    required String icon,
-    required String label,
-    required Color color,
-  }) {
+  Color _getFacilityColor(double available, double capacity) {
+    if (capacity <= 0) return Colors.grey;
+    final pct = available / capacity;
+    if (pct > 0.5) return Colors.green;
+    if (pct > 0.2) return Colors.orange;
+    return Colors.red;
+  }
+
+  Widget _buildLegendChip({required String icon, required String label, required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppRadius.small),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSelectedFacilitySheet() {
-    final lang = context.watch<LanguageProvider>().strings;
-    final f = _selectedFacility!;
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        boxShadow: [AppShadows.card],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _getFacilityColor(f.type).withOpacity(0.15),
-                ),
-                child: Center(
-                  child: Text(
-                    f.typeIcon,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      f.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      f.typeLabel,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => setState(() => _selectedFacility = null),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _buildInfoChip(
-                icon: '📍',
-                label: f.district,
-              ),
-              const SizedBox(width: 8),
-              _buildInfoChip(
-                icon: '📦',
-                label: NumberFormatter.capacity(
-                  f.usedCapacity,
-                  f.capacityTons,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _makePhoneCall(f.contactPhone),
-                  icon: const Icon(Icons.phone, size: 18),
-                  label: Text(lang.call),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textOnPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _sendEmail(f.contactEmail),
-                  icon: const Icon(Icons.email, size: 18),
-                  label: Text(lang.email),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: const BorderSide(color: AppColors.primary),
-                    foregroundColor: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '📞 ${f.contactName}  |  🕐 ${f.operationalHours}',
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoChip({
-    required String icon,
-    required String label,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(AppRadius.small),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(icon, style: const TextStyle(fontSize: 12)),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
+          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
         ],
       ),
     );
   }
 
-  Color _getFacilityColor(String type) {
-    switch (type) {
-      case 'drying_ground':
-        return AppColors.primary;
-      case 'silo':
-        return AppColors.secondary;
-      case 'cold_storage':
-        return Colors.blue;
-      case 'storage_center':
-        return const Color(0xFF8B5CF6);
-      case 'mobile_dryer':
-        return Colors.orange;
-      default:
-        return AppColors.textSecondary;
+  void _makePhoneCall(String phone) async {
+    final uri = 'tel:$phone';
+    if (await canLaunch(uri)) {
+      await launch(uri);
     }
   }
 
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    final uri = Uri(scheme: 'tel', path: phoneNumber);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+  void _sendEmail(String email) async {
+    if (email.isNotEmpty) {
+      final uri = 'mailto:$email';
+      if (await canLaunch(uri)) {
+        await launch(uri);
+      }
     }
   }
 
-  Future<void> _sendEmail(String email) async {
-    final uri = Uri(scheme: 'mailto', path: email);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
-  }
-}
-
-class _FacilityCard extends StatelessWidget {
-  final Facility facility;
-  final AppStrings lang;
-  final VoidCallback onTap;
-  final VoidCallback onCall;
-  final VoidCallback onEmail;
-
-  const _FacilityCard({
-    required this.facility,
-    required this.lang,
-    required this.onTap,
-    required this.onCall,
-    required this.onEmail,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isHighUtilization =
-        facility.utilizationPct > 75;
-
+  Widget _buildFacilityCard(Facility facility, AppStrings lang) {
+    final isFull = facility.capacityTons > 0 &&
+        facility.availableCapacityTons / facility.capacityTons < 0.2;
+    final isPartial = facility.capacityTons > 0 &&
+        facility.availableCapacityTons / facility.capacityTons < 0.5;
+    
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
+        onTap: () => setState(() => _selectedFacility = facility),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header row
               Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary.withOpacity(0.15),
+                      color: _getFacilityColor(facility.availableCapacityTons, facility.capacityTons).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Center(
-                      child: Text(
-                        facility.typeIcon,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ),
+                    child: const Icon(Icons.storage, size: 22, color: Colors.green),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -521,98 +286,92 @@ class _FacilityCard extends StatelessWidget {
                       children: [
                         Text(
                           facility.name,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          facility.district ?? 'District unknown',
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getFacilityColor(facility.availableCapacityTons, facility.capacityTons).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isFull ? Icons.folder_off : (isPartial ? Icons.warning : Icons.check),
+                          size: 14,
+                          color: _getFacilityColor(facility.availableCapacityTons, facility.capacityTons),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          isFull ? lang.facilityFull : (
+                            isPartial ? lang.facilityPartial : lang.facilityAvailable
+                          ),
+                          style: TextStyle(
+                            fontSize: 10,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          facility.typeLabel,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          facility.district,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: _getFacilityColor(facility.availableCapacityTons, facility.capacityTons),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  if (isHighUtilization)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
-                        borderRadius:
-                            BorderRadius.circular(AppRadius.small),
-                        border: Border.all(
-                          color: Colors.orange.withOpacity(0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.warning_amber,
-                            size: 14,
-                            color: Colors.orange,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            lang.highUsage,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.orange,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               ),
               const SizedBox(height: 12),
-              const Divider(),
-              const SizedBox(height: 8),
+              // Capacity
               Row(
                 children: [
-                  _buildStatItem(
-                    '📦 Capacity',
-                    '${facility.availableCapacityTons.toStringAsFixed(0)}/${facility.capacityTons.toStringAsFixed(0)} tons',
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.textSecondary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${facility.availableCapacityTons.toStringAsFixed(0)} tons available',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  _buildStatItem(
-                    '📊 Used',
-                    '${facility.utilizationPct.toStringAsFixed(0)}%',
-                    valueColor: isHighUtilization
-                        ? Colors.orange
-                        : AppColors.textSecondary,
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.textSecondary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${facility.utilizationPct.toStringAsFixed(0)}% full',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isFull ? Colors.red : AppColors.textSecondary,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
+              // Contact info
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: onCall,
+                      onPressed: () => _makePhoneCall(facility.contactPhone),
                       icon: const Icon(Icons.phone, size: 16),
-                      label: Text(facility.contactPhone),
+                      label: Text(
+                        facility.contactPhone.isNotEmpty ? facility.contactPhone : 'No phone',
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        side: const BorderSide(
-                          color: AppColors.primary,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        side: const BorderSide(color: AppColors.primary),
                         foregroundColor: AppColors.primary,
                       ),
                     ),
@@ -620,18 +379,15 @@ class _FacilityCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: onEmail,
+                      onPressed: () => _sendEmail(facility.contactEmail),
                       icon: const Icon(Icons.email, size: 16),
                       label: Text(
-                        facility.contactEmail.isNotEmpty
-                            ? facility.contactEmail
-                            : 'No email',
+                        facility.contactEmail.isNotEmpty ? facility.contactEmail : 'No email',
+                        overflow: TextOverflow.ellipsis,
                       ),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        side: const BorderSide(
-                          color: AppColors.textSecondary,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        side: const BorderSide(color: Color(0xFF78909C)),
                         foregroundColor: AppColors.textSecondary,
                       ),
                     ),
@@ -642,34 +398,6 @@ class _FacilityCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatItem(
-    String label,
-    String value, {
-    Color? valueColor,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: valueColor ?? AppColors.textPrimary,
-          ),
-        ),
-      ],
     );
   }
 }

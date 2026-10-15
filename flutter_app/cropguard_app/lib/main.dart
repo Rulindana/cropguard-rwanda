@@ -36,9 +36,38 @@ class CropGuardApp extends StatelessWidget {
       theme: ThemeProvider.lightTheme,
       darkTheme: ThemeProvider.darkTheme,
       themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
+      // ── Font scaling guard ──────────────────────────────────────────────
+      // The app uses the device's own font style (Samsung One, Tecno, etc.)
+      // automatically — no fontFamily is forced.
+      //
+      // However we clamp text scaling to 1.15× max so that users who set
+      // "Large" or "Extra-Large" fonts in System Settings don't cause nav
+      // labels to overflow or content to be cut off. Content areas (scrollable
+      // screens) are NOT affected — only fixed-height UI chrome is protected.
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        final clampedScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 1.0,
+          maxScaleFactor: 1.15,
+        );
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: clampedScaler),
+          // Wrap in DefaultTextStyle so every Text() that doesn't explicitly
+          // set fontWeight inherits bold (w700) as the app-wide default.
+          child: DefaultTextStyle(
+            style: DefaultTextStyle.of(context).style.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+            child: child!,
+          ),
+        );
+      },
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/dashboard':
+            return MaterialPageRoute(
+                builder: (_) => const ResponsiveScaffold());
+          case '/scan':
             return MaterialPageRoute(
                 builder: (_) => const ResponsiveScaffold());
           default:

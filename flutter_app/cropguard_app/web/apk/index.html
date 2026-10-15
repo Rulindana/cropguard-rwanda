@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CropGuard AI – Download APK</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0B1617;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #112225;
+      border: 1.5px solid #00E676;
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 0 40px rgba(0,230,118,0.15);
+    }
+    .logo {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: block;
+      border: 2px solid #00E676;
+    }
+    h1 { color: #00E676; font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+    .sub { color: #B0BEC5; font-size: 14px; margin-bottom: 28px; }
+
+    .badge {
+      display: inline-block;
+      background: rgba(0,230,118,0.15);
+      border: 1px solid rgba(0,230,118,0.4);
+      color: #00E676;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .features {
+      text-align: left;
+      background: #1A3035;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .features li {
+      color: #B0BEC5;
+      font-size: 13px;
+      margin-bottom: 6px;
+      padding-left: 4px;
+      list-style: none;
+    }
+    .features li::before { content: "✅ "; }
+
+    .btn-primary {
+      display: block;
+      background: linear-gradient(135deg, #00E676, #00C853);
+      color: #0B1617;
+      padding: 16px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 16px;
+      margin-bottom: 12px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 20px rgba(0,230,118,0.35);
+    }
+    .btn-primary:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 28px rgba(0,230,118,0.5);
+    }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .version-info {
+      color: #546E7A;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .warning {
+      background: rgba(255,152,0,0.1);
+      border: 1px solid rgba(255,152,0,0.3);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      color: #FFB74D;
+      text-align: left;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .back { color: #00E676; font-size: 13px; text-decoration: none; font-weight: 600; }
+    .back:hover { text-decoration: underline; }
+
+    .steps {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .steps h3 { color: #00E676; font-size: 13px; margin-bottom: 8px; }
+    .steps p { color: #B0BEC5; font-size: 12px; margin-bottom: 4px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="../assets/assets/icon/logo.png"
+         class="logo"
+         onerror="this.style.display='none'"
+         alt="CropGuard AI Logo">
+
+    <span class="badge">🆕 Latest Release</span>
+    <h1>🌿 CropGuard AI</h1>
+    <p class="sub">Post-Harvest Risk Monitoring · Rwanda</p>
+
+    <div class="features">
+      <ul>
+        <li>Disease detection for 8 crops</li>
+        <li>30-district risk map</li>
+        <li>Offline-first — works without internet</li>
+        <li>English / Kinyarwanda / French</li>
+        <li>Free for Rwandan farmers</li>
+      </ul>
+    </div>
+
+    <!-- PRIMARY DOWNLOAD BUTTON -->
+    <a class="btn-primary"
+       id="download-btn"
+       href="https://github.com/cropguard-rwanda/releases/releases/download/v2.0/CropGuard_Rwanda_v2.0.apk"
+       download="CropGuard_Rwanda_v2.0.apk">
+      ⬇ Download v2.0 APK
+    </a>
+
+    <p class="version-info">Version 2.0 &nbsp;·&nbsp; ~62 MB &nbsp;·&nbsp; Android 5.0+</p>
+
+    <div class="warning">
+      ⚠ <strong>Before installing:</strong> Go to your phone
+      <strong>Settings → Security → Unknown Sources</strong>
+      and allow installation from unknown sources. This is required for all apps
+      downloaded outside the Play Store.
+    </div>
+
+    <div class="steps">
+      <h3>📲 How to install:</h3>
+      <p>1. Tap the download button above</p>
+      <p>2. Open the downloaded file from your notifications or Downloads folder</p>
+      <p>3. Tap <strong>Install</strong> when prompted</p>
+      <p>4. Open CropGuard AI and start protecting your crops!</p>
+    </div>
+
+    <a href="/" class="back">← Back to Web App</a>
+  </div>
+
+  <script>
+    // Try to load the current APK URL from Firebase if available
+    // Falls back gracefully to the hardcoded URL above
+    const FIREBASE_PROJECT = 'nisr-b06b6';
+    const FIRESTORE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents/app_config/apk_release`;
+
+    fetch(FIRESTORE_URL)
+      .then(r => r.json())
+      .then(data => {
+        const fields = data.fields;
+        if (fields && fields.download_url && fields.download_url.stringValue) {
+          const btn = document.getElementById('download-btn');
+          const url = fields.download_url.stringValue;
+          const version = fields.version?.stringValue || '2.0';
+          btn.href = url;
+          btn.setAttribute('download', `CropGuard_Rwanda_v${version}.apk`);
+          btn.textContent = `⬇ Download v${version} APK`;
+          document.querySelector('.version-info').textContent =
+            `Version ${version} · ~62 MB · Android 5.0+`;
+        }
+      })
+      .catch(() => { /* use hardcoded fallback */ });
+  </script>
+</body>
+</html>

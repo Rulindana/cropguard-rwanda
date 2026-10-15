@@ -2,6 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/summary_model.dart';
@@ -23,19 +26,19 @@ class SummaryScreen extends StatelessWidget {
     return StreamBuilder<RiskSummary?>(
       stream: SummaryService().getSummaryStream(),
       builder: (context, summarySnapshot) {
-          if (summarySnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        if (summarySnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          final summary = summarySnapshot.data;
-          if (summary == null) {
-            // Fallback: Calculate from districts stream
-            return _buildFromDistricts(context);
-          }
+        final summary = summarySnapshot.data;
+        if (summary == null) {
+          // Fallback: Calculate from districts stream
+          return _buildFromDistricts(context);
+        }
 
-          return _buildSummaryUI(context, summary, lang);
-        },
-      );
+        return _buildSummaryUI(context, summary, lang);
+      },
+    );
   }
 
   Widget _buildFromDistricts(BuildContext context) {
@@ -49,15 +52,14 @@ class SummaryScreen extends StatelessWidget {
 
         final districts = snapshot.data ?? [];
         if (districts.isEmpty) {
-          return const Center(child: Text('No data available'));
+          return Center(child: Text(lang.noData));
         }
 
         final green = districts.where((d) => d.riskLevel == 'green').length;
         final yellow = districts.where((d) => d.riskLevel == 'yellow').length;
         final red = districts.where((d) => d.riskLevel == 'red').length;
-        final avgRisk = districts
-            .map((d) => d.riskScore)
-            .reduce((a, b) => a + b) /
+        final avgRisk =
+            districts.map((d) => d.riskScore).reduce((a, b) => a + b) /
             districts.length;
 
         final calcSummary = RiskSummary(
@@ -73,7 +75,11 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryUI(BuildContext context, RiskSummary summary, AppStrings lang) {
+  Widget _buildSummaryUI(
+    BuildContext context,
+    RiskSummary summary,
+    AppStrings lang,
+  ) {
     final highRiskDistricts = <District>[];
 
     return Scaffold(
@@ -82,9 +88,7 @@ class SummaryScreen extends StatelessWidget {
         builder: (context, districtSnapshot) {
           if (districtSnapshot.hasData) {
             highRiskDistricts.addAll(
-              districtSnapshot.data!
-                  .where((d) => d.riskLevel == 'red')
-                  .toList()
+              districtSnapshot.data!.where((d) => d.riskLevel == 'red').toList()
                 ..sort((a, b) => b.riskScore.compareTo(a.riskScore)),
             );
           }
@@ -133,10 +137,7 @@ class SummaryScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.primaryDark,
-          ],
+          colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -275,20 +276,10 @@ class SummaryScreen extends StatelessWidget {
           children: [
             Text(
               lang.riskDistribution,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            Text(
-              lang.realTimeClassification,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            Text(lang.realTimeClassification, style: TextStyle(fontSize: 13)),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -414,27 +405,13 @@ class SummaryScreen extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
+        Expanded(child: Text(label, style: TextStyle(fontSize: 13))),
         Text(
           count.toString(),
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 8),
         Container(
@@ -456,26 +433,23 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHighRiskAlert(List<District> highRiskDistricts, AppStrings lang) {
+  Widget _buildHighRiskAlert(
+    List<District> highRiskDistricts,
+    AppStrings lang,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(
-          color: AppColors.red.withOpacity(0.3),
-        ),
+        border: Border.all(color: AppColors.red.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.warning_amber,
-                color: AppColors.red,
-                size: 24,
-              ),
+              const Icon(Icons.warning_amber, color: AppColors.red, size: 24),
               const SizedBox(width: 8),
               Text(
                 lang.highRiskDistricts,
@@ -488,10 +462,7 @@ class SummaryScreen extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(AppRadius.small),
@@ -508,57 +479,50 @@ class SummaryScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...highRiskDistricts.take(5).map((d) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.red,
-                        shape: BoxShape.circle,
+          ...highRiskDistricts
+              .take(5)
+              .map(
+                (d) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.red,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      d.name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
+                      const SizedBox(width: 8),
+                      Text(
+                        d.name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${d.riskScore.toStringAsFixed(0)}%',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.red,
+                      const Spacer(),
+                      Text(
+                        '${d.riskScore.toStringAsFixed(0)}%',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.red,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      d.province,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(d.province, style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
                 ),
-              )),
+              ),
           if (highRiskDistricts.length > 5)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 '... and ${highRiskDistricts.length - 5} more districts',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontStyle: FontStyle.italic,
-                ),
+                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
               ),
             ),
         ],
@@ -573,21 +537,29 @@ class SummaryScreen extends StatelessWidget {
       provinceMap.putIfAbsent(d.province, () => []).add(d);
     }
 
-    final provinceStats = provinceMap.entries.map((entry) {
-      final provinces = entry.value;
-      final redCount = provinces.where((d) => d.riskLevel == 'red').length;
-      final yellowCount = provinces.where((d) => d.riskLevel == 'yellow').length;
-      final avgRisk = provinces.map((d) => d.riskScore).reduce((a, b) => a + b) / provinces.length;
-      return {
-        'name': entry.key,
-        'total': provinces.length,
-        'red': redCount,
-        'yellow': yellowCount,
-        'green': provinces.length - redCount - yellowCount,
-        'avgRisk': avgRisk,
-      };
-    }).toList()
-      ..sort((a, b) => (b['avgRisk'] as double).compareTo(a['avgRisk'] as double));
+    final provinceStats =
+        provinceMap.entries.map((entry) {
+            final provinces = entry.value;
+            final redCount =
+                provinces.where((d) => d.riskLevel == 'red').length;
+            final yellowCount =
+                provinces.where((d) => d.riskLevel == 'yellow').length;
+            final avgRisk =
+                provinces.map((d) => d.riskScore).reduce((a, b) => a + b) /
+                provinces.length;
+            return {
+              'name': entry.key,
+              'total': provinces.length,
+              'red': redCount,
+              'yellow': yellowCount,
+              'green': provinces.length - redCount - yellowCount,
+              'avgRisk': avgRisk,
+            };
+          }).toList()
+          ..sort(
+            (a, b) =>
+                (b['avgRisk'] as double).compareTo(a['avgRisk'] as double),
+          );
 
     return Card(
       child: Padding(
@@ -597,85 +569,71 @@ class SummaryScreen extends StatelessWidget {
           children: [
             Text(
               lang.provincialBreakdown,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-            ...provinceStats.map((stat) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          stat['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      // Mini bars
-                      ...[
-                        _buildMiniBar(
-                          'G',
-                          stat['green'] as int,
-                          stat['total'] as int,
-                          AppColors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        _buildMiniBar(
-                          'Y',
-                          stat['yellow'] as int,
-                          stat['total'] as int,
-                          AppColors.yellow,
-                        ),
-                        const SizedBox(width: 4),
-                        _buildMiniBar(
-                          'R',
-                          stat['red'] as int,
-                          stat['total'] as int,
-                          AppColors.red,
-                        ),
-                      ],
-                      const Spacer(),
-                      Text(
-                        '${(stat['avgRisk'] as double).toStringAsFixed(0)}%',
+            ...provinceStats.map(
+              (stat) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        stat['name'] as String,
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: _getColorForRisk(stat['avgRisk'] as double),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
+                    ),
+                    // Mini bars
+                    ...[
+                      _buildMiniBar(
+                        'G',
+                        stat['green'] as int,
+                        stat['total'] as int,
+                        AppColors.green,
+                      ),
+                      const SizedBox(width: 4),
+                      _buildMiniBar(
+                        'Y',
+                        stat['yellow'] as int,
+                        stat['total'] as int,
+                        AppColors.yellow,
+                      ),
+                      const SizedBox(width: 4),
+                      _buildMiniBar(
+                        'R',
+                        stat['red'] as int,
+                        stat['total'] as int,
+                        AppColors.red,
+                      ),
                     ],
-                  ),
-                )),
+                    const Spacer(),
+                    Text(
+                      '${(stat['avgRisk'] as double).toStringAsFixed(0)}%',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: _getColorForRisk(stat['avgRisk'] as double),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMiniBar(
-    String label,
-    int count,
-    int total,
-    Color color,
-  ) {
+  Widget _buildMiniBar(String label, int count, int total, Color color) {
     final pct = total > 0 ? count / total : 0.0;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 10)),
         const SizedBox(width: 2),
         Expanded(
           child: ClipRRect(
@@ -686,9 +644,7 @@ class SummaryScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 widthFactor: pct.clamp(0, 1),
-                child: Container(
-                  color: color,
-                ),
+                child: Container(color: color),
               ),
             ),
           ),
@@ -696,10 +652,7 @@ class SummaryScreen extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           count.toString(),
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -716,10 +669,7 @@ class SummaryScreen extends StatelessWidget {
       color: AppColors.primary.withOpacity(0.05),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.large),
-        side: const BorderSide(
-          color: AppColors.primary,
-          width: 1,
-        ),
+        side: const BorderSide(color: AppColors.primary, width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -728,11 +678,7 @@ class SummaryScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.policy,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
+                const Icon(Icons.policy, color: AppColors.primary, size: 24),
                 const SizedBox(width: 8),
                 Text(
                   lang.policyRecommendations,
@@ -749,7 +695,12 @@ class SummaryScreen extends StatelessWidget {
             if (summary.redCount > 0) ...[
               _buildRecommendation(
                 icon: Icons.warning_amber,
-                title: 'Emergency Resource Deployment',
+                title:
+                    lang.languageCode == 'rw'
+                        ? 'Kohereza Imikoreshereze y\'Ihutirwa'
+                        : lang.languageCode == 'fr'
+                        ? 'Déploiement d\'Urgence'
+                        : 'Emergency Resource Deployment',
                 description:
                     'Deploy mobile grain dryers to ${summary.redCount} high-risk districts immediately. '
                     'Prioritize districts with peak harvest windows and rainfall forecast >30mm.',
@@ -757,7 +708,12 @@ class SummaryScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _buildRecommendation(
                 icon: Icons.storage,
-                title: 'Storage Capacity Check',
+                title:
+                    lang.languageCode == 'rw'
+                        ? 'Gusuzuma Ubushobozi bw\'Ububiko'
+                        : lang.languageCode == 'fr'
+                        ? 'Vérification du Stockage'
+                        : 'Storage Capacity Check',
                 description:
                     'Verify available capacity at cooperative storage facilities in red-zone districts. '
                     'Redirect harvest to covered storage before rain causes crop rot.',
@@ -766,7 +722,12 @@ class SummaryScreen extends StatelessWidget {
             if (summary.yellowCount > 0) ...[
               _buildRecommendation(
                 icon: Icons.schedule,
-                title: 'Precautionary Drying Schedule',
+                title:
+                    lang.languageCode == 'rw'
+                        ? 'Gahunda yo Gukama'
+                        : lang.languageCode == 'fr'
+                        ? 'Programme de Séchage Préventif'
+                        : 'Precautionary Drying Schedule',
                 description:
                     'Arrange mechanical drying services for ${summary.yellowCount} moderate-risk districts. '
                     'Ensure drying equipment is available within 48 hours.',
@@ -786,11 +747,7 @@ class SummaryScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               lang.nst2Alignment,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
-              ),
+              style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 20),
             // ✅ Innovation 2: Download Policy Brief
@@ -817,20 +774,10 @@ class SummaryScreen extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 2),
-              Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+              Text(description, style: TextStyle(fontSize: 13)),
             ],
           ),
         ),
@@ -854,27 +801,186 @@ class _DownloadPolicyBriefButtonState
   Future<void> _download() async {
     setState(() => _loading = true);
     try {
-      final content =
-          await rootBundle.loadString('assets/data/policy_brief.md');
-      // Copy to clipboard — works on all platforms including web
-      await Clipboard.setData(ClipboardData(text: content));
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                '✅ Policy brief copied to clipboard — paste into any text editor to save'),
-            backgroundColor: AppColors.primary,
-            duration: Duration(seconds: 4),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      final content = await rootBundle.loadString(
+        'assets/data/policy_brief.md',
+      );
+
+      // Build PDF document
+      final pdfDoc = pw.Document();
+      final lines = content.split('\n');
+
+      pdfDoc.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(40),
+          header:
+              (ctx) => pw.Container(
+                padding: const pw.EdgeInsets.only(bottom: 8),
+                decoration: const pw.BoxDecoration(
+                  border: pw.Border(
+                    bottom: pw.BorderSide(color: PdfColors.green700, width: 2),
+                  ),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      'CropGuard AI',
+                      style: pw.TextStyle(
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.green700,
+                      ),
+                    ),
+                    pw.Text(
+                      'NISR Hackathon 2026',
+                      style: const pw.TextStyle(
+                        fontSize: 9,
+                        color: PdfColors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          footer:
+              (ctx) => pw.Container(
+                padding: const pw.EdgeInsets.only(top: 8),
+                decoration: const pw.BoxDecoration(
+                  border: pw.Border(
+                    top: pw.BorderSide(color: PdfColors.grey300),
+                  ),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      'statistics.gov.rw',
+                      style: const pw.TextStyle(
+                        fontSize: 8,
+                        color: PdfColors.grey,
+                      ),
+                    ),
+                    pw.Text(
+                      'Page ${ctx.pageNumber} of ${ctx.pagesCount}',
+                      style: const pw.TextStyle(
+                        fontSize: 8,
+                        color: PdfColors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          build: (ctx) {
+            final widgets = <pw.Widget>[];
+            for (final line in lines) {
+              if (line.startsWith('# ')) {
+                widgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(top: 16, bottom: 8),
+                    child: pw.Text(
+                      line.substring(2),
+                      style: pw.TextStyle(
+                        fontSize: 20,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.green800,
+                      ),
+                    ),
+                  ),
+                );
+              } else if (line.startsWith('## ')) {
+                widgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(top: 12, bottom: 4),
+                    child: pw.Text(
+                      line.substring(3),
+                      style: pw.TextStyle(
+                        fontSize: 14,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.green700,
+                      ),
+                    ),
+                  ),
+                );
+              } else if (line.startsWith('### ')) {
+                widgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(top: 8, bottom: 2),
+                    child: pw.Text(
+                      line.substring(4),
+                      style: pw.TextStyle(
+                        fontSize: 12,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.blueGrey800,
+                      ),
+                    ),
+                  ),
+                );
+              } else if (line.startsWith('- ') || line.startsWith('* ')) {
+                widgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(left: 16, bottom: 2),
+                    child: pw.Row(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          '• ',
+                          style: pw.TextStyle(
+                            color: PdfColors.green700,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(
+                            line.substring(2),
+                            style: const pw.TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else if (line.trim().isEmpty) {
+                widgets.add(pw.SizedBox(height: 6));
+              } else if (line.startsWith('---')) {
+                widgets.add(pw.Divider(color: PdfColors.grey300));
+              } else {
+                // Remove markdown bold/italic markers for clean output
+                final clean = line
+                    .replaceAll('**', '')
+                    .replaceAll('__', '')
+                    .replaceAll('*', '');
+                widgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(bottom: 3),
+                    child: pw.Text(
+                      clean,
+                      style: const pw.TextStyle(
+                        fontSize: 10,
+                        color: PdfColors.black,
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+            return widgets;
+          },
+        ),
+      );
+
+      // Save / print PDF
+      await Printing.layoutPdf(
+        onLayout: (_) async => pdfDoc.save(),
+        name: 'CropGuard_Rwanda_Policy_Brief.pdf',
+      );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Download failed: $e'),
-          backgroundColor: AppColors.alertRed,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF export failed: $e'),
+            backgroundColor: AppColors.alertRed,
+          ),
+        );
       }
     }
     if (mounted) setState(() => _loading = false);
@@ -882,6 +988,7 @@ class _DownloadPolicyBriefButtonState
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().strings;
     return HolographicCard(
       accentColor: AppColors.primary,
       child: Padding(
@@ -889,44 +996,63 @@ class _DownloadPolicyBriefButtonState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(children: [
-              Icon(Icons.description_outlined,
-                  color: AppColors.primary, size: 18),
-              SizedBox(width: 8),
-              Text('Policy Brief Export',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary)),
-            ]),
+            Row(
+              children: [
+                Icon(
+                  Icons.description_outlined,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  lang.languageCode == 'rw'
+                      ? 'Gukura Raporo'
+                      : lang.languageCode == 'fr'
+                      ? 'Export du Rapport'
+                      : 'Policy Brief Export',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
             const SizedBox(height: 6),
-            const Text(
-              'Export national risk brief for MINAGRI planners and development partners',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            Text(
+              lang.languageCode == 'rw'
+                  ? 'Kura raporo y\'ingaruka ku batera inkunga n\'MINAGRI'
+                  : lang.languageCode == 'fr'
+                  ? 'Exporter le rapport de risque national pour MINAGRI'
+                  : 'Export national risk brief for MINAGRI planners and development partners',
+              style: TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _loading ? null : _download,
-                icon: _loading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
+                icon:
+                    _loading
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Color(0xFF0B1617)))
-                    : const Icon(Icons.download, size: 18),
+                            color: Color(0xFF0B1617),
+                          ),
+                        )
+                        : const Icon(Icons.download, size: 18),
                 label: Text(
-                    _loading ? 'Preparing...' : 'Download Policy Brief'),
+                  _loading ? 'Preparing...' : 'Download Policy Brief',
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: const Color(0xFF0B1617),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   textStyle: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 14),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
                   elevation: 0,
                 ),
               ),

@@ -54,7 +54,7 @@ class DistrictDetailScreen extends StatelessWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Risk card copied to clipboard!'),
+                    content: Text(context.read<LanguageProvider>().strings.riskCardCopied),
                     backgroundColor: AppColors.primary,
                     behavior: SnackBarBehavior.floating,
                     duration: const Duration(seconds: 2),
@@ -73,10 +73,7 @@ class DistrictDetailScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  district.riskIcon,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                Text(district.riskIcon, style: const TextStyle(fontSize: 16)),
                 const SizedBox(width: 4),
                 Text(
                   '${district.riskScore.toStringAsFixed(0)}%',
@@ -140,9 +137,7 @@ class DistrictDetailScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(
-          color: district.riskColor.withOpacity(0.3),
-        ),
+        border: Border.all(color: district.riskColor.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,19 +172,12 @@ class DistrictDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       district.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
                       ),
                     ),
-                    Text(
-                      district.province,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+                    Text(district.province, style: TextStyle(fontSize: 14)),
                     const SizedBox(height: 4),
                     Text(
                       district.advisory.split(' - ').last,
@@ -216,14 +204,14 @@ class DistrictDetailScreen extends StatelessWidget {
               ),
               Expanded(
                 child: _buildStatItem(
-                  'Rainfall (14d)',
+                  lang.rainfall14d,
                   '${district.totalPrecipitation14dMm.toStringAsFixed(1)} mm',
                   AppColors.primary,
                 ),
               ),
               Expanded(
                 child: _buildStatItem(
-                  'Max Humidity',
+                  lang.maxHumidity,
                   '${district.maxHumidityPct.toStringAsFixed(0)}%',
                   AppColors.secondary,
                 ),
@@ -234,13 +222,7 @@ class DistrictDetailScreen extends StatelessWidget {
           // Mini risk meter
           Row(
             children: [
-              const Text(
-                'Risk Level: ',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
+              const Text('Risk Level: ', style: TextStyle(fontSize: 13)),
               Expanded(
                 child: LinearProgressIndicator(
                   value: district.riskScore / 100,
@@ -278,10 +260,10 @@ class DistrictDetailScreen extends StatelessWidget {
                   district.riskTrend == 'rising'
                       ? Icons.trending_up
                       : district.riskTrend == 'falling'
-                          ? Icons.trending_down
-                          : district.riskTrend == 'stable'
-                              ? Icons.trending_flat
-                              : Icons.show_chart,
+                      ? Icons.trending_down
+                      : district.riskTrend == 'stable'
+                      ? Icons.trending_flat
+                      : Icons.show_chart,
                   size: 14,
                   color: district.trendColor,
                 ),
@@ -314,13 +296,7 @@ class DistrictDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 11)),
       ],
     );
   }
@@ -334,20 +310,10 @@ class DistrictDetailScreen extends StatelessWidget {
           children: [
             Text(
               lang.expectedHarvest,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            Text(
-              lang.nirsBaseline,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            Text(lang.nirsBaseline, style: TextStyle(fontSize: 12)),
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
@@ -358,7 +324,12 @@ class DistrictDetailScreen extends StatelessWidget {
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        final labels = ['Maize', 'Beans', 'Potatoes', 'Cassava'];
+                        final labels = [
+                          'Maize',
+                          'Beans',
+                          'Potatoes',
+                          'Cassava',
+                        ];
                         final values = [
                           district.maizeTons,
                           district.beansTons,
@@ -367,10 +338,7 @@ class DistrictDetailScreen extends StatelessWidget {
                         ];
                         return BarTooltipItem(
                           '${labels[groupIndex]}\n${NumberFormatter.tonsFull(values[groupIndex])}',
-                          const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          TextStyle(fontWeight: FontWeight.w600),
                         );
                       },
                     ),
@@ -381,16 +349,19 @@ class DistrictDetailScreen extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          final labels = ['Maize', 'Beans', 'Potatoes', 'Cassava'];
-                          if (value.toInt() >= 0 && value.toInt() < labels.length) {
+                          final labels = [
+                            'Maize',
+                            'Beans',
+                            'Potatoes',
+                            'Cassava',
+                          ];
+                          if (value.toInt() >= 0 &&
+                              value.toInt() < labels.length) {
                             return Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                 labels[value.toInt()],
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: TextStyle(fontSize: 11),
                               ),
                             );
                           }
@@ -419,7 +390,9 @@ class DistrictDetailScreen extends StatelessWidget {
                           toY: district.maizeTons,
                           color: AppColors.primary,
                           width: 24,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ],
                     ),
@@ -430,7 +403,9 @@ class DistrictDetailScreen extends StatelessWidget {
                           toY: district.beansTons,
                           color: AppColors.secondary,
                           width: 24,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ],
                     ),
@@ -441,7 +416,9 @@ class DistrictDetailScreen extends StatelessWidget {
                           toY: district.irishPotatoesTons,
                           color: const Color(0xFF8B5CF6),
                           width: 24,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ],
                     ),
@@ -452,7 +429,9 @@ class DistrictDetailScreen extends StatelessWidget {
                           toY: district.cassavaTons,
                           color: const Color(0xFFEC4899),
                           width: 24,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ],
                     ),
@@ -461,16 +440,53 @@ class DistrictDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildLegendItem('🌽', 'Maize', AppColors.primary, district.maizeTons),
-                const SizedBox(width: 16),
-                _buildLegendItem('🫘', 'Beans', AppColors.secondary, district.beansTons),
-                const SizedBox(width: 16),
-                _buildLegendItem('🥔', 'Potatoes', const Color(0xFF8B5CF6), district.irishPotatoesTons),
-                const SizedBox(width: 16),
-                _buildLegendItem('🌿', 'Cassava', const Color(0xFFEC4899), district.cassavaTons),
-              ],
+            // Responsive legend: wraps to 2×2 grid on narrow screens
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = (constraints.maxWidth - 16) / 2;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: _buildLegendItem(
+                        '🌽',
+                        'Maize',
+                        AppColors.primary,
+                        district.maizeTons,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _buildLegendItem(
+                        '🫘',
+                        'Beans',
+                        AppColors.secondary,
+                        district.beansTons,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _buildLegendItem(
+                        '🥔',
+                        'Potatoes',
+                        const Color(0xFF8B5CF6),
+                        district.irishPotatoesTons,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _buildLegendItem(
+                        '🌿',
+                        'Cassava',
+                        const Color(0xFFEC4899),
+                        district.cassavaTons,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -478,33 +494,39 @@ class DistrictDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String icon, String label, Color color, double value) {
-    return Expanded(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(2),
-            ),
+  Widget _buildLegendItem(
+    String icon,
+    String label,
+    Color color,
+    double value,
+  ) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
           ),
-          const SizedBox(width: 4),
-          Text(icon, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 4),
-          Text(
+        ),
+        const SizedBox(width: 4),
+        Text(icon, style: const TextStyle(fontSize: 12)),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 11),
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(width: 4),
-          Text(
-            NumberFormatter.tons(value),
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          NumberFormatter.tons(value),
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+        ),
+      ],
     );
   }
 
@@ -517,20 +539,10 @@ class DistrictDetailScreen extends StatelessWidget {
           children: [
             Text(
               lang.weatherOutlook,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            Text(
-              lang.openMeteoData,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            Text(lang.openMeteoData, style: TextStyle(fontSize: 12)),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -538,7 +550,8 @@ class DistrictDetailScreen extends StatelessWidget {
                   child: _buildWeatherMetric(
                     icon: '🌧️',
                     title: lang.totalPrecipitation,
-                    value: '${district.totalPrecipitation14dMm.toStringAsFixed(1)} mm',
+                    value:
+                        '${district.totalPrecipitation14dMm.toStringAsFixed(1)} mm',
                     subtitle: lang.over14Days,
                     color: AppColors.primary,
                   ),
@@ -561,14 +574,15 @@ class DistrictDetailScreen extends StatelessWidget {
             // Rainfall index indicator
             Row(
               children: [
-                const Icon(Icons.water_drop, color: AppColors.primary, size: 20),
+                const Icon(
+                  Icons.water_drop,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   '${lang.rainfallRiskIndex}: ',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(fontSize: 13),
                 ),
                 Expanded(
                   child: LinearProgressIndicator(
@@ -598,10 +612,7 @@ class DistrictDetailScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${lang.humidityRiskIndex}: ',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(fontSize: 13),
                 ),
                 Expanded(
                   child: LinearProgressIndicator(
@@ -651,19 +662,9 @@ class DistrictDetailScreen extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
         ),
-        Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(subtitle, style: TextStyle(fontSize: 11)),
       ],
     );
   }
@@ -677,20 +678,10 @@ class DistrictDetailScreen extends StatelessWidget {
           children: [
             Text(
               lang.riskBreakdown,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            Text(
-              lang.riskBreakdown,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            Text(lang.riskBreakdown, style: TextStyle(fontSize: 12)),
             const SizedBox(height: 16),
             _buildBreakdownRow(
               'Rainfall Index',
@@ -730,19 +721,13 @@ class DistrictDetailScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Formula: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 Expanded(
                   child: Text(
                     '(Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) '
                     '+ (Soil Moisture × 0.15) = ${district.riskScore.toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 13),
                   ),
                 ),
               ],
@@ -768,19 +753,12 @@ class DistrictDetailScreen extends StatelessWidget {
             Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             const Spacer(),
             Text(
@@ -810,13 +788,7 @@ class DistrictDetailScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Text(
-          description,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(description, style: TextStyle(fontSize: 12)),
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: value / 100,
@@ -834,9 +806,7 @@ class DistrictDetailScreen extends StatelessWidget {
       color: district.riskColor.withOpacity(0.05),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.large),
-        side: BorderSide(
-          color: district.riskColor.withOpacity(0.3),
-        ),
+        side: BorderSide(color: district.riskColor.withOpacity(0.3)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -845,10 +815,7 @@ class DistrictDetailScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
-                  district.riskIcon,
-                  style: const TextStyle(fontSize: 24),
-                ),
+                Text(district.riskIcon, style: const TextStyle(fontSize: 24)),
                 const SizedBox(width: 8),
                 Text(
                   lang.recommendedAction,
@@ -937,9 +904,7 @@ class DistrictDetailScreen extends StatelessWidget {
                 onPressed: () => _subscribeToSmsAlerts(context, lang),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: BorderSide(
-                    color: district.riskColor.withOpacity(0.6),
-                  ),
+                  side: BorderSide(color: district.riskColor.withOpacity(0.6)),
                   foregroundColor: district.riskColor,
                 ),
                 icon: const Icon(Icons.sms_outlined, size: 18),
@@ -960,8 +925,8 @@ class DistrictDetailScreen extends StatelessWidget {
       facilities = await FacilityService().getFacilitiesOnce();
     } catch (e) {
       scaffoldMessenger.showSnackBar(
-        const SnackBar(
-          content: Text('Could not load facilities. Please try again.'),
+        SnackBar(
+          content: Text(context.read<LanguageProvider>().strings.couldNotLoadFacilities),
         ),
       );
       return;
@@ -969,16 +934,17 @@ class DistrictDetailScreen extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => DispatchScreen(
-          district: district,
-          facilities: facilities,
-        ),
+        builder:
+            (_) => DispatchScreen(district: district, facilities: facilities),
       ),
     );
   }
 
   /// Show the bilingual SMS alert opt-in dialog (Innovation #1).
-  Future<void> _subscribeToSmsAlerts(BuildContext context, AppStrings lang) async {
+  Future<void> _subscribeToSmsAlerts(
+    BuildContext context,
+    AppStrings lang,
+  ) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final ok = await AlertSubscriptionService.showSubscribeDialog(
       context,
@@ -995,25 +961,14 @@ class DistrictDetailScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildActionItem({
-    required IconData icon,
-    required String text,
-  }) {
+  Widget _buildActionItem({required IconData icon, required String text}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Icon(icon, size: 16, color: district.riskColor.withOpacity(0.7)),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
+          Expanded(child: Text(text, style: TextStyle(fontSize: 13))),
         ],
       ),
     );
@@ -1034,11 +989,11 @@ class _FieldReportSection extends StatefulWidget {
 }
 
 class _FieldReportSectionState extends State<_FieldReportSection> {
-  // The three selectable conditions
-  static const _conditions = [
-    ('dry_safe', '☀️ Dry & Safe'),
-    ('wet_conditions', '🌧️ Wet Conditions'),
-    ('storage_full', '🏭 Storage Full'),
+  // The three selectable conditions — labels translated at build time
+  List<(String, String)> _getConditions(AppStrings lang) => [
+    ('dry_safe', lang.languageCode == 'rw' ? '☀️ Imyaka Ikaze & Yizewe' : lang.languageCode == 'fr' ? '☀️ Sec & Sûr' : '☀️ Dry & Safe'),
+    ('wet_conditions', lang.languageCode == 'rw' ? '🌧️ Imiterere y\'Ubunyiligira' : lang.languageCode == 'fr' ? '🌧️ Conditions Humides' : '🌧️ Wet Conditions'),
+    ('storage_full', lang.languageCode == 'rw' ? '🏭 Ububiko Bwuzuye' : lang.languageCode == 'fr' ? '🏭 Stockage Plein' : '🏭 Storage Full'),
   ];
 
   String? _selectedCondition;
@@ -1054,7 +1009,7 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
   Future<void> _submitReport() async {
     if (_selectedCondition == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a ground condition.')),
+        SnackBar(content: Text(context.read<LanguageProvider>().strings.selectGroundCondition)),
       );
       return;
     }
@@ -1071,9 +1026,9 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Report submitted! Thank you.'),
-          backgroundColor: Color(0xFF16A34A), // green-600
+        SnackBar(
+          content: Text(context.read<LanguageProvider>().strings.reportSubmitted),
+          backgroundColor: Color(0xFF16A34A),
         ),
       );
 
@@ -1085,33 +1040,38 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
       _notesController.clear();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to submit report: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to submit report: $e')));
       setState(() => _submitting = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>().strings;
     return HolographicCard(
       accentColor: AppColors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Header ───────────────────────────────────────────────────────
-          const Text(
-            '📍 Ground Conditions Report',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+          Text(
+            lang.languageCode == 'rw'
+                ? '📍 Raporo y\'Imitere y\'Ubutaka'
+                : lang.languageCode == 'fr'
+                    ? '📍 Rapport des Conditions Terrain'
+                    : '📍 Ground Conditions Report',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Report what you see on the ground',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          Text(
+            lang.languageCode == 'rw'
+                ? 'Tanga raporo y\'ibiboneka hasi'
+                : lang.languageCode == 'fr'
+                    ? 'Signalez ce que vous voyez sur le terrain'
+                    : 'Report what you see on the ground',
+            style: const TextStyle(fontSize: 13),
           ),
           const SizedBox(height: 16),
 
@@ -1119,31 +1079,32 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _conditions.map((entry) {
-              final isSelected = _selectedCondition == entry.$1;
-              return ChoiceChip(
-                label: Text(entry.$2),
-                selected: isSelected,
-                onSelected: (_) =>
-                    setState(() => _selectedCondition = entry.$1),
-                selectedColor: AppColors.primary.withOpacity(0.2),
-                checkmarkColor: AppColors.primary,
-                labelStyle: TextStyle(
-                  fontSize: 13,
-                  fontWeight:
-                      isSelected ? FontWeight.w600 : FontWeight.normal,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
-                ),
-                side: BorderSide(
-                  color: isSelected
-                      ? AppColors.primary
-                      : Colors.grey.shade400,
-                ),
-                backgroundColor: Colors.transparent,
-              );
-            }).toList(),
+            children:
+                _getConditions(lang).map((entry) {
+                  final isSelected = _selectedCondition == entry.$1;
+                  return ChoiceChip(
+                    label: Text(entry.$2),
+                    selected: isSelected,
+                    onSelected:
+                        (_) => setState(() => _selectedCondition = entry.$1),
+                    selectedColor: AppColors.primary.withOpacity(0.2),
+                    checkmarkColor: AppColors.primary,
+                    labelStyle: TextStyle(
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color:
+                          isSelected
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
+                    ),
+                    side: BorderSide(
+                      color:
+                          isSelected ? AppColors.primary : Colors.grey.shade400,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  );
+                }).toList(),
           ),
           const SizedBox(height: 14),
 
@@ -1152,33 +1113,29 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
             controller: _notesController,
             maxLines: 2,
             maxLength: 500,
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 13),
             decoration: InputDecoration(
-              hintText: 'Additional notes (optional)',
-              hintStyle: const TextStyle(
-                  fontSize: 13, color: AppColors.textSecondary),
+              hintText: lang.languageCode == 'rw' ? 'Andi makuru (si ngombwa)' : lang.languageCode == 'fr' ? 'Notes supplémentaires (optionnel)' : 'Additional notes (optional)',
+              hintStyle: TextStyle(fontSize: 13),
               filled: true,
               fillColor: Colors.white.withOpacity(0.05),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.grey.shade400),
+                borderSide: BorderSide(color: Colors.grey.shade400),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.grey.shade400),
+                borderSide: BorderSide(color: Colors.grey.shade400),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    const BorderSide(color: AppColors.primary),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
-              counterStyle: const TextStyle(
-                  fontSize: 10, color: AppColors.textSecondary),
+              counterStyle: TextStyle(fontSize: 10),
             ),
           ),
           const SizedBox(height: 12),
@@ -1193,44 +1150,42 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
                 foregroundColor: AppColors.textOnPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              icon: _submitting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.send_outlined, size: 18),
-              label: const Text('Submit Report'),
+              icon:
+                  _submitting
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Icon(Icons.send_outlined, size: 18),
+              label: Text(context.watch<LanguageProvider>().strings.submitReport),
             ),
           ),
           const SizedBox(height: 16),
 
           // ── Recent reports StreamBuilder ──────────────────────────────────
           StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('field_reports')
-                .where('district_id',
-                    isEqualTo: widget.district.id)
-                .orderBy('reported_at', descending: true)
-                .limit(5)
-                .snapshots(),
+            stream:
+                FirebaseFirestore.instance
+                    .collection('field_reports')
+                    .where('district_id', isEqualTo: widget.district.id)
+                    .orderBy('reported_at', descending: true)
+                    .limit(5)
+                    .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError ||
                   !snapshot.hasData ||
                   snapshot.data!.docs.isEmpty) {
-                final errorOrEmpty = !snapshot.hasData ||
-                    snapshot.data!.docs.isEmpty;
+                final errorOrEmpty =
+                    !snapshot.hasData || snapshot.data!.docs.isEmpty;
                 return Text(
                   errorOrEmpty
                       ? '0 farmers reported today'
                       : '0 farmers reported today',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12),
                 );
               }
 
@@ -1243,16 +1198,13 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.group_outlined,
-                          size: 14,
-                          color: AppColors.textSecondary),
+                      const Icon(Icons.group_outlined, size: 14),
                       const SizedBox(width: 6),
                       Text(
                         '$count farmer${count == 1 ? '' : 's'} reported today',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -1261,33 +1213,33 @@ class _FieldReportSectionState extends State<_FieldReportSection> {
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: recent.map((doc) {
-                      final data =
-                          doc.data() as Map<String, dynamic>;
-                      final condition =
-                          data['condition'] as String? ?? '';
-                      final label = _conditions
-                          .firstWhere(
-                            (e) => e.$1 == condition,
-                            orElse: () => (condition, condition),
-                          )
-                          .$2;
-                      return Chip(
-                        label: Text(
-                          label,
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        backgroundColor:
-                            AppColors.primary.withOpacity(0.1),
-                        side: BorderSide(
-                            color: AppColors.primary
-                                .withOpacity(0.3)),
-                        padding: EdgeInsets.zero,
-                        materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
-                      );
-                    }).toList(),
+                    children:
+                        recent.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final condition = data['condition'] as String? ?? '';
+                          final lang = context.read<LanguageProvider>().strings;
+                          final label =
+                              _getConditions(lang)
+                                  .firstWhere(
+                                    (e) => e.$1 == condition,
+                                    orElse: () => (condition, condition),
+                                  )
+                                  .$2;
+                          return Chip(
+                            label: Text(
+                              label,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            side: BorderSide(
+                              color: AppColors.primary.withOpacity(0.3),
+                            ),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          );
+                        }).toList(),
                   ),
                 ],
               );
@@ -1344,9 +1296,16 @@ class _RiskTrendChartState extends State<_RiskTrendChart> {
         final variation = (rand.nextDouble() - 0.5) * 12;
         return (baseScore + variation * (1 - i / 6)).clamp(0.0, 100.0);
       });
-      if (mounted) setState(() { _scores = points; _loading = false; });
+      if (mounted)
+        setState(() {
+          _scores = points;
+          _loading = false;
+        });
     } catch (_) {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -1358,8 +1317,13 @@ class _RiskTrendChartState extends State<_RiskTrendChart> {
     Color trendColor = AppColors.alertYellow;
     if (_scores.length >= 2) {
       final delta = _scores.last - _scores.first;
-      if (delta > 3) { trendLabel = '↑ Rising'; trendColor = AppColors.alertRed; }
-      else if (delta < -3) { trendLabel = '↓ Falling'; trendColor = AppColors.primary; }
+      if (delta > 3) {
+        trendLabel = '↑ Rising';
+        trendColor = AppColors.alertRed;
+      } else if (delta < -3) {
+        trendLabel = '↓ Falling';
+        trendColor = AppColors.primary;
+      }
     }
 
     return HolographicCard(
@@ -1369,31 +1333,49 @@ class _RiskTrendChartState extends State<_RiskTrendChart> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              const Icon(Icons.show_chart, color: AppColors.primary, size: 18),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text('Risk Trend (7 days)',
-                    style: TextStyle(fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary)),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: trendColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: trendColor.withOpacity(0.5)),
+            Row(
+              children: [
+                const Icon(
+                  Icons.show_chart,
+                  color: AppColors.primary,
+                  size: 18,
                 ),
-                child: Text(trendLabel,
-                    style: TextStyle(fontSize: 11,
-                        fontWeight: FontWeight.w700, color: trendColor)),
-              ),
-            ]),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Risk Trend (7 days)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: trendColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: trendColor.withOpacity(0.5)),
+                  ),
+                  child: Text(
+                    trendLabel,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: trendColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             if (_loading)
-              const Center(child: SizedBox(height: 80,
-                  child: CircularProgressIndicator(color: AppColors.primary)))
+              const Center(
+                child: SizedBox(
+                  height: 80,
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
+              )
             else
               SizedBox(
                 height: 120,
@@ -1402,35 +1384,57 @@ class _RiskTrendChartState extends State<_RiskTrendChart> {
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: false,
-                      getDrawingHorizontalLine: (_) =>
-                          const FlLine(color: Colors.white12, strokeWidth: 1),
+                      getDrawingHorizontalLine:
+                          (_) => const FlLine(
+                            color: Colors.white12,
+                            strokeWidth: 1,
+                          ),
                     ),
                     titlesData: FlTitlesData(
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
                           reservedSize: 36,
-                          getTitlesWidget: (v, _) => Text('${v.toInt()}%',
-                              style: const TextStyle(
-                                  fontSize: 9, color: Colors.white54)),
+                          getTitlesWidget:
+                              (v, _) => Text(
+                                '${v.toInt()}%',
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  color: Colors.white54,
+                                ),
+                              ),
                         ),
                       ),
                       rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
                           getTitlesWidget: (v, _) {
-                            const days = ['D-6','D-5','D-4','D-3','D-2','D-1','Now'];
+                            const days = [
+                              'D-6',
+                              'D-5',
+                              'D-4',
+                              'D-3',
+                              'D-2',
+                              'D-1',
+                              'Now',
+                            ];
                             final i = v.toInt();
                             if (i < 0 || i >= days.length) {
                               return const SizedBox.shrink();
                             }
-                            return Text(days[i],
-                                style: const TextStyle(
-                                    fontSize: 9, color: Colors.white54));
+                            return Text(
+                              days[i],
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Colors.white54,
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -1438,15 +1442,17 @@ class _RiskTrendChartState extends State<_RiskTrendChart> {
                     borderData: FlBorderData(show: false),
                     lineBarsData: [
                       LineChartBarData(
-                        spots: List.generate(_scores.length,
-                            (i) => FlSpot(i.toDouble(), _scores[i])),
+                        spots: List.generate(
+                          _scores.length,
+                          (i) => FlSpot(i.toDouble(), _scores[i]),
+                        ),
                         isCurved: true,
                         color: color,
                         barWidth: 2.5,
                         dotData: FlDotData(
                           show: true,
-                          getDotPainter: (spot, _, __, ___) =>
-                              FlDotCirclePainter(
+                          getDotPainter:
+                              (spot, _, __, ___) => FlDotCirclePainter(
                                 radius: 3,
                                 color: color,
                                 strokeWidth: 1,

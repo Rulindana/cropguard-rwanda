@@ -1,0 +1,217 @@
+{
+  "generated_at": "2026-10-09T18:37:15.891571Z",
+  "shortcode": "*123*1#",
+  "welcome_message": "CropGuard Rwanda. Reply with district number for post-harvest risk:",
+  "districts": [
+    {
+      "district_id": "district_05",
+      "label": "Burera - 76% (RED)",
+      "level": "red",
+      "score": 76.5,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_24",
+      "label": " Gisagara - 76% (RED)",
+      "level": "red",
+      "score": 76.0,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_25",
+      "label": "Nyamagabe - 75% (RED)",
+      "level": "red",
+      "score": 75.3,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_02",
+      "label": "Bugesera - 74% (RED)",
+      "level": "red",
+      "score": 74.5,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_13",
+      "label": "Nyabihu - 74% (RED)",
+      "level": "red",
+      "score": 74.2,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_07",
+      "label": "Gabiro - 74% (RED)",
+      "level": "red",
+      "score": 74.1,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_23",
+      "label": "Nyanza - 74% (RED)",
+      "level": "red",
+      "score": 73.6,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_22",
+      "label": "Huye - 73% (RED)",
+      "level": "red",
+      "score": 73.4,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_27",
+      "label": "Ruhango - 73% (RED)",
+      "level": "red",
+      "score": 73.3,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_15",
+      "label": "Ngororero - 73% (RED)",
+      "level": "red",
+      "score": 72.7,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_04",
+      "label": "Gicumbi - 73% (RED)",
+      "level": "red",
+      "score": 72.6,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_08",
+      "label": "Ngoma - 72% (RED)",
+      "level": "red",
+      "score": 72.2,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_09",
+      "label": "Kirehe - 72% (RED)",
+      "level": "red",
+      "score": 71.5,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_20",
+      "label": "Kicukiro - 72% (RED)",
+      "level": "red",
+      "score": 71.5,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_30",
+      "label": "Ngoma Rural - 71% (RED)",
+      "level": "red",
+      "score": 71.4,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_16",
+      "label": "Rusizi - 71% (RED)",
+      "level": "red",
+      "score": 71.3,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_01",
+      "label": "Musanze - 71% (RED)",
+      "level": "red",
+      "score": 70.9,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_18",
+      "label": " Karongi - 71% (RED)",
+      "level": "red",
+      "score": 70.9,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_17",
+      "label": "Karongi - 70% (RED)",
+      "level": "red",
+      "score": 70.5,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_19",
+      "label": "Gasabo - 69% (RED)",
+      "level": "red",
+      "score": 69.4,
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed"
+    },
+    {
+      "district_id": "district_21",
+      "label": "Nyarugenge - 69% (YELLOW)",
+      "level": "yellow",
+      "score": 68.8,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_06",
+      "label": "Rulindo - 68% (YELLOW)",
+      "level": "yellow",
+      "score": 68.5,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_14",
+      "label": "Rubavu - 68% (YELLOW)",
+      "level": "yellow",
+      "score": 67.8,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_11",
+      "label": "Kayonza - 63% (YELLOW)",
+      "level": "yellow",
+      "score": 62.8,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_10",
+      "label": "Rwamagana - 62% (YELLOW)",
+      "level": "yellow",
+      "score": 62.4,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_26",
+      "label": "Muhanga - 62% (YELLOW)",
+      "level": "yellow",
+      "score": 62.0,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_03",
+      "label": "Nyagatare - 61% (YELLOW)",
+      "level": "yellow",
+      "score": 60.7,
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h"
+    },
+    {
+      "district_id": "district_29",
+      "label": "Kayonza Rural - 33% (GREEN)",
+      "level": "green",
+      "score": 32.9,
+      "advisory": "Low Risk - Safe harvesting conditions"
+    },
+    {
+      "district_id": "district_12",
+      "label": "Gatsibo - 32% (GREEN)",
+      "level": "green",
+      "score": 32.0,
+      "advisory": "Low Risk - Safe harvesting conditions"
+    },
+    {
+      "district_id": "district_28",
+      "label": "Kamonyi - 31% (GREEN)",
+      "level": "green",
+      "score": 31.4,
+      "advisory": "Low Risk - Safe harvesting conditions"
+    }
+  ]
+}

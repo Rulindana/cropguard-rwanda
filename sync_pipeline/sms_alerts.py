@@ -57,33 +57,38 @@ MESSAGES = {
     "en": {
         "red": (
             "CropGuard ALERT: {district} post-harvest risk is "
-            "{score}% (HIGH). Move crops to covered storage NOW. "
+            "{score}% (HIGH). Cause: {cause}. "
+            "Move crops to covered storage NOW. "
             "Nearest facility: {facility} {phone}"
         ),
         "yellow": (
             "CropGuard: {district} post-harvest risk is {score}% "
-            "(CAUTION). Arrange drying within 48h. Nearest facility: "
+            "(CAUTION). Cause: {cause}. "
+            "Arrange drying within 48h. Nearest facility: "
             "{facility} {phone}"
         ),
         "recovery": (
             "CropGuard: {district} post-harvest risk is back to "
-            "{score}% (LOW). Normal harvesting conditions."
+            "{score}% (LOW). Rain: {rain}mm, Humidity: {humidity}%. "
+            "Normal harvesting conditions."
         ),
     },
     "rw": {
         "red": (
             "CropGuard UMURONGO UKOMEYE: {district} umuvandu w'ibihingwa "
-            "ugera ku {score}% (HEJURYO). Ohereza ibihingwa mu bubiko "
-            "ubu. {facility} {phone}"
+            "ugera ku {score}% (HEJURYO). Impamvu: {cause}. "
+            "Ohereza ibihingwa mu bubiko ubu. {facility} {phone}"
         ),
         "yellow": (
             "CropGuard: {district} umuvandu w'ibihingwa ugera ku {score}% "
-            "(IMENYETSO). Teekera icyuma cy'ongera umuvandu mu masaa 48. "
+            "(IMENYETSO). Impamvu: {cause}. "
+            "Teekera icyuma cy'ongera umuvandu mu masaa 48. "
             "{facility} {phone}"
         ),
         "recovery": (
             "CropGuard: {district} umuvandu washize ku {score}% "
-            "(AGATINTO). Ibihingwa bigira buhoro."
+            "(AGATINTO). Imvura: {rain}mm, Ubuhehere: {humidity}%. "
+            "Ibihingwa bigira buhoro."
         ),
     },
 }
@@ -160,20 +165,59 @@ def _top_facility(district: dict[str, Any]) -> dict[str, Any] | None:
     return dispatch[0] if dispatch else None
 
 
+def _build_cause(district: dict[str, Any], language: str) -> str:
+    """
+    Build a short cause sentence from sensor data for SMS/USSD messages.
+    Picks the dominant sensor(s) that drove the risk level.
+    """
+    rain   = district["risk"].get("total_precipitation_14d_mm", 0.0)
+    humid  = district["risk"].get("max_humidity_pct", 0.0)
+    soil   = district["risk"].get("soil_moisture_index", 0.0) * 100
+
+    parts_en = []
+    parts_rw = []
+    if rain > 80:
+        parts_en.append(f"{rain:.0f}mm rain (14d)")
+        parts_rw.append(f"imvura {rain:.0f}mm (iminsi 14)")
+    if humid > 75:
+        parts_en.append(f"{humid:.0f}% humidity")
+        parts_rw.append(f"ubuhehere {humid:.0f}%")
+    if soil > 65:
+        parts_en.append(f"{soil:.0f}% soil moisture")
+        parts_rw.append(f"ubutaka bujyijwe {soil:.0f}%")
+
+    if not parts_en:
+        # fallback: show raw numbers even if below thresholds
+        parts_en.append(f"{rain:.0f}mm rain, {humid:.0f}% humidity")
+        parts_rw.append(f"imvura {rain:.0f}mm, ubuhehere {humid:.0f}%")
+
+    return (", ".join(parts_rw) if language == "rw" else ", ".join(parts_en))
+
+
 def compose_message(district: dict[str, Any], level: str, language: str) -> str:
     """Build a single alert SMS for a district and target language."""
     facility = _top_facility(district)
     facility_name = facility["facility_name"] if facility else "District agri office"
     facility_phone = facility["contact_phone"] if facility else ""
 
+    rain  = district["risk"].get("total_precipitation_14d_mm", 0.0)
+    humid = district["risk"].get("max_humidity_pct", 0.0)
+    cause = _build_cause(district, language)
+
     if level not in ALERT_LEVELS:
         template = MESSAGES.get(language, MESSAGES["en"])["recovery"]
-    else:
-        template = MESSAGES.get(language, MESSAGES["en"])[level]
+        return template.format(
+            district=district["district_name"],
+            score=f"{district['risk']['risk_score']:.0f}",
+            rain=f"{rain:.0f}",
+            humidity=f"{humid:.0f}",
+        )
 
+    template = MESSAGES.get(language, MESSAGES["en"])[level]
     return template.format(
         district=district["district_name"],
         score=f"{district['risk']['risk_score']:.0f}",
+        cause=cause,
         facility=facility_name,
         phone=facility_phone,
     )

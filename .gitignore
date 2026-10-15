@@ -29,3 +29,9 @@ data/data_quality_report.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Large binary files — share separately (Google Drive / WeTransfer)
+*.apk
+datas/
+CropGuard_AI_Documentation.pdf
+flutter_app/cropguard_app/web/apk/

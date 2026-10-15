@@ -21,8 +21,10 @@ class AlertSubscriptionService {
     String role = 'farmer',
   }) async {
     final normalized = _normalizePhone(phone);
-    final docId = '${normalized}_$districtId'
-        .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+    final docId = '${normalized}_$districtId'.replaceAll(
+      RegExp(r'[^a-zA-Z0-9_]'),
+      '',
+    );
 
     await _firestore.collection('subscribers').doc(docId).set({
       'phone': normalized,
@@ -41,8 +43,10 @@ class AlertSubscriptionService {
     required String districtId,
   }) async {
     final normalized = _normalizePhone(phone);
-    final docId = '${normalized}_$districtId'
-        .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+    final docId = '${normalized}_$districtId'.replaceAll(
+      RegExp(r'[^a-zA-Z0-9_]'),
+      '',
+    );
     await _firestore.collection('subscribers').doc(docId).delete();
   }
 
@@ -51,8 +55,10 @@ class AlertSubscriptionService {
     required String districtId,
   }) async {
     final normalized = _normalizePhone(phone);
-    final docId = '${normalized}_$districtId'
-        .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+    final docId = '${normalized}_$districtId'.replaceAll(
+      RegExp(r'[^a-zA-Z0-9_]'),
+      '',
+    );
     final doc = await _firestore.collection('subscribers').doc(docId).get();
     return doc.exists && (doc.data()?['active'] ?? true) == true;
   }

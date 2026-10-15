@@ -19,12 +19,18 @@ class RwaMapPolygon {
   final List<LatLng> points;
   final bool matched;
 
-  const RwaMapPolygon({required this.name, required this.points, this.matched = true});
+  const RwaMapPolygon({
+    required this.name,
+    required this.points,
+    this.matched = true,
+  });
 
   /// Loads simplified district boundaries and converts lon/lat coordinates
   /// into [LatLng] pairs.
   static Future<List<RwaMapPolygon>> load() async {
-    final raw = await rootBundle.loadString('assets/geo/rwa_adm2_simplified.geojson');
+    final raw = await rootBundle.loadString(
+      'assets/geo/rwa_adm2_simplified.geojson',
+    );
     final data = json.decode(raw) as Map<String, dynamic>;
     return loadFromJson(data as Map<String, dynamic>);
   }
@@ -46,16 +52,25 @@ class RwaMapPolygon {
 
   /// Unwraps GeoJSON coordinates ([Polygon] ring or [MultiPolygon] parts)
   /// into [LatLng] points. Longitude first, latitude second.
-  static List<LatLng> _decodeCoordinates(List<dynamic> coordinates, String geomType) {
+  static List<LatLng> _decodeCoordinates(
+    List<dynamic> coordinates,
+    String geomType,
+  ) {
     if (geomType == 'polygon' && coordinates.isNotEmpty) {
       final ring = coordinates[0] as List<dynamic>;
       return ring
-          .map((c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble()))
+          .map(
+            (c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble()),
+          )
           .toList();
     }
     if (geomType == 'multipolygon') {
       return coordinates
-          .expand((ring) => (ring as List<dynamic>).map((c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble())))
+          .expand(
+            (ring) => (ring as List<dynamic>).map(
+              (c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble()),
+            ),
+          )
           .toList();
     }
     return const [];

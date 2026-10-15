@@ -29,4 +29,22 @@ class RiskSummary {
   }
 
   int get totalAtRisk => yellowCount + redCount;
+
+  /// Serialize for the offline cache.
+  Map<String, dynamic> toJson() => {
+    'total_districts': totalDistricts,
+    'green_count': greenCount,
+    'yellow_count': yellowCount,
+    'red_count': redCount,
+    'avg_risk_score': avgRiskScore,
+  };
+
+  /// Deserialize from the offline cache.
+  factory RiskSummary.fromJson(Map<String, dynamic> data) => RiskSummary(
+    totalDistricts: data['total_districts'] ?? 0,
+    greenCount: data['green_count'] ?? 0,
+    yellowCount: data['yellow_count'] ?? 0,
+    redCount: data['red_count'] ?? 0,
+    avgRiskScore: (data['avg_risk_score'] as num?)?.toDouble() ?? 0.0,
+  );
 }

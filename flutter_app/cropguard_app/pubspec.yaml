@@ -29,6 +29,22 @@ dependencies:
   # URL launching for phone/email from facilities screen
   url_launcher: ^6.3.0
 
+  # Persist user preferences (language, theme) across app restarts
+  shared_preferences: ^2.3.2
+
+  # Local filesystem for offline-first cache snapshots
+  path_provider: ^2.1.4
+
+  # PDF generation for policy brief download
+  pdf: ^3.11.1
+  printing: ^5.13.1
+
+  # GPS location for "my location" on facilities map
+  geolocator: ^13.0.1
+
+  # Image picker for crop disease scan feature (camera + gallery)
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -38,9 +54,16 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/logo.png
+    - assets/icon/hero_farmer.png
+    - assets/icon/hero_farmer.jpg
+    - assets/icon/hero_plant.jpg
+    - assets/icon/team_moise.png
+    - assets/icon/team_rulindana.jpg
+    - assets/icon/team_jean_damour.png
     - assets/geo/rwa_adm2_simplified.geojson
     - assets/data/risk_scores.json
     - assets/data/risk_history.json
     - assets/data/policy_brief.md
     - assets/data/facilities.json
     - assets/data/nisr_sas_districts.json
+    - assets/data/ussd_digest.json

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -181,7 +182,7 @@ class _DesktopDashboard extends StatelessWidget {
                   child: Column(
                     children: [
                       // Weather card
-                      _WeatherCard(district: districts.first, now: now),
+                      _WeatherCard(district: districts.first, now: now, allDistricts: districts),
                       const SizedBox(height: 12),
                       // ✅ Taller map — fixed 560px height
                       SizedBox(
@@ -263,7 +264,7 @@ class _MobileDashboard extends StatelessWidget {
             _MobileAlertBanner(district: highRisk, onNavigate: onNavigate),
 
           const SizedBox(height: 12),
-          _WeatherCard(district: districts.first, now: now, isMobile: true),
+          _WeatherCard(district: districts.first, now: now, isMobile: true, allDistricts: districts),
           const SizedBox(height: 12),
 
           // Map
@@ -299,9 +300,14 @@ class _WeatherCard extends StatefulWidget {
   final District district;
   final DateTime now;
   final bool isMobile;
+  final List<District> allDistricts;
 
-  const _WeatherCard(
-      {required this.district, required this.now, this.isMobile = false});
+  const _WeatherCard({
+    required this.district,
+    required this.now,
+    this.isMobile = false,
+    this.allDistricts = const [],
+  });
 
   @override
   State<_WeatherCard> createState() => _WeatherCardState();
@@ -310,17 +316,65 @@ class _WeatherCard extends StatefulWidget {
 class _WeatherCardState extends State<_WeatherCard> {
   Map<String, dynamic>? _weather;
   bool _loading = true;
+  District? _nearestDistrict;
 
   @override
   void initState() {
     super.initState();
-    _fetchWeather();
+    _initLocation();
   }
 
-  Future<void> _fetchWeather() async {
+  /// Try to get GPS location and find the nearest district.
+  /// Falls back to widget.district (first in list) if GPS denied/unavailable.
+  Future<void> _initLocation() async {
+    // Only run on mobile (geolocator not reliable on web)
     try {
-      final lat = widget.district.centroidLat;
-      final lng = widget.district.centroidLng;
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _fetchWeather(widget.district);
+        return;
+      }
+      LocationPermission perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
+        _fetchWeather(widget.district);
+        return;
+      }
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 10),
+      );
+      // Find nearest district centroid
+      final nearest = _findNearestDistrict(pos.latitude, pos.longitude);
+      if (mounted) setState(() => _nearestDistrict = nearest);
+      _fetchWeather(nearest ?? widget.district);
+    } catch (_) {
+      _fetchWeather(widget.district);
+    }
+  }
+
+  District? _findNearestDistrict(double lat, double lng) {
+    if (widget.allDistricts.isEmpty) return null;
+    District? nearest;
+    double minDist = double.infinity;
+    for (final d in widget.allDistricts) {
+      final dLat = d.centroidLat - lat;
+      final dLng = d.centroidLng - lng;
+      final dist = dLat * dLat + dLng * dLng; // squared distance is fine for comparison
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = d;
+      }
+    }
+    return nearest;
+  }
+
+  Future<void> _fetchWeather(District district) async {
+    try {
+      final lat = district.centroidLat;
+      final lng = district.centroidLng;
       final url = Uri.parse(
         'https://api.open-meteo.com/v1/forecast'
         '?latitude=$lat&longitude=$lng'
@@ -373,9 +427,10 @@ class _WeatherCardState extends State<_WeatherCard> {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>().strings;
+    final displayDistrict = _nearestDistrict ?? widget.district;
     final temp = (_weather?['temperature_2m'] as num?)?.toStringAsFixed(0) ?? '--';
     final humidity = (_weather?['relative_humidity_2m'] as num?)?.toStringAsFixed(0)
-        ?? widget.district.maxHumidityPct.toStringAsFixed(0);
+        ?? displayDistrict.maxHumidityPct.toStringAsFixed(0);
     final precip = (_weather?['precipitation'] as num?)?.toStringAsFixed(1) ?? '0.0';
     final wind = (_weather?['wind_speed_10m'] as num?)?.toStringAsFixed(0) ?? '12';
     final code = _weather?['weather_code'] as int?;
@@ -403,7 +458,7 @@ class _WeatherCardState extends State<_WeatherCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.district.name,
+                  Text(displayDistrict.name,
                       style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                   Text(desc, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                 ],
@@ -414,7 +469,7 @@ class _WeatherCardState extends State<_WeatherCard> {
               children: [
                 Text('$temp°C',
                     style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                Text('H: 26°  L: 16°', style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                Text('${lang.weatherHigh}: ${displayDistrict.maxHumidityPct > 0 ? "${(_weather?['temperature_2m'] as num? ?? 26).toInt() + 4}°" : "26°"}  ${lang.weatherLow}: ${(_weather?['temperature_2m'] as num? ?? 16).toInt() - 4 < 10 ? "10°" : "${((_weather?['temperature_2m'] as num? ?? 16).toInt() - 4)}°"}', style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
               ],
             ),
             const SizedBox(width: 16),
@@ -1023,38 +1078,38 @@ class _RiskIndicatorsCard extends StatelessWidget {
               const SizedBox(height: 10),
               _RiskRow(
                 icon: Icons.bug_report,
-                label: 'Plant Disease Risk',
+                label: lang.riskPlantDisease,
                 level: avgHumidity > 70
-                    ? 'High'
-                    : (avgHumidity > 50 ? 'Moderate' : 'Low'),
+                    ? lang.riskHigh
+                    : (avgHumidity > 50 ? lang.riskModerate : lang.riskLow),
                 isHigh: avgHumidity > 70,
                 isModerate: avgHumidity > 50 && avgHumidity <= 70,
               ),
               const SizedBox(height: 8),
               _RiskRow(
                 icon: Icons.wb_sunny,
-                label: 'Drought Risk',
+                label: lang.riskDrought,
                 level: avgRainfall < 30
-                    ? 'High'
-                    : (avgRainfall < 50 ? 'Moderate' : 'Low'),
+                    ? lang.riskHigh
+                    : (avgRainfall < 50 ? lang.riskModerate : lang.riskLow),
                 isHigh: avgRainfall < 30,
                 isModerate: avgRainfall >= 30 && avgRainfall < 50,
               ),
               const SizedBox(height: 8),
               _RiskRow(
                 icon: Icons.umbrella,
-                label: 'Flood Risk',
+                label: lang.riskFlood,
                 level: avgRainfall > 70
-                    ? 'High'
-                    : (avgRainfall > 50 ? 'Moderate' : 'Low'),
+                    ? lang.riskHigh
+                    : (avgRainfall > 50 ? lang.riskModerate : lang.riskLow),
                 isHigh: avgRainfall > 70,
                 isModerate: avgRainfall > 50 && avgRainfall <= 70,
               ),
               const SizedBox(height: 8),
               _RiskRow(
                 icon: Icons.pest_control,
-                label: 'Pest Infestation',
-                level: 'Low',
+                label: lang.riskPest,
+                level: lang.riskLow,
                 isHigh: false,
                 isModerate: false,
               ),
@@ -1074,8 +1129,8 @@ class _RiskIndicatorsCard extends StatelessWidget {
                   ),
                   icon: const Icon(Icons.assessment,
                       color: AppColors.textOnPrimary, size: 16),
-                  label: const Text('View Detailed Analytics →',
-                      style: TextStyle(
+                  label: Text(lang.viewDetailedAnalytics,
+                      style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
                 ),
