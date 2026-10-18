@@ -1,6 +1,9 @@
 /// CropGuard AI — Plant Disease Database
 /// Covers the most common crop diseases in Rwanda & East Africa
-/// Used by the mock AI scanner to return realistic results.
+/// Served to the real AI scanner as its diagnosis vocabulary
+/// (see lib/services/ai_service.dart).
+
+import 'dart:typed_data';
 
 class PlantDisease {
   final String id;
@@ -30,11 +33,12 @@ class PlantDisease {
   });
 }
 
-/// Scan result returned by the mock AI engine
+/// Scan result returned by the AI diagnosis engine
 class ScanResult {
   final PlantDisease disease;
   final double confidence; // 0.0 – 1.0
   final String imagePath;
+  final Uint8List? imageBytes; // in-memory photo (survives temp-cache cleanup)
   final DateTime scannedAt;
   final List<PlantDisease> alternatives; // next-best matches
 
@@ -42,6 +46,7 @@ class ScanResult {
     required this.disease,
     required this.confidence,
     required this.imagePath,
+    this.imageBytes,
     required this.scannedAt,
     required this.alternatives,
   });
@@ -673,24 +678,4 @@ class DiseaseDatabase {
       ],
     ),
   ];
-
-  /// Returns a pseudo-random disease based on image path hash
-  /// In production, this would be replaced by a real ML model API call.
-  static ScanResult mockAnalyze(String imagePath) {
-    // Use image path hash to get deterministic but varied results
-    final hash = imagePath.hashCode.abs();
-    final primaryIndex = hash % all.length;
-    final confidence = 0.72 + (hash % 27) / 100; // 72%–98%
-
-    final alt1 = (primaryIndex + 1) % all.length;
-    final alt2 = (primaryIndex + 3) % all.length;
-
-    return ScanResult(
-      disease: all[primaryIndex],
-      confidence: confidence.clamp(0.70, 0.98),
-      imagePath: imagePath,
-      scannedAt: DateTime.now(),
-      alternatives: [all[alt1], all[alt2]],
-    );
-  }
 }

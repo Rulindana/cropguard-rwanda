@@ -75,7 +75,7 @@ Post-Harvest Risk Score = (Rainfall Index × 0.35) + (Humidity Index × 0.25)
 - Take or upload a photo of a plant leaf
 - AI validates the image is actually a plant (rejects bibles, documents, etc.)
 - Pixel-level green/brown color analysis for plant detection
-- Identifies 15 diseases across 8 crops (maize, beans, cassava, potato, banana, tomato, wheat, coffee)
+- Identifies **16 verified disease profiles** across 8 crops (maize, beans, cassava, potato, banana, tomato, wheat & coffee), with local agronomist-reviewed treatment guides
 - Full treatment steps, prevention tips, confidence score
 - Camera and gallery permission asked only once (remembered permanently)
 
@@ -105,7 +105,7 @@ Post-Harvest Risk Score = (Rainfall Index × 0.35) + (Humidity Index × 0.25)
 
 ### 🥇 AI Plant Disease Scanner with Validation
 - Image pixel analysis to reject non-plant photos before AI runs
-- 15 diseases across Rwanda's main crops with full treatment guides
+- 16 verified disease profiles across Rwanda's main crops with full treatment guides, prevention tips and local context (symptoms, causes, treatment) for each crop
 - Confidence scoring, alternative diagnoses, prevention tips
 
 ### 🥈 Facility Dispatch Matching
@@ -202,15 +202,26 @@ flutter run
 🌐 **https://nisr-b06b6.web.app**
 
 ### Android APK
-📱 **CropGuard_Rwanda_v3.0.apk** — in the root of this repository
+📱 **Download the APK:** https://github.com/Rulindana/cropguard-rwanda/releases
+
+```bash
+# or build yourself:
+flutter build apk --release     # output: flutter_app/cropguard_app/build/app/outputs/flutter-apk/app-release.apk
+adb install -r build/app/outputs/flutter-apk/app-release.apk
+```
 
 ---
+
+### 🤖 AI Providers
+- **OpenAI** — default provider (highest accuracy, needs an `AI_API_KEY` dart-define)
+- **Cloudflare** — free tier (~500 scans/day, no API key, no Google/OpenAI), real vision model via the proxy in `cloudflare_worker/`
+- Switch at runtime: `flutter run --dart-define=AI_PROVIDER=cloudflare` (or `openai`)
 
 ## 📈 Impact Metrics
 
 - **30 districts** monitored across all 5 provinces
 - **21 facilities** cataloged (drying grounds, silos, cold storage, mobile dryers)
-- **8 crops** with AI disease detection (15 diseases)
+- **8 crops** with AI disease detection — 16 verified disease profiles (maize, beans, cassava, potato, banana, tomato, wheat & coffee)
 - **12 years** of NISR SAS data integrated (2013–2025)
 - **3 languages** — English, Kinyarwanda, French
 - **6-hourly** automated risk score updates

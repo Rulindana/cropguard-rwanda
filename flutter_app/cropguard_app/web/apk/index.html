@@ -133,15 +133,15 @@
       </ul>
     </div>
 
-    <!-- PRIMARY DOWNLOAD BUTTON -->
+    <!-- PRIMARY DOWNLOAD BUTTON — APK hosted on GitHub Releases (free, unlimited) -->
     <a class="btn-primary"
        id="download-btn"
-       href="https://github.com/cropguard-rwanda/releases/releases/download/v2.0/CropGuard_Rwanda_v2.0.apk"
-       download="CropGuard_Rwanda_v2.0.apk">
-      ⬇ Download v2.0 APK
+       href="https://github.com/Rulindana/cropguard-rwanda/releases/download/v3.4/CropGuard_Rwanda_v3.4.apk"
+       download="CropGuard_Rwanda_v3.4.apk">
+      ⬇ Download v3.4 APK
     </a>
 
-    <p class="version-info">Version 2.0 &nbsp;·&nbsp; ~62 MB &nbsp;·&nbsp; Android 5.0+</p>
+    <p class="version-info">Version 3.4 &nbsp;·&nbsp; ~62 MB &nbsp;·&nbsp; Android 5.0+</p>
 
     <div class="warning">
       ⚠ <strong>Before installing:</strong> Go to your phone
@@ -162,6 +162,22 @@
   </div>
 
   <script>
+    // AUTO-START for Android visitors: if the user agent is Android, begin the
+    // APK download immediately (one tap on the web button → file downloads).
+    (function () {
+      if (/Android/i.test(navigator.userAgent)) {
+        var btn = document.getElementById('download-btn');
+        if (btn && btn.href) {
+          var a = document.createElement('a');
+          a.href = btn.href;
+          a.setAttribute('download', btn.getAttribute('download') || '');
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      }
+    })();
+
     // Try to load the current APK URL from Firebase if available
     // Falls back gracefully to the hardcoded URL above
     const FIREBASE_PROJECT = 'nisr-b06b6';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/disease_model.dart';
 import '../utils/colors.dart';
@@ -126,7 +127,9 @@ class _DiseaseResultScreenState extends State<DiseaseResultScreen>
               children: [
                 // ── Scanned image ──────────────────────────────────────────
                 _ScannedImageCard(
-                    imagePath: widget.result.imagePath, isDark: isDark),
+                    imagePath: widget.result.imagePath,
+                    imageBytes: widget.result.imageBytes,
+                    isDark: isDark),
                 const SizedBox(height: 16),
 
                 // ── Disease name card ───────────────────────────────────────
@@ -231,8 +234,10 @@ class _DiseaseResultScreenState extends State<DiseaseResultScreen>
 
 class _ScannedImageCard extends StatelessWidget {
   final String imagePath;
+  final Uint8List? imageBytes;
   final bool isDark;
-  const _ScannedImageCard({required this.imagePath, required this.isDark});
+  const _ScannedImageCard(
+      {required this.imagePath, this.imageBytes, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -248,15 +253,7 @@ class _ScannedImageCard extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    // web/platform image — handle both file path and asset
-    if (imagePath.startsWith('assets/')) {
-      return Image.asset(imagePath, fit: BoxFit.cover);
-    }
-    if (kIsWeb) {
-      return Image.network(
-        imagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
+    Widget fallback() => const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -266,23 +263,32 @@ class _ScannedImageCard extends StatelessWidget {
                   style: TextStyle(color: AppColors.primary)),
             ],
           ),
-        ),
+        );
+
+    // In-memory bytes always win: they render even if the temp file was
+    // cleaned or gallery pickers return odd paths (the black-box bug).
+    if (imageBytes != null && imageBytes!.isNotEmpty) {
+      return Image.memory(
+        imageBytes!,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        errorBuilder: (_, __, ___) => fallback(),
+      );
+    }
+    if (imagePath.startsWith('assets/')) {
+      return Image.asset(imagePath, fit: BoxFit.cover);
+    }
+    if (kIsWeb) {
+      return Image.network(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => fallback(),
       );
     }
     return Image.file(
       File(imagePath),
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.eco, color: AppColors.primary, size: 64),
-            SizedBox(height: 8),
-            Text('Plant Image',
-                style: TextStyle(color: AppColors.primary)),
-          ],
-        ),
-      ),
+      errorBuilder: (_, __, ___) => fallback(),
     );
   }
 }

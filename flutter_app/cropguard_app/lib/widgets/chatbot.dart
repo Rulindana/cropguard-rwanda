@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../services/ai_service.dart';
 import '../utils/colors.dart';
 import '../utils/language_provider.dart';
 
@@ -555,6 +556,55 @@ class _ChatEngine {
 
 // ── Chatbot Widget ────────────────────────────────────────────────────────────
 
+/// Pulsing dot used by the chatbot "typing…" indicator.
+class _TypingDot extends StatefulWidget {
+  const _TypingDot({required this.delayMs});
+
+  final int delayMs;
+
+  @override
+  State<_TypingDot> createState() => _TypingDotState();
+}
+
+class _TypingDotState extends State<_TypingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: widget.delayMs), () {
+      if (mounted) _ctrl.repeat(reverse: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0.25, end: 1.0).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+      ),
+      child: Container(
+        width: 7,
+        height: 7,
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
 class CropGuardChatbot extends StatefulWidget {
   const CropGuardChatbot({super.key});
 
@@ -565,6 +615,8 @@ class CropGuardChatbot extends StatefulWidget {
 class _CropGuardChatbotState extends State<CropGuardChatbot>
     with SingleTickerProviderStateMixin {
   bool _isOpen = false;
+  final AIService _ai = AIService();
+  bool _isTyping = false;
   final List<_ChatMessage> _messages = [];
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -616,20 +668,47 @@ class _CropGuardChatbotState extends State<CropGuardChatbot>
     });
   }
 
-  void _send(String text, String langCode) {
+  Future<void> _send(String text, String langCode) async {
     if (text.trim().isEmpty) return;
     final engine = _ChatEngine(langCode);
     setState(() {
       _messages.add(_ChatMessage(text: text, isBot: false));
+      _isTyping = true;
     });
     _controller.clear();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      final reply = engine.respond(text);
-      if (mounted) {
-        setState(() => _messages.add(reply));
-        _scrollToBottom();
+    _scrollToBottom();
+
+    _ChatMessage reply;
+    if (_ai.isConfigured) {
+      try {
+        // Ground the answer in live CropGuard risk/facility data
+        final dataContext = await _ai.loadDataContext();
+        final answer = await _ai.ask(
+          question: text,
+          languageCode: langCode,
+          dataContext: dataContext,
+        );
+        reply = _ChatMessage(
+          text: answer,
+          isBot: true,
+          suggestions: engine._nextSuggestions(),
+        );
+      } catch (_) {
+        // Offline / quota / service error → honest local quick answers
+        reply = engine.respond(text);
       }
-    });
+    } else {
+      // No API key in this build → local quick answers (clearly labeled)
+      reply = engine.respond(text);
+    }
+
+    if (mounted) {
+      setState(() {
+        _isTyping = false;
+        _messages.add(reply);
+      });
+      _scrollToBottom();
+    }
   }
 
   void _scrollToBottom() {
@@ -642,6 +721,37 @@ class _CropGuardChatbotState extends State<CropGuardChatbot>
         );
       }
     });
+  }
+
+  /// "Assistant is typing…" bubble shown while the real AI call runs.
+  Widget _buildTypingIndicator() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1A3035) : const Color(0xFFE8F5E9),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+            bottomRight: Radius.circular(12),
+            bottomLeft: Radius.circular(2),
+          ),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _TypingDot(delayMs: 0),
+            SizedBox(width: 4),
+            _TypingDot(delayMs: 200),
+            SizedBox(width: 4),
+            _TypingDot(delayMs: 400),
+          ],
+        ),
+      ),
+    );
   }
 
   String _placeholder(String langCode) {
@@ -742,9 +852,11 @@ class _CropGuardChatbotState extends State<CropGuardChatbot>
                                     color: Color(0xFF0B1617),
                                   ),
                                 ),
-                                const Text(
-                                  '● Online',
-                                  style: TextStyle(
+                                Text(
+                                  _ai.isConfigured
+                                      ? lang.chatStatusAi
+                                      : lang.chatStatusOffline,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     color: Color(0xFF0B4020),
                                     fontWeight: FontWeight.w600,
@@ -772,8 +884,11 @@ class _CropGuardChatbotState extends State<CropGuardChatbot>
                       child: ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(12),
-                        itemCount: _messages.length,
+                        itemCount: _messages.length + (_isTyping ? 1 : 0),
                         itemBuilder: (context, i) {
+                          if (_isTyping && i >= _messages.length) {
+                            return _buildTypingIndicator();
+                          }
                           final msg = _messages[i];
                           return Column(
                             crossAxisAlignment:

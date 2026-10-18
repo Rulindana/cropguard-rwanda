@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/language_provider.dart';
 import '../utils/theme_provider.dart';
@@ -327,6 +328,47 @@ class _GlowButtonState extends State<_GlowButton> with SingleTickerProviderState
   }
 }
 
+// ── Android APK one-tap download (web only) ───────────────────────────────
+// Opens the /apk landing page, which auto-starts the APK download for
+// Android visitors. Uses url_launcher so it works in every browser.
+class _DownloadAppButton extends StatelessWidget {
+  final AppStrings lang;
+  const _DownloadAppButton({required this.lang});
+
+  static const _apkPageUrl = 'https://nisr-b06b6.web.app/apk';
+
+  Future<void> _openApkPage(BuildContext context) async {
+    final uri = Uri.parse(_apkPageUrl);
+    if (!await launchUrl(uri, webOnlyWindowName: '_self')) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_apkPageUrl)),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: () => _openApkPage(context),
+      icon: const Icon(Icons.android, size: 20, color: Color(0xFF00E676)),
+      label: Text(lang.downloadApp,
+          style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF00E676))),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+        side: const BorderSide(color: Color(0xFF00E676), width: 1.5),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30)),
+      ),
+    );
+  }
+}
+
+
 // ── Scroll hint ───────────────────────────────────────────────────────────────
 class _BouncingScrollHint extends StatefulWidget {
   final String label;
@@ -607,6 +649,13 @@ class _ImpactSection extends StatelessWidget {
             const SizedBox(height: 48),
             _GlowButton(label: lang.openDashboard,
                 onTap: () => Navigator.pushNamed(context, '/dashboard')),
+            // ── Android APK download ──────────────────────────────────
+            // Web only: Android visitors tap once → /apk page auto-starts
+            // the APK download. Hidden inside the installed APK itself.
+            if (kIsWeb) ...[
+              const SizedBox(height: 12),
+              _DownloadAppButton(lang: lang),
+            ],
           ]),
         ),
       ),

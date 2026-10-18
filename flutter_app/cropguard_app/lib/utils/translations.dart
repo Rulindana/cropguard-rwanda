@@ -731,6 +731,13 @@ class AppStrings {
         'fr': 'Ouvrir le Tableau →',
       }[languageCode]!;
 
+  String get downloadApp =>
+      const {
+        'en': '⬇ Download App (Android)',
+        'rw': '⬇ Kuramo Porogaramu (Android)',
+        'fr': '⬇ Télécharger l’Appli (Android)',
+      }[languageCode]!;
+
   String get scrollToExplore =>
       const {
         'en': 'Scroll to explore',
@@ -1155,9 +1162,9 @@ class AppStrings {
   }[languageCode]!;
 
   String get scanPrivacyNote => const {
-    'en': 'Privacy protected · Used only for disease analysis',
-    'rw': 'Ubuzima bw\'amakuru burinzwe · Bukoreshwa gusa isuzuma',
-    'fr': 'Vie privée protégée · Utilisé uniquement pour l\'analyse',
+    'en': 'Sent to AI for analysis only · Never stored',
+    'rw': 'Herekezwa kuri AI gusa isuzuma · Ntibibikwa',
+    'fr': 'Envoyé à l\'IA pour analyse uniquement · Jamais stocké',
   }[languageCode]!;
 
   String get scanAllowCameraBtn => const {
@@ -1245,6 +1252,88 @@ class AppStrings {
   String get scanStep7 => const {
     'en': 'Preparing results...', 'rw': 'Gutegura ibisubizo...', 'fr': 'Préparation des résultats...',
   }[languageCode]!;
+
+  // AI scan error states (real API failures — shown honestly, never faked)
+  String get scanErrorNotConfiguredTitle => const {
+    'en': 'AI Not Configured',
+    'rw': 'AI Nturatekwe',
+    'fr': 'IA Non Configurée',
+  }[languageCode]!;
+
+  String get scanErrorNotConfiguredDesc => const {
+    'en': 'This build has no AI API key, so real disease diagnosis is unavailable. Rebuild the app with --dart-define=AI_API_KEY=your_key.',
+    'rw': 'Uyu muco nturafite AI API key, ku buryo ubuzume bw\'imeze ntushoboka. Subiza porojiti wifashishe --dart-define=AI_API_KEY=ikibanza.',
+    'fr': 'Cette version n\'a pas de clé API IA, le diagnostic réel est indisponible. Reconstruisez avec --dart-define=AI_API_KEY=votre_cle.',
+  }[languageCode]!;
+
+  String get scanErrorNetworkTitle => const {
+    'en': 'No Connection',
+    'rw': 'Nta Muyunguruzi',
+    'fr': 'Pas de Connexion',
+  }[languageCode]!;
+
+  String get scanErrorNetworkDesc => const {
+    'en': 'The AI service could not be reached. Check your internet connection and try again.',
+    'rw': 'AI ntashoboye kugera. Tserekana urubuganya rwawe hongere ugerageze.',
+    'fr': 'Le service IA est injoignable. Vérifiez votre connexion internet et réessayez.',
+  }[languageCode]!;
+
+  String get scanErrorServiceTitle => const {
+    'en': 'Analysis Failed',
+    'rw': 'Isuzuma Ryatsindwe',
+    'fr': 'Analyse Échouée',
+  }[languageCode]!;
+
+  String get scanErrorServiceDesc => const {
+    'en': 'The AI service returned an error, so no diagnosis was made. Please try again in a moment.',
+    'rw': 'AI yagarukije ikosa, kandi nta buzume bwakozwe. Nyamuneka wongere ugerageze.',
+    'fr': 'Le service IA a renvoyé une erreur, aucun diagnostic n\'a été fait. Veuillez réessayer.',
+  }[languageCode]!;
+
+  String get scanErrorNoMatchDesc => const {
+    'en': 'The model could not match this photo to any disease in the database. Try a clearer photo of the affected leaf.',
+    'rw': 'AI ntatumoye kubona indwara icuza ku ifoto uyu. Fata ifoto isanzure y\'ikibabi kirwaye.',
+    'fr': 'Le modèle n\'a pas pu associer cette photo à une maladie de la base. Prenez une photo plus claire de la feuille atteinte.',
+  }[languageCode]!;
+
+  String get scanErrorTryAgain => const {
+    'en': 'OK, Try Again',
+    'rw': 'Urishyuye, Ongerereza',
+    'fr': 'OK, Réessayer',
+  }[languageCode]!;
+
+  // Crop-outside-database dialog (honest: model saw a real plant, but the
+  // crop is not one of the 8 covered crops — never a fabricated disease).
+  String get scanNotCoveredTitle => const {
+    'en': 'Crop Not Covered Yet',
+    'rw': 'Igihingwa Ntigitarangijwe',
+    'fr': 'Culture Non Couverte',
+  }[languageCode]!;
+
+  String scanNotCoveredDesc(String cropSeen, String notes) => const {
+    'en':
+        'We see {CROP}. CropGuard currently diagnoses 8 crops (Maize, Beans, Cassava, Irish Potato, Tomato, Banana, Coffee, Wheat) — this one is not in our disease database yet, so no diagnosis was made.\n\n{NOTES}',
+    'rw':
+        'Tubona {CROP}. CropGuard ubu isuzuma ibihingwa 8 (Ibigori, Ibishyimbo, Imyumbati, Ibirayi, Inyanya, Ibitoki, Ikawa, Ingano) — iki ntikiri muri bayi dati yacu, ku buryo nta buzume bwakozwe.\n\n{NOTES}',
+    'fr':
+        'Nous voyons {CROP}. CropGuard diagnostique actuellement 8 cultures (Maïs, Haricots, Manioc, Pomme de terre, Tomate, Banane, Café, Blé) — celle-ci n\u2019est pas encore dans notre base, aucun diagnostic n\u2019a été fait.\n\n{NOTES}',
+  }[languageCode]!
+      .replaceAll('{CROP}', cropSeen.isEmpty ? 'this plant' : cropSeen)
+      .replaceAll('{NOTES}', notes);
+
+  // Chatbot connection status (honest: real AI vs offline quick answers)
+  String get chatStatusAi => const {
+    'en': '● AI online',
+    'rw': '● AI iri kuri leta',
+    'fr': '● IA en ligne',
+  }[languageCode]!;
+
+  String get chatStatusOffline => const {
+    'en': '● Offline quick answers',
+    'rw': '● Ibisubizo bwihuse bidafite internet',
+    'fr': '● Réponses hors ligne',
+  }[languageCode]!;
+
 
   // Tips section
   String get scanTipsTitle => const {

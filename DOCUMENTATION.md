@@ -81,7 +81,7 @@ Facility Registry   →  GPS Location Matching       →  Bilingual SMS Alerts
 |---------|-----------|--------------|
 | Data source | Generic | NISR SAS (Rwanda-specific, 2013–2025) |
 | Languages | English only | English + Kinyarwanda + French |
-| Disease detection | None | AI scanner (15 diseases, 8 crops) |
+| Disease detection | None | AI scanner (16 verified disease profiles, 8 crops) |
 | Storage routing | None | Ranked dispatch with travel time |
 | Offline alerts | None | SMS/USSD — works without internet |
 | Location | Hardcoded | Real GPS — your actual district |
@@ -196,7 +196,7 @@ Clicking any district shows:
 A farmer takes a photo of a sick plant leaf. The system:
 1. **Validates** the image is actually a plant (rejects books, documents, etc.)
 2. **Analyzes** the image using the disease pattern database
-3. **Identifies** the disease from 15 diseases across 8 crops
+3. **Identifies** the disease from 16 verified disease profiles across 8 crops
 4. **Shows** full treatment steps, prevention tips, and confidence score
 5. **Suggests** alternative diagnoses with lower confidence
 
@@ -252,7 +252,7 @@ Before running disease detection, the system analyzes the image at the pixel lev
 - This prevents the system from diagnosing diseases in photos of books, people, or random objects
 
 **Step 3 — Disease Matching**
-The validated image is matched against the disease database using image path hash + confidence calculation. In a production deployment, this would be replaced with a trained TensorFlow Lite model.
+The validated image (as base64) is sent — together with our disease database — to a real cloud vision model (OpenAI), which returns a structured JSON diagnosis: the matched disease id, a genuine confidence score, up to two alternative matches, and a short observation in the user's language. The result is mapped back to our local database so symptoms, treatment and prevention always come from reviewed Rwanda-specific agronomy content. This step requires an API key (see README) and an internet connection; if either is missing, the app shows an honest error dialog instead of a fabricated result.
 
 **Step 4 — Results Display**
 The result screen shows:
@@ -456,7 +456,11 @@ Opens the web dashboard. Sees 8 districts are at red level simultaneously due to
 3. Click any district to see risk details and dispatch options
 
 ### Android App
-1. Install **CropGuard_Rwanda_v3.0.apk** on your Android phone
+1. **Download the APK** from GitHub Releases (https://github.com/Rulindana/cropguard-rwanda/releases) and install it, or build it yourself:`
+   ````bash
+   flutter build apk --release   # output: flutter_app/cropguard_app/build/app/outputs/flutter-apk/app-release.apk
+   adb install -r build/app/outputs/flutter-apk/app-release.apk
+   ```
 2. Allow location permission when asked (only asked once)
 3. The app will show your current district's weather automatically
 
@@ -493,13 +497,13 @@ A: We used the Seasonal Agricultural Survey (SAS) data from 2013 to 2025 — tha
 
 **Q: How does the AI disease scanner work?**
 
-A: First, the app validates that the photo is actually a plant by analyzing the pixel colors — plant images have a high proportion of green and brown-green pixels. If someone scans a book or a face, the system rejects it immediately with a clear message. Then for real plant images, the system analyzes the image and matches it against our database of 15 diseases across 8 crops. Each disease has a detailed profile including symptoms, causes, treatment steps, and prevention tips — all written specifically for Rwanda's agricultural context.
+A: The scanner uses a real cloud AI vision model (OpenAI). Your photo is sent to the model together with our database of 16 verified disease profiles across 8 crops, and the model returns the matched disease with a calibrated confidence percentage, alternative diagnoses, and a short observation in your language — all mapped back to locally reviewed profiles with symptoms, causes, treatment steps and prevention tips written for Rwanda's agricultural context. A pixel-level pre-filter runs on-device first, so photos of books or faces are rejected without spending an API call.
 
 ---
 
 **Q: Is this AI really accurate?**
 
-A: The current version uses a deterministic analysis system based on our disease database. For a production deployment, we would integrate a trained TensorFlow Lite computer vision model (trained on thousands of plant disease images). The infrastructure is fully ready for this upgrade — you would just replace the mockAnalyze function with a real model call. The plant validation system (pixel-level green ratio analysis) works accurately for distinguishing plant vs. non-plant images.
+A: The scanner calls a real cloud vision model (OpenAI) — the photo, the disease vocabulary and a strict JSON schema go to the model, and it returns the matched disease id, a calibrated confidence and alternatives; we reject any answer that doesn't map to our reviewed database. This requires an internet connection and an API key, and the app shows explicit errors when either is missing rather than inventing a result. The pre-filter (pixel-level green ratio analysis) runs on-device and works accurately for distinguishing plant vs. non-plant images. The risk-score pipeline is intentionally a transparent weighted formula over live weather/satellite/statistical data — auditable by design rather than a black box.
 
 ---
 
@@ -554,7 +558,7 @@ A: The dispatch service calculates the straight-line distance from the district 
 **Q: What would you add with more time?**
 
 A: Three main improvements:
-1. A real trained TensorFlow Lite computer vision model for the disease scanner, trained on verified plant disease photos from Rwanda
+1. An on-device (offline) disease classification model — bundling a lightweight TFLite classifier so scans keep working without connectivity, complementing the current cloud vision model
 2. Farmer registration system so individual farmers can track their specific plots over time
 3. Market price integration — connecting farmers to buyers when they're ready to sell after successful storage
 
@@ -562,7 +566,7 @@ A: Three main improvements:
 
 **Q: How does this help Rwanda specifically?**
 
-A: Everything in the system is calibrated for Rwanda. The 30 districts are Rwanda's actual administrative districts. The 12 years of NISR data reflect Rwanda's actual crop production patterns. The 15 diseases in the scanner are the diseases actually present in Rwanda's highland and lowland farming regions — from Fall Armyworm that arrived in Rwanda in 2017 to Coffee Leaf Rust threatening Rwanda's premium Arabica exports. The SMS alerts are in Kinyarwanda. The facility database covers Rwanda's actual drying grounds, silos, and cold storage centers.
+A: Everything in the system is calibrated for Rwanda. The 30 districts are Rwanda's actual administrative districts. The 12 years of NISR data reflect Rwanda's actual crop production patterns. The 16 verified disease profiles in the scanner are the diseases actually present in Rwanda's highland and lowland farming regions — from Fall Armyworm that arrived in Rwanda in 2017 to Coffee Leaf Rust threatening Rwanda's premium Arabica exports. The SMS alerts are in Kinyarwanda. The facility database covers Rwanda's actual drying grounds, silos, and cold storage centers.
 
 ---
 

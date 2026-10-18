@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' show instantiateImageCodec;
@@ -7,9 +6,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/disease_model.dart';
+import '../services/ai_service.dart';
 import '../utils/colors.dart';
 import '../utils/language_provider.dart';
 import '../utils/theme_provider.dart';
@@ -31,6 +33,8 @@ class _CropScanScreenState extends State<CropScanScreen>
 
   // UI state
   String? _selectedImagePath;
+  XFile? _selectedFile;
+  Uint8List? _previewBytes;
   bool _isAnalyzing = false;
   String _analyzeStatus = '';
 
@@ -258,6 +262,36 @@ class _CropScanScreenState extends State<CropScanScreen>
     await prefs.setBool(key, true);
   }
 
+  /// Copies the picked photo into our OWN app-documents folder so the file
+  /// survives after image_picker's temp cache is cleaned. Without this the
+  /// preview/result screens render a stale path = dark/black box.
+  Future<void> _keepPickedPhoto(XFile file) async {
+    try {
+      final bytes = await file.readAsBytes();
+      final dir = await getApplicationDocumentsDirectory();
+      final ext = p.extension(file.path).isNotEmpty
+          ? p.extension(file.path)
+          : '.jpg';
+      final stablePath =
+          p.join(dir.path, 'scan_${DateTime.now().millisecondsSinceEpoch}$ext');
+      await File(stablePath).writeAsBytes(bytes, flush: true);
+      if (!mounted) return;
+      setState(() {
+        _selectedFile = file;
+        _selectedImagePath = stablePath;
+        _previewBytes = bytes;
+      });
+    } catch (_) {
+      // Fall back to the raw picker path if the copy fails.
+      if (!mounted) return;
+      setState(() {
+        _selectedFile = file;
+        _selectedImagePath = file.path;
+        _previewBytes = null;
+      });
+    }
+  }
+
   Future<void> _pickFromCamera() async {
     HapticFeedback.mediumImpact();
     if (!kIsWeb) {
@@ -273,7 +307,7 @@ class _CropScanScreenState extends State<CropScanScreen>
       final XFile? file =
           await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
       if (file != null) {
-        setState(() => _selectedImagePath = file.path);
+        await _keepPickedPhoto(file);
       }
     } catch (e) {
       _showError(context.read<LanguageProvider>().strings.scanCameraError);
@@ -295,7 +329,7 @@ class _CropScanScreenState extends State<CropScanScreen>
       final XFile? file = await _picker.pickImage(
           source: ImageSource.gallery, imageQuality: 85);
       if (file != null) {
-        setState(() => _selectedImagePath = file.path);
+        await _keepPickedPhoto(file);
       }
     } catch (e) {
       _showError(context.read<LanguageProvider>().strings.scanGalleryError);
@@ -360,6 +394,94 @@ class _CropScanScreenState extends State<CropScanScreen>
       // If validation fails for any reason, allow the scan
       return true;
     }
+  }
+
+  /// Shows an honest dialog when the model saw a real plant whose crop is
+  /// NOT in our disease database (e.g. avocado seedling) — never a disease.
+  Future<void> _showNotCoveredDialog({
+    required String cropSeen,
+    required String notes,
+  }) async {
+    final lang = context.read<LanguageProvider>().strings;
+    final isDark = context.read<ThemeProvider>().isDark;
+    final cardBg = isDark ? const Color(0xFF1A3035) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF0B2010);
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+                color: const Color(0xFF00C853).withOpacity(0.5), width: 1.5),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C853).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Text('🌳', style: TextStyle(fontSize: 32)),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                lang.scanNotCoveredTitle,
+                style: TextStyle(
+                    color: textColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                lang.scanNotCoveredDesc(cropSeen, notes),
+                style: TextStyle(
+                  color: isDark
+                      ? const Color(0xFF7B9EA0)
+                      : const Color(0xFF546E7A),
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    _clearImage();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: const Color(0xFF0B1617),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    lang.scanErrorTryAgain,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   /// Shows a dialog telling the user the image is not a plant.
@@ -473,6 +595,16 @@ class _CropScanScreenState extends State<CropScanScreen>
   Future<void> _analyzeImage() async {
     if (_selectedImagePath == null) return;
     HapticFeedback.mediumImpact();
+    final lang = context.read<LanguageProvider>().strings;
+    final ai = AIService();
+
+    if (!ai.isConfigured) {
+      await _showScanErrorDialog(
+        title: lang.scanErrorNotConfiguredTitle,
+        message: lang.scanErrorNotConfiguredDesc,
+      );
+      return;
+    }
 
     setState(() {
       _isAnalyzing = true;
@@ -480,7 +612,7 @@ class _CropScanScreenState extends State<CropScanScreen>
       _analyzeStatus = _analysisSteps[0];
     });
 
-    // Simulate AI analysis progress through status steps
+    // Progress steps advance while the real model call runs
     _stepTimer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       if (!mounted) {
         timer.cancel();
@@ -494,43 +626,222 @@ class _CropScanScreenState extends State<CropScanScreen>
       if (_stepIndex >= _analysisSteps.length - 1) timer.cancel();
     });
 
-    // Simulate network + AI processing delay (2.5 - 4 seconds)
-    final delay = 2500 + Random().nextInt(1500);
-    await Future.delayed(Duration(milliseconds: delay));
-
-    if (!mounted) return;
-    _stepTimer?.cancel();
+    // Read the real image bytes (XFile works on mobile AND web).
+    // The progress timer keeps running until the model call finishes.
+    late final Uint8List bytes;
+    try {
+      if (_selectedFile != null) {
+        bytes = await _selectedFile!.readAsBytes();
+      } else if (!kIsWeb) {
+        bytes = await File(_selectedImagePath!).readAsBytes();
+      } else {
+        throw Exception('Image source unavailable');
+      }
+    } catch (e) {
+      _stepTimer?.cancel();
+      if (!mounted) return;
+      setState(() => _isAnalyzing = false);
+      if (!mounted) return;
+      await _showScanErrorDialog(
+        title: lang.scanErrorServiceTitle,
+        message: lang.scanErrorServiceDesc,
+      );
+      return;
+    }
 
     // ── Plant validation ────────────────────────────────────────
-    final isPlant = await _isPlantImage(_selectedImagePath!);
-    setState(() => _isAnalyzing = false);
-
-    if (!mounted) return;
-
-    if (!isPlant) {
-      // Not a plant — show rejection dialog
+    // Free on-device pixel pre-filter: reject obvious non-plant photos
+    // before spending an API call. The model validates again in depth.
+    final looksLikePlant = await _isPlantImage(_selectedImagePath!);
+    if (!looksLikePlant) {
+      _stepTimer?.cancel();
+      if (!mounted) return;
+      setState(() => _isAnalyzing = false);
+      if (!mounted) return;
       await _showNotPlantDialog();
       return;
     }
 
-    // Run mock AI analysis
-    final result = DiseaseDatabase.mockAnalyze(_selectedImagePath!);
+    // Real AI diagnosis — the photo is sent to the vision model
+    try {
+      final diagnosis = await ai.diagnose(
+        imageBytes: bytes,
+        mimeType: _mimeTypeFor(_selectedImagePath!),
+        languageCode: lang.languageCode,
+      );
 
-    // Navigate to result screen
-    if (mounted) {
+      _stepTimer?.cancel();
+      if (!mounted) return;
+      setState(() => _isAnalyzing = false);
+      if (!mounted) return;
+
+      if (!diagnosis.isPlant) {
+        await _showNotPlantDialog();
+        return;
+      }
+
+      if (!diagnosis.cropCovered) {
+        await _showNotCoveredDialog(
+          cropSeen: diagnosis.cropSeen,
+          notes: diagnosis.notes,
+        );
+        return;
+      }
+
+      final disease = diagnosis.disease;
+      if (disease == null) {
+        await _showScanErrorDialog(
+          title: lang.scanErrorServiceTitle,
+          message: lang.scanErrorNoMatchDesc,
+        );
+        return;
+      }
+
+      // Navigate to result screen with the REAL diagnosis
+      final result = ScanResult(
+        disease: disease,
+        confidence: diagnosis.confidence,
+        imagePath: _selectedImagePath!,
+        imageBytes: bytes,
+        scannedAt: DateTime.now(),
+        alternatives: diagnosis.alternatives,
+      );
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => DiseaseResultScreen(result: result),
         ),
+      );
+    } on AIServiceException catch (e) {
+      _stepTimer?.cancel();
+      if (!mounted) return;
+      setState(() => _isAnalyzing = false);
+      final (title, message) = switch (e.kind) {
+        AIServiceErrorKind.notConfigured =>
+          (lang.scanErrorNotConfiguredTitle, lang.scanErrorNotConfiguredDesc),
+        AIServiceErrorKind.network =>
+          (lang.scanErrorNetworkTitle, lang.scanErrorNetworkDesc),
+        _ => (lang.scanErrorServiceTitle, lang.scanErrorServiceDesc),
+      };
+      if (!mounted) return;
+      await _showScanErrorDialog(title: title, message: message);
+    } catch (e) {
+      _stepTimer?.cancel();
+      if (!mounted) return;
+      setState(() => _isAnalyzing = false);
+      if (!mounted) return;
+      await _showScanErrorDialog(
+        title: lang.scanErrorServiceTitle,
+        message: lang.scanErrorServiceDesc,
       );
     }
   }
 
   void _clearImage() {
     setState(() {
+      _selectedFile = null;
       _selectedImagePath = null;
       _isAnalyzing = false;
     });
+  }
+
+  /// Guesses the MIME type of the picked image for the vision API.
+  String _mimeTypeFor(String path) {
+    final lower = path.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.heic') || lower.endsWith('.heif')) return 'image/heic';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    return 'image/jpeg';
+  }
+
+  /// Honest error dialog for real AI-service failures (no fake fallbacks).
+  Future<void> _showScanErrorDialog({
+    required String title,
+    required String message,
+  }) async {
+    final lang = context.read<LanguageProvider>().strings;
+    final isDark = context.read<ThemeProvider>().isDark;
+    final cardBg = isDark ? const Color(0xFF1A3035) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF0B2010);
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFF59E0B).withOpacity(0.5),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF59E0B).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.wifi_off_rounded,
+                  color: Color(0xFFF59E0B),
+                  size: 36,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: TextStyle(
+                  color:
+                      isDark ? const Color(0xFF7B9EA0) : const Color(0xFF546E7A),
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: const Color(0xFF0B1617),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    lang.scanErrorTryAgain,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // ── Build ─────────────────────────────────────────────────────────────────
@@ -573,6 +884,7 @@ class _CropScanScreenState extends State<CropScanScreen>
                         )
                       : _ImagePreview(
                           imagePath: _selectedImagePath!,
+                          imageBytes: _previewBytes,
                           isDark: isDark,
                           isAnalyzing: _isAnalyzing,
                           analyzeStatus: _analyzeStatus,
@@ -876,6 +1188,7 @@ class _ActionButton extends StatelessWidget {
 
 class _ImagePreview extends StatelessWidget {
   final String imagePath;
+  final Uint8List? imageBytes;
   final bool isDark;
   final bool isAnalyzing;
   final String analyzeStatus;
@@ -887,6 +1200,7 @@ class _ImagePreview extends StatelessWidget {
 
   const _ImagePreview({
     required this.imagePath,
+    this.imageBytes,
     required this.isDark,
     required this.isAnalyzing,
     required this.analyzeStatus,
@@ -1124,6 +1438,16 @@ class _ImagePreview extends StatelessWidget {
   }
 
   Widget _buildImage() {
+    // In-memory bytes always win: they render even if the temp file was
+    // cleaned or the path is stale — this was the black-preview bug.
+    if (imageBytes != null && imageBytes!.isNotEmpty) {
+      return Image.memory(
+        imageBytes!,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        errorBuilder: (_, __, ___) => _fallbackWidget(),
+      );
+    }
     if (imagePath.startsWith('assets/')) {
       return Image.asset(imagePath, fit: BoxFit.cover);
     }
