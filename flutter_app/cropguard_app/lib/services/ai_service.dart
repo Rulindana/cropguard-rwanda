@@ -71,6 +71,9 @@ class AIDiagnosis {
     required this.notes,
     this.cropSeen = '',
     this.cropCovered = true,
+    this.aiSymptoms = const [],
+    this.aiTreatment = const [],
+    this.aiPrevention = const [],
   });
 
   /// False when the photo does not show a plant/leaf at all.
@@ -98,6 +101,15 @@ class AIDiagnosis {
   /// False when [cropSeen] is outside our database crops — no disease may be
   /// shown in that case.
   final bool cropCovered;
+
+  /// Real symptoms observed by AI from the photo (not from database).
+  final List<String> aiSymptoms;
+
+  /// Real treatment steps written by AI (not from database).
+  final List<String> aiTreatment;
+
+  /// Real prevention tips written by AI (not from database).
+  final List<String> aiPrevention;
 }
 
 /// Which cloud AI backend to use. Selected via
@@ -225,7 +237,7 @@ class AIService {
       'the crop you actually see (e.g. "maize", "avocado seedling",',
       '"tomato", "unknown tree"). Put it in "crop_seen".',
       'The app currently covers ONLY these crops: ${coveredCrops.join(', ')}.',
-      'STAGE 2 — disease match:',
+      'STAGE 2 — disease match and full diagnosis:',
       '- If the photo does not clearly show a plant, set is_plant to false.',
       '- If the crop_seen is NOT one of the covered crops, set',
       '  "crop_covered" to false, "disease_id" to "crop_not_covered",',
@@ -237,10 +249,20 @@ class AIService {
       '- confidence is your calibrated probability between 0 and 1.',
       '- alternatives: up to 2 other database ids (never the primary one), each with a confidence.',
       '- notes: 1-2 plain sentences in $languageName describing what you observe in the photo.',
-      'Answer ONLY with a JSON object of the shape:',
-      '{"is_plant": bool, "crop_seen": string, "crop_covered": bool, '
-          '"disease_id": string, "confidence": number, '
-          '"alternatives": [{"disease_id": string, "confidence": number}], "notes": string}',
+      '- symptoms: list of 4-6 specific symptoms you actually SEE in this photo, written in $languageName.',
+      '  Describe exactly what is visible — color changes, lesion shapes, patterns, wilting etc.',
+      '  Do NOT copy from the database — write what you actually observe.',
+      '- treatment_steps: list of 5-7 concrete actionable treatment steps in $languageName',
+      '  specific to what you see in this photo and the severity of infection.',
+      '- prevention: list of 4-5 prevention tips in $languageName relevant to this crop and disease.',
+      'Answer ONLY with a JSON object of this exact shape:',
+      '{"is_plant": bool, "crop_seen": string, "crop_covered": bool,',
+      ' "disease_id": string, "confidence": number,',
+      ' "alternatives": [{"disease_id": string, "confidence": number}],',
+      ' "notes": string,',
+      ' "symptoms": [string],',
+      ' "treatment_steps": [string],',
+      ' "prevention": [string]}',
     ].join('\n');
 
     final userText =
@@ -257,13 +279,13 @@ class AIService {
             ? {
                 'prompt': '$systemPrompt\n\n$userText',
                 'image_base64': base64Encode(imageBytes),
-                'max_tokens': 700,
+                'max_tokens': 1200,
                 'temperature': 0.2,
               }
             : {
                 'prompt': '$systemPrompt\n\n$userText',
                 'image': {'base64': base64Encode(imageBytes)},
-                'max_tokens': 700,
+                'max_tokens': 1200,
                 'temperature': 0.2,
               },
         timeout: _cfVisionTimeout,
@@ -273,7 +295,7 @@ class AIService {
       final body = {
         'model': _chatModel,
         'temperature': 0.2,
-        'max_tokens': 700,
+        'max_tokens': 1200,
         'response_format': {'type': 'json_object'},
         'messages': [
           {'role': 'system', 'content': systemPrompt},
@@ -346,7 +368,18 @@ class AIService {
       notes: (parsed['notes'] ?? '').toString(),
       cropSeen: cropSeen,
       cropCovered: cropCovered,
+      aiSymptoms: _parseStringList(parsed['symptoms']),
+      aiTreatment: _parseStringList(parsed['treatment_steps']),
+      aiPrevention: _parseStringList(parsed['prevention']),
     );
+  }
+
+  /// Safely parse a JSON value as a List<String>.
+  List<String> _parseStringList(dynamic value) {
+    if (value is List) {
+      return value.map((e) => e.toString()).where((s) => s.isNotEmpty).toList();
+    }
+    return const [];
   }
 
   // ── Grounded chatbot ────────────────────────────────────────────────────────

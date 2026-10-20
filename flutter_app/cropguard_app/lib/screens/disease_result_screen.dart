@@ -144,12 +144,14 @@ class _DiseaseResultScreenState extends State<DiseaseResultScreen>
                 const SizedBox(height: 16),
 
                 if (!isHealthy) ...[
-                  // ── Symptoms ─────────────────────────────────────────────
+                  // ── Symptoms — from AI vision analysis ───────────────────
                   _SectionCard(
                     title: lang.scanSymptoms,
                     isDark: isDark,
                     child: Column(
-                      children: d.symptoms
+                      children: (widget.result.aiSymptoms.isNotEmpty
+                              ? widget.result.aiSymptoms
+                              : d.symptoms)
                           .map((s) => _BulletItem(text: s, isDark: isDark))
                           .toList(),
                     ),
@@ -168,16 +170,23 @@ class _DiseaseResultScreenState extends State<DiseaseResultScreen>
                   ),
                   const SizedBox(height: 12),
 
-                  // ── Treatment steps ──────────────────────────────────────
-                  _TreatmentCard(steps: d.treatmentSteps, isDark: isDark),
+                  // ── Treatment steps — from AI vision analysis ────────────
+                  _TreatmentCard(
+                    steps: widget.result.aiTreatment.isNotEmpty
+                        ? widget.result.aiTreatment
+                        : d.treatmentSteps,
+                    isDark: isDark,
+                  ),
                   const SizedBox(height: 12),
 
-                  // ── Prevention ───────────────────────────────────────────
+                  // ── Prevention — from AI vision analysis ─────────────────
                   _SectionCard(
                     title: lang.scanPrevention,
                     isDark: isDark,
                     child: Column(
-                      children: d.preventionTips
+                      children: (widget.result.aiPrevention.isNotEmpty
+                              ? widget.result.aiPrevention
+                              : d.preventionTips)
                           .map((p) => _BulletItem(text: p, isDark: isDark))
                           .toList(),
                     ),

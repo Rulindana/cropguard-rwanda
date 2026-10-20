@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/admin_user_model.dart';
 
 /// Admin authentication.
@@ -13,56 +14,60 @@ class AdminAuthService {
   // Fallback email whitelist — used if UID doesn't match
   static const List<String> _adminEmails = [
     'admin@cropguard.ai',
+    'tesny2005@gmail.com',
+    'rulindana@cropguard.ai',
   ];
+
+  // Local admin credentials — works without Firebase Auth
+  static const Map<String, String> _localCredentials = {
+    'admin@cropguard.ai': 'CropGuard2026!',
+    'tesny2005@gmail.com': 'CropGuard2026!',
+  };
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<AdminUserModel?> signIn(String email, String password) async {
+    final emailLower = email.trim().toLowerCase();
+    final pass = password.trim();
+
+    // Check local credentials first — works on web and offline
+    final localPass = _localCredentials[emailLower] ?? _localCredentials[email.trim()];
+    if (localPass != null && localPass == pass) {
+      return AdminUserModel(
+        id: _adminUid,
+        email: email.trim(),
+        name: 'Admin',
+        role: 'admin',
+      );
+    }
+
+    // On web, skip Firebase Auth entirely (API key not configured for identitytoolkit)
+    if (kIsWeb) {
+      throw 'Invalid credentials. Use admin@cropguard.ai / CropGuard2026!';
+    }
+
+    // Mobile: try Firebase Auth
     try {
       final cred = await _auth.signInWithEmailAndPassword(
-          email: email.trim(), password: password.trim());
+          email: email.trim(), password: pass);
       final user = cred.user;
       if (user == null) return null;
 
-      // Check 1: UID match (fast, no Firestore needed)
       if (user.uid == _adminUid) {
-        // Also write/update the role doc while we have access
         _ensureRoleDoc(user.uid, user.email ?? email);
-        return AdminUserModel(
-          id: user.uid,
-          email: user.email ?? email,
-          name: user.displayName ?? 'Admin',
-          role: 'admin',
-        );
+        return AdminUserModel(id: user.uid, email: user.email ?? email, name: user.displayName ?? 'Admin', role: 'admin');
       }
-
-      // Check 2: email whitelist
-      final emailLower = (user.email ?? '').toLowerCase();
       if (_adminEmails.any((e) => e.toLowerCase() == emailLower)) {
         _ensureRoleDoc(user.uid, user.email ?? email);
-        return AdminUserModel(
-          id: user.uid,
-          email: user.email ?? email,
-          name: user.displayName ?? 'Admin',
-          role: 'admin',
-        );
+        return AdminUserModel(id: user.uid, email: user.email ?? email, name: user.displayName ?? 'Admin', role: 'admin');
       }
-
-      // Check 3: Firestore role doc (if UID/email didn't match)
       try {
         final doc = await _db.collection('admins').doc(user.uid).get();
         if (doc.exists && doc.data()?['role'] == 'admin' && doc.data()?['active'] == true) {
-          return AdminUserModel(
-            id: user.uid,
-            email: user.email ?? email,
-            name: user.displayName ?? 'Admin',
-            role: 'admin',
-          );
+          return AdminUserModel(id: user.uid, email: user.email ?? email, name: user.displayName ?? 'Admin', role: 'admin');
         }
       } catch (_) {}
-
-      // Not an admin
       await _auth.signOut();
       throw 'Access denied. This account is not authorised as admin.';
     } on FirebaseAuthException catch (e) {

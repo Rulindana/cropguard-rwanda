@@ -51,6 +51,7 @@ class DataCacheService {
     required List<Facility> facilities,
     RiskSummary? summary,
   }) async {
+    if (kIsWeb) return; // path_provider not supported on web
     try {
       final docs = await getApplicationDocumentsDirectory();
       final file = File('${docs.path}/$_cacheFileName');
@@ -70,6 +71,7 @@ class DataCacheService {
 
   /// Read the cached snapshot from disk. Returns null if there is no cache.
   Future<CachePayload?> loadCache() async {
+    if (kIsWeb) return null; // path_provider not supported on web
     try {
       final docs = await getApplicationDocumentsDirectory();
       final file = File('${docs.path}/$_cacheFileName');
@@ -117,12 +119,11 @@ class DataCacheService {
 
   /// Clear the on-disk cache. Useful when the user forces a refresh.
   Future<void> clearCache() async {
+    if (kIsWeb) return;
     try {
       final docs = await getApplicationDocumentsDirectory();
       final file = File('${docs.path}/$_cacheFileName');
-      if (await file.exists()) {
-        await file.delete();
-      }
+      if (await file.exists()) await file.delete();
       _cacheExists = false;
       _lastUpdated = null;
     } catch (e) {

@@ -19,6 +19,13 @@
     ],
     "headers": [
       {
+        "source": "**",
+        "headers": [
+          { "key": "Permissions-Policy", "value": "geolocation=*, camera=*, microphone=()" },
+          { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
+        ]
+      },
+      {
         "source": "/index.html",
         "headers": [
           { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },

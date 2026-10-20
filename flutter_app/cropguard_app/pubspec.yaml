@@ -54,7 +54,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/logo.png
-    - assets/icon/hero_farmer.png
     - assets/icon/hero_farmer.jpg
     - assets/icon/hero_plant.jpg
     - assets/icon/team_moise.png

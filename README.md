@@ -183,6 +183,17 @@ cropguard-rwanda/
 
 ---
 
+## 🔐 Admin Panel
+
+| Field | Value |
+|-------|-------|
+| **Email** | `admin@cropguard.ai` |
+| **Password** | `CropGuard2026!` |
+
+> Also works with `tesny2005@gmail.com` / `CropGuard2026!`
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites

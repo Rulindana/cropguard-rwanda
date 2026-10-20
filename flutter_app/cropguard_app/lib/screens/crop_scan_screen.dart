@@ -354,44 +354,45 @@ class _CropScanScreenState extends State<CropScanScreen>
     try {
       Uint8List bytes;
       if (kIsWeb) {
-        // On web we can't read file bytes easily — assume valid
-        return true;
+        if (_previewBytes == null) return true;
+        bytes = _previewBytes!;
+      } else {
+        bytes = await File(imagePath).readAsBytes();
       }
-      bytes = await File(imagePath).readAsBytes();
 
-      // Decode image to get pixel data using Flutter's image decoder
+      // Decode image to get pixel data
       final codec = await instantiateImageCodec(bytes, targetWidth: 80, targetHeight: 80);
       final frame = await codec.getNextFrame();
       final image = frame.image;
       final byteData = await image.toByteData();
       image.dispose();
 
-      if (byteData == null) return true; // Can't validate → allow
+      if (byteData == null) return true;
 
       int greenDominantPixels = 0;
       int totalPixels = 0;
       final pixelBytes = byteData.buffer.asUint8List();
 
-      // Sample every 4th pixel (RGBA format)
       for (int i = 0; i < pixelBytes.length; i += 16) {
         final r = pixelBytes[i];
         final g = pixelBytes[i + 1];
         final b = pixelBytes[i + 2];
-        // A pixel is "plant-like" if:
-        // - green is the dominant channel
-        // - OR it has significant brown/yellow-green (earth, dried leaves)
-        final isGreenDominant = g > r && g > b && g > 60;
-        final isBrownYellow = r > 80 && g > 60 && b < 80 && r > b;
-        if (isGreenDominant || isBrownYellow) greenDominantPixels++;
+        // Green dominant — clear plant pixel
+        final isGreenDominant = g > r && g > b && g > 40 && (g - r) > 10;
+        // Brown/yellow — dried or diseased leaf
+        final isBrownLeaf = g > 60 && r > 40 && b < 120 && g >= r && (g - b) > 10;
+        if (isGreenDominant || isBrownLeaf) greenDominantPixels++;
         totalPixels++;
       }
 
       if (totalPixels == 0) return true;
       final greenRatio = greenDominantPixels / totalPixels;
-      // Plant images typically have >18% green/brown-plant pixels
-      return greenRatio >= 0.18;
+
+      // Very low threshold — pixel check only rejects obvious non-plants
+      // (solid blue/white/black screens, documents, pure skin tones).
+      // The AI model does the real validation via diagnosis.isPlant.
+      return greenRatio >= 0.08;
     } catch (e) {
-      // If validation fails for any reason, allow the scan
       return true;
     }
   }
@@ -705,6 +706,9 @@ class _CropScanScreenState extends State<CropScanScreen>
         imageBytes: bytes,
         scannedAt: DateTime.now(),
         alternatives: diagnosis.alternatives,
+        aiSymptoms: diagnosis.aiSymptoms,
+        aiTreatment: diagnosis.aiTreatment,
+        aiPrevention: diagnosis.aiPrevention,
       );
       Navigator.of(context).push(
         MaterialPageRoute(

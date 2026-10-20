@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
@@ -834,7 +835,10 @@ class _DesktopHeader extends StatelessWidget {
           _LanguageSwitcher(isDark: isDark),
           const SizedBox(width: 8),
           _ThemeToggle(),
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
+          // ── Location button (web only) ──────────────────────────────────
+          if (kIsWeb) _LocationButton(),
+          const SizedBox(width: 4),
           IconButton(
             onPressed: () => onNavigate(NavItem.alerts),
             icon: Stack(
@@ -856,6 +860,97 @@ class _DesktopHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Location button (web only) ───────────────────────────────────────────────
+class _LocationButton extends StatefulWidget {
+  const _LocationButton();
+  @override
+  State<_LocationButton> createState() => _LocationButtonState();
+}
+
+class _LocationButtonState extends State<_LocationButton> {
+  bool _detecting = false;
+  String? _district;
+  bool _denied = false;
+
+  Future<void> _detect() async {
+    if (_detecting) return;
+    setState(() { _detecting = true; _denied = false; });
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 15),
+      );
+      // Find nearest district from all loaded districts
+      final scaffold = context.findAncestorStateOfType<_ResponsiveScaffoldState>();
+      if (scaffold != null && scaffold._districts.isNotEmpty) {
+        District? nearest;
+        double minDist = double.infinity;
+        for (final d in scaffold._districts) {
+          final dist = (d.centroidLat - pos.latitude) * (d.centroidLat - pos.latitude) +
+              (d.centroidLng - pos.longitude) * (d.centroidLng - pos.longitude);
+          if (dist < minDist) { minDist = dist; nearest = d; }
+        }
+        if (mounted) setState(() { _district = nearest?.name; _detecting = false; });
+      } else {
+        if (mounted) setState(() => _detecting = false);
+      }
+    } catch (_) {
+      if (mounted) setState(() { _detecting = false; _denied = true; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: _denied
+          ? 'Location blocked — click to retry'
+          : _district != null
+              ? '📍 $_district — click to refresh'
+              : 'Detect my location',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: _detect,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: _denied
+                ? Colors.orange.withValues(alpha: 0.15)
+                : AppColors.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: _denied
+                  ? Colors.orange.withValues(alpha: 0.5)
+                  : AppColors.primary.withValues(alpha: 0.35),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _detecting
+                  ? const SizedBox(width: 14, height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                  : Icon(
+                      _denied ? Icons.location_disabled : Icons.location_on,
+                      color: _denied ? Colors.orange : AppColors.primary,
+                      size: 14,
+                    ),
+              const SizedBox(width: 5),
+              Text(
+                _detecting ? 'Detecting...' : _district ?? 'My Location',
+                style: TextStyle(
+                  color: _denied ? Colors.orange : AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

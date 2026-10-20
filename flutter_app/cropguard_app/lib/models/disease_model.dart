@@ -41,6 +41,9 @@ class ScanResult {
   final Uint8List? imageBytes; // in-memory photo (survives temp-cache cleanup)
   final DateTime scannedAt;
   final List<PlantDisease> alternatives; // next-best matches
+  final List<String> aiSymptoms;    // real symptoms observed by AI from photo
+  final List<String> aiTreatment;   // real treatment steps from AI
+  final List<String> aiPrevention;  // real prevention tips from AI
 
   const ScanResult({
     required this.disease,
@@ -49,6 +52,9 @@ class ScanResult {
     this.imageBytes,
     required this.scannedAt,
     required this.alternatives,
+    this.aiSymptoms = const [],
+    this.aiTreatment = const [],
+    this.aiPrevention = const [],
   });
 }
 

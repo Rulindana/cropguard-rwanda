@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/district_model.dart';
 import '../models/facility_model.dart';
 import '../services/firebase_service.dart';
@@ -181,7 +185,7 @@ class _DesktopDashboard extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      // Weather card
+                      // Weather card — uses GPS to detect user's district automatically
                       _WeatherCard(district: districts.first, now: now, allDistricts: districts),
                       const SizedBox(height: 12),
                       // ✅ Taller map — fixed 560px height
@@ -317,42 +321,221 @@ class _WeatherCardState extends State<_WeatherCard> {
   Map<String, dynamic>? _weather;
   bool _loading = true;
   District? _nearestDistrict;
+  bool _detectingLocation = true;
+  String? _locationError;
+  bool _locationRequested = false; // web: track if user tapped to request
+
+  static const _kLocationPrefKey = 'location_perm_granted';
 
   @override
   void initState() {
     super.initState();
-    _initLocation();
+    if (kIsWeb) {
+      // On web, browsers block GPS unless triggered by user gesture.
+      // Show a "Tap to detect location" button instead of auto-running.
+      setState(() => _detectingLocation = false);
+      _fetchWeather(_kigaliDistrict()); // show Kigali weather while waiting
+    } else {
+      _initLocation();
+    }
   }
 
-  /// Try to get GPS location and find the nearest district.
-  /// Falls back to widget.district (first in list) if GPS denied/unavailable.
+  /// Smart location flow:
+  /// - If user already granted before → go straight to GPS, no dialog
+  /// - If never asked → show a nice dialog with "Enable Location" button
+  /// - Once granted → save to prefs so we never ask again
+  /// - If denied → show button to open Settings
   Future<void> _initLocation() async {
-    // Only run on mobile (geolocator not reliable on web)
+    if (mounted) setState(() { _detectingLocation = true; _locationError = null; });
+
+    // Web: user tapped the button — trigger browser GPS popup now
+    if (kIsWeb) {
+      if (mounted) setState(() { _locationRequested = true; });
+      try {
+        final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          timeLimit: const Duration(seconds: 15),
+        );
+        _onPositionFound(pos);
+      } catch (_) {
+        if (mounted) setState(() {
+          _detectingLocation = false;
+          _locationError = 'location_blocked';
+        });
+        _fetchWeather(_kigaliDistrict());
+      }
+      return;
+    }
+
+    // ── Mobile ────────────────────────────────────────────────────────────
+
+    // 1. Check if user already granted in a previous session
+    final prefs = await SharedPreferences.getInstance();
+    final alreadyGranted = prefs.getBool(_kLocationPrefKey) ?? false;
+
+    if (!alreadyGranted) {
+      // Show dialog asking user to allow location — only once ever
+      if (!mounted) return;
+      final allowed = await _showLocationPermissionDialog();
+      if (!allowed) {
+        if (mounted) setState(() {
+          _detectingLocation = false;
+          _locationError = 'location_blocked';
+        });
+        _fetchWeather(_kigaliDistrict());
+        return;
+      }
+    }
+
+    // 2. Check GPS service is on
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (mounted) setState(() {
+        _detectingLocation = false;
+        _locationError = 'gps_off';
+      });
+      _fetchWeather(_kigaliDistrict());
+      return;
+    }
+
+    // 3. Check / request permission
+    LocationPermission perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    if (perm == LocationPermission.deniedForever || perm == LocationPermission.denied) {
+      if (mounted) setState(() {
+        _detectingLocation = false;
+        _locationError = 'location_blocked';
+      });
+      _fetchWeather(_kigaliDistrict());
+      return;
+    }
+
+    // 4. Get position and save granted flag
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _fetchWeather(widget.district);
-        return;
-      }
-      LocationPermission perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) {
-        perm = await Geolocator.requestPermission();
-      }
-      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
-        _fetchWeather(widget.district);
-        return;
-      }
       final pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
-        timeLimit: const Duration(seconds: 10),
+        timeLimit: const Duration(seconds: 15),
       );
-      // Find nearest district centroid
-      final nearest = _findNearestDistrict(pos.latitude, pos.longitude);
-      if (mounted) setState(() => _nearestDistrict = nearest);
-      _fetchWeather(nearest ?? widget.district);
+      await prefs.setBool(_kLocationPrefKey, true); // remember forever
+      _onPositionFound(pos);
     } catch (_) {
-      _fetchWeather(widget.district);
+      if (mounted) setState(() {
+        _detectingLocation = false;
+        _locationError = 'gps_off';
+      });
+      _fetchWeather(_kigaliDistrict());
     }
+  }
+
+  /// Shows a one-time dialog asking user to allow location.
+  /// Returns true if user tapped "Enable Location".
+  Future<bool> _showLocationPermissionDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final cardBg = isDark ? const Color(0xFF1A3035) : Colors.white;
+        final textColor = isDark ? Colors.white : const Color(0xFF0B2010);
+        final subColor = isDark ? const Color(0xFF7B9EA0) : const Color(0xFF546E7A);
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
+              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 24, offset: const Offset(0, 8))],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64, height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 2),
+                  ),
+                  child: const Icon(Icons.location_on, color: AppColors.primary, size: 30),
+                ),
+                const SizedBox(height: 16),
+                Text('Enable Location', style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w800), textAlign: TextAlign.center),
+                const SizedBox(height: 10),
+                Text(
+                  'CropGuard needs your location to show real weather and post-harvest risk for your district.',
+                  style: TextStyle(color: subColor, fontSize: 13, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.lock_outline, color: AppColors.primary, size: 14),
+                      SizedBox(width: 6),
+                      Expanded(child: Text('Your location is only used locally — never shared.', style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600))),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () { HapticFeedback.mediumImpact(); Navigator.of(ctx).pop(true); },
+                    icon: const Icon(Icons.location_on, size: 18),
+                    label: const Text('Enable Location', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: const Color(0xFF0B1617),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () { HapticFeedback.lightImpact(); Navigator.of(ctx).pop(false); },
+                    style: TextButton.styleFrom(foregroundColor: subColor, padding: const EdgeInsets.symmetric(vertical: 10)),
+                    child: const Text('Not now', style: TextStyle(fontSize: 13)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return result ?? false;
+  }
+
+  void _onPositionFound(Position pos) {
+    final nearest = _findNearestDistrict(pos.latitude, pos.longitude);
+    if (mounted) setState(() {
+      _nearestDistrict = nearest;
+      _detectingLocation = false;
+      _locationError = null;
+    });
+    _fetchWeather(nearest ?? _kigaliDistrict());
+  }
+
+  void _fallbackToKigali() {
+    if (mounted) setState(() => _detectingLocation = false);
+    _fetchWeather(_kigaliDistrict());
+  }
+
+  /// Returns Kigali district, or first district if Kigali not found.
+  District _kigaliDistrict() {
+    return widget.allDistricts.firstWhere(
+      (d) => d.name.toLowerCase().contains('kigali'),
+      orElse: () => widget.district,
+    );
   }
 
   District? _findNearestDistrict(double lat, double lng) {
@@ -427,7 +610,14 @@ class _WeatherCardState extends State<_WeatherCard> {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>().strings;
-    final displayDistrict = _nearestDistrict ?? widget.district;
+    final displayDistrict = _nearestDistrict ?? _kigaliDistrict();
+    // Web: show "Detect location" button until user taps it
+    final showDetectBtn = kIsWeb && !_locationRequested && _nearestDistrict == null && _locationError == null;
+    final locationLabel = _detectingLocation
+        ? '📍 Detecting location...'
+        : _locationError != null
+            ? '⚠️ Location blocked. Tap to retry.'
+            : '📍 ${displayDistrict.name}';
     final temp = (_weather?['temperature_2m'] as num?)?.toStringAsFixed(0) ?? '--';
     final humidity = (_weather?['relative_humidity_2m'] as num?)?.toStringAsFixed(0)
         ?? displayDistrict.maxHumidityPct.toStringAsFixed(0);
@@ -458,8 +648,34 @@ class _WeatherCardState extends State<_WeatherCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(displayDistrict.name,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  GestureDetector(
+                    onTap: (_locationError != null || showDetectBtn) ? _initLocation : null,
+                    child: showDetectBtn
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.location_searching, color: AppColors.primary, size: 14),
+                                SizedBox(width: 6),
+                                Text('Detect my location', style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          )
+                        : Text(
+                            locationLabel,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: _locationError != null ? Colors.orange : AppColors.textPrimary,
+                            ),
+                          ),
+                  ),
                   Text(desc, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                 ],
               ),
