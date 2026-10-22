@@ -10,6 +10,17 @@
 
 ---
 
+> **💡 Core Idea:**
+> NISR spends enormous resources every year collecting agricultural data through the Seasonal Agricultural Survey — field visits, enumerators, data entry, analysis.
+> That data ends up in a PDF report. Read once. Then filed away.
+>
+> **CropGuard AI changes that.**
+> Instead of NISR working hard to produce data that sits unused, CropGuard puts NISR's own data to work — automatically, every 6 hours, across all 30 districts — predicting post-harvest losses **before they happen**, not documenting them after.
+>
+> *NISR already did the hard work. CropGuard makes it work for Rwanda.*
+
+---
+
 ## 🎯 The Problem
 
 In Rwanda, unseasonal rainfall during harvest periods causes devastating post-harvest losses:

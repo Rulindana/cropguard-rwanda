@@ -8,6 +8,28 @@
 
 ---
 
+> ## 💡 The Core Idea — Why This System Exists
+>
+> NISR invests enormous resources every year to collect agricultural data:
+> enumerators travel to every district, farmers are interviewed, crop production
+> is measured, loss rates are calculated. The result is the Seasonal Agricultural
+> Survey (SAS) — one of Rwanda's most valuable national datasets.
+>
+> **But that data ends up in a PDF. Read once. Filed away. Until next year.**
+>
+> CropGuard AI was built to change that. It takes NISR's own 12 years of SAS data
+> and combines it with live satellite and weather feeds to create something NISR
+> has never had: a **continuous, real-time, predictive agricultural intelligence system**.
+>
+> - Instead of describing losses **after** harvest — CropGuard predicts them **5–14 days before**
+> - Instead of a once-a-year national picture — CropGuard updates every **6 hours**
+> - Instead of data sitting in files — CropGuard puts it on a **live map** that any officer can open on their phone
+>
+> **NISR already did the hard work collecting the data.**  
+> **CropGuard makes that data work for Rwanda — every day, not once a year.**
+
+---
+
 ## TABLE OF CONTENTS
 
 1. Executive Summary
