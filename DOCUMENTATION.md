@@ -403,7 +403,7 @@ CropGuard AI directly addresses NST2 Pillar 2: **Economic Transformation through
 - **30 districts** monitored across all 5 provinces (Northern, Southern, Eastern, Western, Kigali City)
 - **21 storage and drying facilities** cataloged with GPS coordinates
 - **8 crops** with AI disease detection
-- **15 plant diseases** in the detection database
+- **16 plant diseases** in the detection database
 - **12 years** of NISR SAS data integrated (2013–2025)
 
 ### Accessibility

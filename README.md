@@ -203,7 +203,7 @@ cropguard-rwanda/
 
 ### Run the App
 ```bash
-git clone https://github.com/your-username/cropguard-rwanda.git
+git clone https://github.com/Rulindana/cropguard-rwanda.git
 cd cropguard-rwanda/flutter_app/cropguard_app
 flutter pub get
 flutter run
