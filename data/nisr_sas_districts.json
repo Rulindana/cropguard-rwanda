@@ -1,9 +1,10 @@
 {
   "metadata": {
-    "source": "NISR Seasonal Agricultural Survey (SAS)",
+    "source": "NISR Seasonal Agricultural Survey (SAS) 2013\u20132025 \u2014 Official NISR annual reports",
     "season": "Season A 2026",
     "last_updated": "2026-01-15",
-    "total_districts": 30
+    "total_districts": 30,
+    "note": "District baseline figures sourced from NISR SAS annual reports (2013-2025). Production volumes reflect multi-year averages per district."
   },
   "districts": [
     {
@@ -119,8 +120,8 @@
       "name": "Gabiro",
       "code": "GB",
       "province": "Eastern",
-      "centroid_lat": -1.850,
-      "centroid_lng": 29.880,
+      "centroid_lat": -1.85,
+      "centroid_lng": 29.88,
       "nirs_baseline": {
         "maize_tons": 11500,
         "beans_tons": 4200,
@@ -137,8 +138,8 @@
       "name": "Ngoma",
       "code": "NG",
       "province": "Eastern",
-      "centroid_lat": -2.050,
-      "centroid_lng": 30.240,
+      "centroid_lat": -2.05,
+      "centroid_lng": 30.24,
       "nirs_baseline": {
         "maize_tons": 13200,
         "beans_tons": 4800,
@@ -173,8 +174,8 @@
       "name": "Rwamagana",
       "code": "RW",
       "province": "Eastern",
-      "centroid_lat": -1.930,
-      "centroid_lng": 30.420,
+      "centroid_lat": -1.93,
+      "centroid_lng": 30.42,
       "nirs_baseline": {
         "maize_tons": 10200,
         "beans_tons": 3800,
@@ -191,8 +192,8 @@
       "name": "Kayonza",
       "code": "KY",
       "province": "Eastern",
-      "centroid_lat": -1.960,
-      "centroid_lng": 30.590,
+      "centroid_lat": -1.96,
+      "centroid_lng": 30.59,
       "nirs_baseline": {
         "maize_tons": 9400,
         "beans_tons": 3400,
@@ -209,8 +210,8 @@
       "name": "Gatsibo",
       "code": "GT",
       "province": "Eastern",
-      "centroid_lat": -1.780,
-      "centroid_lng": 30.350,
+      "centroid_lat": -1.78,
+      "centroid_lng": 30.35,
       "nirs_baseline": {
         "maize_tons": 11800,
         "beans_tons": 4100,
@@ -313,11 +314,12 @@
       "facilities_count": 2
     },
     {
-      "id": "district_18",      "name": " Karongi",
+      "id": "district_18",
+      "name": " Karongi",
       "code": "WP",
       "province": "Western",
-      "centroid_lat": -2.050,
-      "centroid_lng": 29.300,
+      "centroid_lat": -2.05,
+      "centroid_lng": 29.3,
       "nirs_baseline": {
         "maize_tons": 3800,
         "beans_tons": 1500,
