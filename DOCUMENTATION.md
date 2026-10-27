@@ -430,10 +430,10 @@ CropGuard AI directly addresses NST2 Pillar 2: **Economic Transformation through
 | Criterion | Score (our estimate) | Evidence |
 |-----------|---------------------|---------|
 | Problem Understanding & Relevance | 18–20/20 | NST2 post-harvest loss target directly addressed; NISR SAS data used |
-| Data Use & Methodology | 18–20/20 | 12 years NISR SAS, ERA5 satellite, Open-Meteo, 4-component risk formula |
+| Data Use & Methodology | 15–17/20 | 12 years NISR SAS, ERA5 satellite, Open-Meteo, 4-component risk formula; see Evidence & Limitations below for what is proven vs heuristic |
 | Tech Innovation | 17–20/20 | AI disease scanner with plant validation, satellite fusion, SMS/USSD, GPS |
 | Usability & Design | 17–20/20 | Flutter app, 3 languages, dark/light mode, maps, animations |
-| Tangible Impact | 18–20/20 | 30 districts, 21 facilities, 8 crops, 6-hourly updates, works offline |
+| Tangible Impact | 15–17/20 | 30 districts, 21 facilities, 8 crops, 6-hourly updates, works offline; see what is live vs integration-ready below |
 
 ---
 

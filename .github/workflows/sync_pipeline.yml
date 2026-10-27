@@ -40,5 +40,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: risk-scores
-          path: data/risk_scores.json
+          path: |
+            data/risk_scores.json
+            data/data_quality_report.json
+            data/ussd_digest.json
+            reports/policy_brief_latest.md
           retention-days: 7

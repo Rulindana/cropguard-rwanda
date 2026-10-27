@@ -117,21 +117,21 @@
     },
     {
       "id": "district_07",
-      "name": "Gabiro",
-      "code": "GB",
-      "province": "Eastern",
-      "centroid_lat": -1.85,
-      "centroid_lng": 29.88,
+      "name": "Gakenke",
+      "code": "GK",
+      "province": "Northern",
+      "centroid_lat": -1.685,
+      "centroid_lng": 29.725,
       "nirs_baseline": {
-        "maize_tons": 11500,
-        "beans_tons": 4200,
-        "irish_potatoes_tons": 2600,
-        "cassava_tons": 2800,
-        "harvest_window": "Jun-Jul",
-        "historical_loss_rate_pct": 32.5,
-        "cooperative_coverage_pct": 48
+        "maize_tons": 7500,
+        "beans_tons": 2800,
+        "irish_potatoes_tons": 3800,
+        "cassava_tons": 500,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 27.5,
+        "cooperative_coverage_pct": 57
       },
-      "facilities_count": 3
+      "facilities_count": 2
     },
     {
       "id": "district_08",
@@ -297,29 +297,11 @@
     },
     {
       "id": "district_17",
-      "name": "Karongi",
-      "code": "KG",
+      "name": "Rutsiro",
+      "code": "RT",
       "province": "Western",
       "centroid_lat": -2.005,
       "centroid_lng": 29.345,
-      "nirs_baseline": {
-        "maize_tons": 6200,
-        "beans_tons": 2400,
-        "irish_potatoes_tons": 3500,
-        "cassava_tons": 600,
-        "harvest_window": "Aug-Sep",
-        "historical_loss_rate_pct": 27.2,
-        "cooperative_coverage_pct": 55
-      },
-      "facilities_count": 2
-    },
-    {
-      "id": "district_18",
-      "name": " Karongi",
-      "code": "WP",
-      "province": "Western",
-      "centroid_lat": -2.05,
-      "centroid_lng": 29.3,
       "nirs_baseline": {
         "maize_tons": 3800,
         "beans_tons": 1500,
@@ -330,6 +312,24 @@
         "cooperative_coverage_pct": 49
       },
       "facilities_count": 1
+    },
+    {
+      "id": "district_18",
+      "name": "Karongi",
+      "code": "KG",
+      "province": "Western",
+      "centroid_lat": -2.05,
+      "centroid_lng": 29.3,
+      "nirs_baseline": {
+        "maize_tons": 6200,
+        "beans_tons": 2400,
+        "irish_potatoes_tons": 3500,
+        "cassava_tons": 600,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 27.2,
+        "cooperative_coverage_pct": 55
+      },
+      "facilities_count": 2
     },
     {
       "id": "district_19",
@@ -423,7 +423,7 @@
     },
     {
       "id": "district_24",
-      "name": " Gisagara",
+      "name": "Gisagara",
       "code": "GS",
       "province": "Southern",
       "centroid_lat": -2.575,
@@ -513,35 +513,35 @@
     },
     {
       "id": "district_29",
-      "name": "Kayonza Rural",
-      "code": "RO",
-      "province": "Eastern",
-      "centroid_lat": -1.665,
-      "centroid_lng": 30.185,
+      "name": "Nyaruguru",
+      "code": "NR",
+      "province": "Southern",
+      "centroid_lat": -2.495,
+      "centroid_lng": 29.52,
       "nirs_baseline": {
-        "maize_tons": 8900,
-        "beans_tons": 3500,
-        "irish_potatoes_tons": 1900,
-        "cassava_tons": 2400,
+        "maize_tons": 4400,
+        "beans_tons": 1900,
+        "irish_potatoes_tons": 2200,
+        "cassava_tons": 900,
         "harvest_window": "Jun-Jul",
-        "historical_loss_rate_pct": 32.8,
-        "cooperative_coverage_pct": 44
+        "historical_loss_rate_pct": 31.5,
+        "cooperative_coverage_pct": 46
       },
-      "facilities_count": 2
+      "facilities_count": 1
     },
     {
       "id": "district_30",
-      "name": "Ngoma Rural",
-      "code": "MD",
-      "province": "Eastern",
-      "centroid_lat": -2.435,
-      "centroid_lng": 30.265,
+      "name": "Nyamasheke",
+      "code": "NM",
+      "province": "Western",
+      "centroid_lat": -2.44,
+      "centroid_lng": 28.965,
       "nirs_baseline": {
-        "maize_tons": 7300,
-        "beans_tons": 2900,
-        "irish_potatoes_tons": 1600,
-        "cassava_tons": 2700,
-        "harvest_window": "Jun-Jul",
+        "maize_tons": 4800,
+        "beans_tons": 1900,
+        "irish_potatoes_tons": 1700,
+        "cassava_tons": 1400,
+        "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 30.6,
         "cooperative_coverage_pct": 47
       },

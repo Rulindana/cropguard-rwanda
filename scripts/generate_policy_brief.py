@@ -46,6 +46,22 @@ def main():
 
     by_score = sorted(districts, key=lambda d: d["risk"]["risk_score"],
                       reverse=True)
+
+    def _trend_str(d: dict) -> str:
+        t = d.get("risk_trend") or {}
+        if isinstance(t, str):
+            t = {"trend": t}
+        trend = t.get("trend", "baseline") if isinstance(t, dict) else "baseline"
+        base = {
+            "rising": "▲ rising", "falling": "▼ falling",
+            "stable": "→ stable", "baseline": "new",
+        }.get(trend, "new")
+        if isinstance(t, dict) and t.get("delta") not in (None, ""):
+            try:
+                base += f" ({float(t['delta']):+.1f})"
+            except (ValueError, TypeError):
+                pass
+        return base
     red = [d for d in districts if d["risk"]["level"] == "red"]
     yellow = [d for d in districts if d["risk"]["level"] == "yellow"]
     green = [d for d in districts if d["risk"]["level"] == "green"]
@@ -98,13 +114,7 @@ def main():
                  "(free capacity) | Travel |")
     lines.append("|---|---|---|---|---|---|---|")
     for i, d in enumerate(by_score[:10], 1):
-        t = d.get("risk_trend", {})
-        trend_str = {
-            "rising": "▲ rising", "falling": "▼ falling",
-            "stable": "→ stable", "baseline": "new",
-        }.get(t.get("trend", "baseline"), "new")
-        if t.get("delta"):
-            trend_str += f" ({t['delta']:+.1f})"
+        trend_str = _trend_str(d)
         dispatch = d.get("dispatch") or []
         if dispatch:
             best = dispatch[0]

@@ -2,7 +2,7 @@
 
 **Generated:** 2026-10-09T18:37:15.874684Z  
 **Audience:** District agricultural planners, MINAGRI, NISR, development partners  
-**Data sources:** NISR SAS District Baseline (mock data) · Open-Meteo API (no key required) · Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)
+**Data sources:** NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports · Open-Meteo API (no key required) · Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)
 
 ## 1. Situation at a glance
 

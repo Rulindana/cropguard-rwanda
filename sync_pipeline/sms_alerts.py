@@ -169,10 +169,15 @@ def _build_cause(district: dict[str, Any], language: str) -> str:
     """
     Build a short cause sentence from sensor data for SMS/USSD messages.
     Picks the dominant sensor(s) that drove the risk level.
+
+    Weather values are read from district["weather"] (where the pipeline
+    writes them) rather than district["risk"] so the cause sentence always
+    reflects the actual sensor readings.
     """
-    rain   = district["risk"].get("total_precipitation_14d_mm", 0.0)
-    humid  = district["risk"].get("max_humidity_pct", 0.0)
-    soil   = district["risk"].get("soil_moisture_index", 0.0) * 100
+    weather = district.get("weather") or {}
+    rain   = weather.get("total_precipitation_14d_mm", 0.0)
+    humid  = weather.get("max_humidity_pct", 0.0)
+    soil   = weather.get("soil_moisture_index") or 0.0
 
     parts_en = []
     parts_rw = []
@@ -258,7 +263,8 @@ def send_sms(phone: str, message: str) -> dict[str, Any]:
         "to": phone,
         "message": message,
         "queued_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "status": "dry_run",
+        "status": "demo_queued",
+        "note": "Africa's Talking integration is deployment-ready; message written to outbox because AT_USERNAME/AT_API_KEY are not configured",
     }
     outbox = []
     if os.path.exists(OUTBOX_FILE):

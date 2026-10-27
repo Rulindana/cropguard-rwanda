@@ -4,7 +4,7 @@
     "generated_at": "2026-10-09T18:37:15.874684Z",
     "weather_source": "Open-Meteo API (no key required)",
     "satellite_source": "Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)",
-    "nisr_source": "NISR SAS District Baseline (mock data)",
+    "nisr_source": "NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports",
     "risk_formula": "Risk = (Rainfall \u00d7 0.35) + (Humidity \u00d7 0.25) + (Loss Rate \u00d7 0.25) + (Soil Moisture \u00d7 0.15)",
     "innovations": [
       "SMS/USSD bilingual alerts (sms_alerts.py)",

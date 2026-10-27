@@ -1,11 +1,11 @@
 {
   "metadata": {
     "pipeline": "CropGuard AI Sync Pipeline",
-    "generated_at": "2026-10-22T08:34:58.001Z",
+    "generated_at": "2026-10-26T06:19:42.722522Z",
     "weather_source": "Open-Meteo API (no key required)",
     "satellite_source": "Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)",
-    "nisr_source": "NISR Seasonal Agricultural Survey (SAS) 2013\u20132025 \u2014 District baselines extracted from official annual reports",
-    "risk_formula": "Risk = (Rainfall \u00d7 0.35) + (Humidity \u00d7 0.25) + (Loss Rate \u00d7 0.25) + (Soil Moisture \u00d7 0.15)",
+    "nisr_source": "NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports and Excel tables",
+    "risk_formula": "Risk = (Rainfall × 0.35) + (Humidity × 0.25) + (Loss Rate × 0.25) + (Soil Moisture × 0.15)",
     "innovations": [
       "SMS/USSD bilingual alerts (sms_alerts.py)",
       "Facility dispatch matching (dispatch_matcher.py)",
@@ -21,20 +21,20 @@
       "report": "data/data_quality_report.json"
     },
     "trend_summary": {
-      "rising": 0,
-      "falling": 0,
-      "stable": 0,
-      "baseline": 30,
+      "rising": 27,
+      "falling": 1,
+      "stable": 2,
+      "baseline": 0,
       "history_file": "risk_history.json",
-      "avg_delta": 0.0
+      "avg_delta": 10.6
     }
   },
   "summary": {
     "total_districts": 30,
-    "green_count": 4,
-    "yellow_count": 9,
-    "red_count": 17,
-    "avg_risk_score": 65.2
+    "green_count": 0,
+    "yellow_count": 3,
+    "red_count": 27,
+    "avg_risk_score": 77.4
   },
   "districts": [
     {
@@ -44,37 +44,32 @@
       "centroid_lat": -1.498,
       "centroid_lng": 29.635,
       "nirs_baseline": {
-        "maize_tons": 5884,
-        "beans_tons": 9136,
-        "irish_potatoes_tons": 4822,
-        "cassava_tons": 174,
+        "maize_tons": 12000,
+        "beans_tons": 4500,
+        "irish_potatoes_tons": 8200,
+        "cassava_tons": 1100,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 28.5,
-        "cooperative_coverage_pct": 62,
-        "sorghum_tons": 1423,
-        "wheat_tons": 562,
-        "groundnuts_tons": 508.5,
-        "sweet_potato_tons": 1539,
-        "peas_tons": 198
+        "cooperative_coverage_pct": 62
       },
       "weather": {
-        "total_precipitation_14d_mm": 119.0,
-        "max_humidity_pct": 98,
-        "avg_humidity_pct": 94.2,
-        "max_temp_c": 23.3,
-        "mean_soil_moisture_m3": 0.1863,
-        "soil_moisture_index": 25.0
+        "total_precipitation_14d_mm": 107.7,
+        "max_humidity_pct": 99,
+        "avg_humidity_pct": 91.4,
+        "max_temp_c": 23.4,
+        "mean_soil_moisture_m3": 0.3465,
+        "soil_moisture_index": 70.0
       },
       "risk": {
-        "risk_score": 70.9,
+        "risk_score": 77.6,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 28.5,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 70.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:16.981887Z",
+      "updated_at": "2026-10-26T06:19:11.592602Z",
       "dispatch": [
         {
           "facility_id": "fac_02",
@@ -131,13 +126,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:16.981887Z",
+      "dispatch_generated_at": "2026-10-26T06:19:11.592602Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 6.7,
+        "previous_score": 70.9,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -147,37 +142,32 @@
       "centroid_lat": -2.143,
       "centroid_lng": 30.088,
       "nirs_baseline": {
-        "maize_tons": 9597,
-        "beans_tons": 14849,
-        "irish_potatoes_tons": 308,
-        "cassava_tons": 10308,
+        "maize_tons": 18500,
+        "beans_tons": 6200,
+        "irish_potatoes_tons": 2100,
+        "cassava_tons": 3400,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 34.2,
-        "cooperative_coverage_pct": 45,
-        "sorghum_tons": 3644,
-        "wheat_tons": 1038.2,
-        "groundnuts_tons": 2875,
-        "sweet_potato_tons": 3606,
-        "peas_tons": 9
+        "cooperative_coverage_pct": 45
       },
       "weather": {
-        "total_precipitation_14d_mm": 100.9,
+        "total_precipitation_14d_mm": 74.9,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 99.1,
-        "max_temp_c": 28.6,
-        "mean_soil_moisture_m3": 0.2265,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 27.7,
+        "mean_soil_moisture_m3": 0.4123,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 74.5,
+        "risk_score": 74.8,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 34.2,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:20.182085Z",
+      "updated_at": "2026-10-26T06:19:12.512827Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -234,13 +224,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:20.182085Z",
+      "dispatch_generated_at": "2026-10-26T06:19:12.512827Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "stable",
+        "delta": 0.3,
+        "previous_score": 74.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -250,37 +240,32 @@
       "centroid_lat": -1.298,
       "centroid_lng": 30.325,
       "nirs_baseline": {
-        "maize_tons": 30096,
-        "beans_tons": 13836,
-        "irish_potatoes_tons": 753,
-        "cassava_tons": 3945,
+        "maize_tons": 24000,
+        "beans_tons": 8100,
+        "irish_potatoes_tons": 1800,
+        "cassava_tons": 5100,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 31.8,
-        "cooperative_coverage_pct": 51,
-        "sorghum_tons": 15085,
-        "wheat_tons": 1012.6,
-        "groundnuts_tons": 1254,
-        "sweet_potato_tons": 1498,
-        "peas_tons": 223
+        "cooperative_coverage_pct": 51
       },
       "weather": {
-        "total_precipitation_14d_mm": 70.5,
+        "total_precipitation_14d_mm": 47.0,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.4,
+        "avg_humidity_pct": 98.1,
         "max_temp_c": 28.6,
-        "mean_soil_moisture_m3": 0.1407,
-        "soil_moisture_index": 10.0
+        "mean_soil_moisture_m3": 0.3892,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 60.7,
+        "risk_score": 65.0,
         "level": "yellow",
-        "rainfall_index": 75.0,
+        "rainfall_index": 55.0,
         "humidity_index": 100.0,
         "loss_rate_index": 31.8,
-        "soil_moisture_index": 10.0
+        "soil_moisture_index": 85.0
       },
       "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:35:22.109031Z",
+      "updated_at": "2026-10-26T06:19:13.444904Z",
       "dispatch": [
         {
           "facility_id": "fac_07",
@@ -337,13 +322,13 @@
           "priority": "recommended"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:22.109031Z",
+      "dispatch_generated_at": "2026-10-26T06:19:13.444904Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 4.3,
+        "previous_score": 60.7,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -353,37 +338,32 @@
       "centroid_lat": -1.935,
       "centroid_lng": 29.915,
       "nirs_baseline": {
-        "maize_tons": 5842,
-        "beans_tons": 17275,
-        "irish_potatoes_tons": 3712,
-        "cassava_tons": 3446,
+        "maize_tons": 9800,
+        "beans_tons": 3600,
+        "irish_potatoes_tons": 6500,
+        "cassava_tons": 900,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 26.3,
-        "cooperative_coverage_pct": 58,
-        "sorghum_tons": 725,
-        "wheat_tons": 408,
-        "groundnuts_tons": 365,
-        "sweet_potato_tons": 7494,
-        "peas_tons": 1824
+        "cooperative_coverage_pct": 58
       },
       "weather": {
-        "total_precipitation_14d_mm": 101.3,
+        "total_precipitation_14d_mm": 81.4,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.6,
-        "max_temp_c": 25.0,
-        "mean_soil_moisture_m3": 0.2026,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 99.1,
+        "max_temp_c": 24.4,
+        "mean_soil_moisture_m3": 0.4229,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 72.6,
+        "risk_score": 81.6,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 26.3,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:24.144783Z",
+      "updated_at": "2026-10-26T06:19:15.292951Z",
       "dispatch": [
         {
           "facility_id": "fac_03",
@@ -440,13 +420,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:24.144783Z",
+      "dispatch_generated_at": "2026-10-26T06:19:15.292951Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 9.0,
+        "previous_score": 72.6,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -456,37 +436,32 @@
       "centroid_lat": -1.665,
       "centroid_lng": 29.575,
       "nirs_baseline": {
-        "maize_tons": 9651,
-        "beans_tons": 10502,
-        "irish_potatoes_tons": 4357,
-        "cassava_tons": 108,
+        "maize_tons": 7200,
+        "beans_tons": 2800,
+        "irish_potatoes_tons": 5400,
+        "cassava_tons": 600,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 24.1,
-        "cooperative_coverage_pct": 65,
-        "sorghum_tons": 1419,
-        "wheat_tons": 645,
-        "groundnuts_tons": 326.2,
-        "sweet_potato_tons": 3836,
-        "peas_tons": 1706
+        "cooperative_coverage_pct": 65
       },
       "weather": {
-        "total_precipitation_14d_mm": 84.4,
+        "total_precipitation_14d_mm": 78.2,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 95.5,
-        "max_temp_c": 19.7,
-        "mean_soil_moisture_m3": 0.3424,
-        "soil_moisture_index": 70.0
+        "avg_humidity_pct": 95.3,
+        "max_temp_c": 19.9,
+        "mean_soil_moisture_m3": 0.4678,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 76.5,
+        "risk_score": 72.3,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 24.1,
-        "soil_moisture_index": 70.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:25.084870Z",
+      "updated_at": "2026-10-26T06:19:16.906877Z",
       "dispatch": [
         {
           "facility_id": "fac_04",
@@ -543,13 +518,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:25.084870Z",
+      "dispatch_generated_at": "2026-10-26T06:19:16.906877Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "falling",
+        "delta": -4.2,
+        "previous_score": 76.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -559,37 +534,32 @@
       "centroid_lat": -1.615,
       "centroid_lng": 29.795,
       "nirs_baseline": {
-        "maize_tons": 4592,
-        "beans_tons": 9268,
-        "irish_potatoes_tons": 1497,
-        "cassava_tons": 4270,
+        "maize_tons": 8400,
+        "beans_tons": 3100,
+        "irish_potatoes_tons": 4900,
+        "cassava_tons": 750,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 27.8,
-        "cooperative_coverage_pct": 54,
-        "sorghum_tons": 1642.9,
-        "wheat_tons": 2,
-        "groundnuts_tons": 46,
-        "sweet_potato_tons": 2970,
-        "peas_tons": 352
+        "cooperative_coverage_pct": 54
       },
       "weather": {
-        "total_precipitation_14d_mm": 162.0,
+        "total_precipitation_14d_mm": 100.0,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.7,
-        "max_temp_c": 23.6,
-        "mean_soil_moisture_m3": 0.1319,
-        "soil_moisture_index": 10.0
+        "avg_humidity_pct": 98.2,
+        "max_temp_c": 23.1,
+        "mean_soil_moisture_m3": 0.3848,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 68.5,
-        "level": "yellow",
+        "risk_score": 79.7,
+        "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 27.8,
-        "soil_moisture_index": 10.0
+        "soil_moisture_index": 85.0
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:35:29.623789Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:18.087312Z",
       "dispatch": [
         {
           "facility_id": "fac_05",
@@ -607,7 +577,7 @@
           "contact_phone": "+250780000005",
           "contact_email": "rulindo.mobile@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_02",
@@ -625,7 +595,7 @@
           "contact_phone": "+250780000002",
           "contact_email": "kinigi.silo@agri.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_20",
@@ -643,16 +613,114 @@
           "contact_phone": "+250780000020",
           "contact_email": "north.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:29.623789Z",
+      "dispatch_generated_at": "2026-10-26T06:19:18.087312Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 11.2,
+        "previous_score": 68.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
+    },
+    {
+      "district_id": "district_07",
+      "district_name": "Gakenke",
+      "province": "Northern",
+      "centroid_lat": -1.685,
+      "centroid_lng": 29.725,
+      "nirs_baseline": {
+        "maize_tons": 7500,
+        "beans_tons": 2800,
+        "irish_potatoes_tons": 3800,
+        "cassava_tons": 500,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 27.5,
+        "cooperative_coverage_pct": 57
+      },
+      "weather": {
+        "total_precipitation_14d_mm": 170.0,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 22.3,
+        "mean_soil_moisture_m3": 0.4914,
+        "soil_moisture_index": 100.0
+      },
+      "risk": {
+        "risk_score": 81.9,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 27.5,
+        "soil_moisture_index": 100.0
+      },
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:19.119712Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_05",
+          "facility_name": "Rulindo Mobile Dryer Station",
+          "facility_type": "drying_ground",
+          "district": "Rulindo",
+          "lat": -1.61,
+          "lng": 29.8,
+          "distance_km": 11.8,
+          "est_travel_minutes": 30,
+          "available_capacity_tons": 150.0,
+          "capacity_utilization_pct": 57.1,
+          "match_score": 71.2,
+          "contact_name": "Theogene Hakizimana",
+          "contact_phone": "+250780000005",
+          "contact_email": "rulindo.mobile@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_02",
+          "facility_name": "Kinigi Silo Storage Unit",
+          "facility_type": "silo",
+          "district": "Musanze",
+          "lat": -1.475,
+          "lng": 29.655,
+          "distance_km": 24.6,
+          "est_travel_minutes": 52,
+          "available_capacity_tons": 640.0,
+          "capacity_utilization_pct": 46.7,
+          "match_score": 69.0,
+          "contact_name": "Annet Mukankusi",
+          "contact_phone": "+250780000002",
+          "contact_email": "kinigi.silo@agri.rw",
+          "operational_hours": "07:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_04",
+          "facility_name": "Burera Cold Storage Facility",
+          "facility_type": "cold_storage",
+          "district": "Burera",
+          "lat": -1.66,
+          "lng": 29.57,
+          "distance_km": 17.5,
+          "est_travel_minutes": 40,
+          "available_capacity_tons": 120.0,
+          "capacity_utilization_pct": 60.0,
+          "match_score": 67.3,
+          "contact_name": "Marie Grace Uwizeye",
+          "contact_phone": "+250780000004",
+          "contact_email": "burera.cold@agri.rw",
+          "operational_hours": "08:00-16:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:19.119712Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 7.8,
+        "previous_score": 74.1,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -662,37 +730,32 @@
       "centroid_lat": -2.05,
       "centroid_lng": 30.24,
       "nirs_baseline": {
-        "maize_tons": 15801,
-        "beans_tons": 15628,
-        "irish_potatoes_tons": 1607,
-        "cassava_tons": 19020,
+        "maize_tons": 13200,
+        "beans_tons": 4800,
+        "irish_potatoes_tons": 1900,
+        "cassava_tons": 3100,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 33.7,
-        "cooperative_coverage_pct": 42,
-        "sorghum_tons": 775,
-        "wheat_tons": 710.9,
-        "groundnuts_tons": 660,
-        "sweet_potato_tons": 1758,
-        "peas_tons": 99
+        "cooperative_coverage_pct": 42
       },
       "weather": {
-        "total_precipitation_14d_mm": 110.7,
+        "total_precipitation_14d_mm": 68.9,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 99.4,
-        "max_temp_c": 27.7,
-        "mean_soil_moisture_m3": 0.1991,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 26.9,
+        "mean_soil_moisture_m3": 0.4394,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 72.2,
+        "risk_score": 74.7,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 33.7,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:32.892522Z",
+      "updated_at": "2026-10-26T06:19:20.199482Z",
       "dispatch": [
         {
           "facility_id": "fac_08",
@@ -749,13 +812,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:32.892522Z",
+      "dispatch_generated_at": "2026-10-26T06:19:20.199482Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 2.5,
+        "previous_score": 72.2,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -765,37 +828,32 @@
       "centroid_lat": -2.015,
       "centroid_lng": 30.375,
       "nirs_baseline": {
-        "maize_tons": 23652,
-        "beans_tons": 19241,
-        "irish_potatoes_tons": 1655,
-        "cassava_tons": 6249,
+        "maize_tons": 15600,
+        "beans_tons": 5400,
+        "irish_potatoes_tons": 2300,
+        "cassava_tons": 3800,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 30.9,
-        "cooperative_coverage_pct": 52,
-        "sorghum_tons": 3536,
-        "wheat_tons": 62,
-        "groundnuts_tons": 436,
-        "sweet_potato_tons": 1487,
-        "peas_tons": 277
+        "cooperative_coverage_pct": 52
       },
       "weather": {
-        "total_precipitation_14d_mm": 86.6,
+        "total_precipitation_14d_mm": 68.5,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.4,
-        "max_temp_c": 26.9,
-        "mean_soil_moisture_m3": 0.1951,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 98.6,
+        "max_temp_c": 25.3,
+        "mean_soil_moisture_m3": 0.4362,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 71.5,
+        "risk_score": 74.0,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 30.9,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:35:36.277647Z",
+      "updated_at": "2026-10-26T06:19:21.499918Z",
       "dispatch": [
         {
           "facility_id": "fac_09",
@@ -852,13 +910,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:36.277647Z",
+      "dispatch_generated_at": "2026-10-26T06:19:21.499918Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 2.5,
+        "previous_score": 71.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -868,37 +926,32 @@
       "centroid_lat": -1.93,
       "centroid_lng": 30.42,
       "nirs_baseline": {
-        "maize_tons": 10449,
-        "beans_tons": 13726,
-        "irish_potatoes_tons": 1172,
-        "cassava_tons": 6553,
+        "maize_tons": 10200,
+        "beans_tons": 3800,
+        "irish_potatoes_tons": 2400,
+        "cassava_tons": 2200,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 29.4,
-        "cooperative_coverage_pct": 56,
-        "sorghum_tons": 6,
-        "wheat_tons": 281.9,
-        "groundnuts_tons": 1087,
-        "sweet_potato_tons": 1862,
-        "peas_tons": 28
+        "cooperative_coverage_pct": 56
       },
       "weather": {
-        "total_precipitation_14d_mm": 76.8,
+        "total_precipitation_14d_mm": 71.8,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.3,
-        "max_temp_c": 27.7,
-        "mean_soil_moisture_m3": 0.1824,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 98.1,
+        "max_temp_c": 25.7,
+        "mean_soil_moisture_m3": 0.4207,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 62.4,
-        "level": "yellow",
+        "risk_score": 73.6,
+        "level": "red",
         "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 29.4,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:35:41.540308Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:22.537410Z",
       "dispatch": [
         {
           "facility_id": "fac_10",
@@ -916,7 +969,7 @@
           "contact_phone": "+250780000010",
           "contact_email": "rwamagana.agri@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_09",
@@ -934,7 +987,7 @@
           "contact_phone": "+250780000009",
           "contact_email": "kirehe.storage@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_12",
@@ -952,16 +1005,16 @@
           "contact_phone": "+250780000012",
           "contact_email": "gatsibo.maize@agri.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:41.540308Z",
+      "dispatch_generated_at": "2026-10-26T06:19:22.537410Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 11.2,
+        "previous_score": 62.4,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -971,37 +1024,32 @@
       "centroid_lat": -1.96,
       "centroid_lng": 30.59,
       "nirs_baseline": {
-        "maize_tons": 17773,
-        "beans_tons": 14530,
-        "irish_potatoes_tons": 2415,
-        "cassava_tons": 21305,
+        "maize_tons": 9400,
+        "beans_tons": 3400,
+        "irish_potatoes_tons": 1600,
+        "cassava_tons": 2600,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 31.2,
-        "cooperative_coverage_pct": 47,
-        "sorghum_tons": 5279,
-        "wheat_tons": 25,
-        "groundnuts_tons": 327,
-        "sweet_potato_tons": 1673,
-        "peas_tons": 112
+        "cooperative_coverage_pct": 47
       },
       "weather": {
-        "total_precipitation_14d_mm": 69.9,
+        "total_precipitation_14d_mm": 42.3,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 99.0,
-        "max_temp_c": 28.2,
-        "mean_soil_moisture_m3": 0.1597,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 99.4,
+        "max_temp_c": 27.8,
+        "mean_soil_moisture_m3": 0.3791,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 62.8,
+        "risk_score": 64.8,
         "level": "yellow",
-        "rainfall_index": 75.0,
+        "rainfall_index": 55.0,
         "humidity_index": 100.0,
         "loss_rate_index": 31.2,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 85.0
       },
       "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:35:42.953270Z",
+      "updated_at": "2026-10-26T06:19:23.619431Z",
       "dispatch": [
         {
           "facility_id": "fac_11",
@@ -1058,13 +1106,13 @@
           "priority": "recommended"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:35:42.953270Z",
+      "dispatch_generated_at": "2026-10-26T06:19:23.619431Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 2.0,
+        "previous_score": 62.8,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1074,37 +1122,32 @@
       "centroid_lat": -1.78,
       "centroid_lng": 30.35,
       "nirs_baseline": {
-        "maize_tons": 22199,
-        "beans_tons": 19282,
-        "irish_potatoes_tons": 2431,
-        "cassava_tons": 9467,
+        "maize_tons": 11800,
+        "beans_tons": 4100,
+        "irish_potatoes_tons": 2100,
+        "cassava_tons": 3200,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 28.9,
-        "cooperative_coverage_pct": 53,
-        "sorghum_tons": 5552,
-        "wheat_tons": 74,
-        "groundnuts_tons": 686,
-        "sweet_potato_tons": 2073,
-        "peas_tons": 299
+        "cooperative_coverage_pct": 53
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 43.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 96.9,
+        "max_temp_c": 26.3,
+        "mean_soil_moisture_m3": 0.3659,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 32.0,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 64.2,
+        "level": "yellow",
+        "rainfall_index": 55.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 28.9,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 85.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-09T18:36:12.989250Z",
+      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
+      "updated_at": "2026-10-26T06:19:24.559578Z",
       "dispatch": [
         {
           "facility_id": "fac_12",
@@ -1122,7 +1165,7 @@
           "contact_phone": "+250780000012",
           "contact_email": "gatsibo.maize@agri.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "available"
+          "priority": "recommended"
         },
         {
           "facility_id": "fac_10",
@@ -1140,7 +1183,7 @@
           "contact_phone": "+250780000010",
           "contact_email": "rwamagana.agri@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "recommended"
         },
         {
           "facility_id": "fac_09",
@@ -1158,16 +1201,16 @@
           "contact_phone": "+250780000009",
           "contact_email": "kirehe.storage@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "recommended"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:12.989250Z",
+      "dispatch_generated_at": "2026-10-26T06:19:24.559578Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 32.2,
+        "previous_score": 32.0,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1177,37 +1220,32 @@
       "centroid_lat": -1.745,
       "centroid_lng": 29.485,
       "nirs_baseline": {
-        "maize_tons": 3148,
-        "beans_tons": 8715,
-        "irish_potatoes_tons": 8713,
-        "cassava_tons": 708,
+        "maize_tons": 5600,
+        "beans_tons": 2200,
+        "irish_potatoes_tons": 4100,
+        "cassava_tons": 500,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 23.6,
-        "cooperative_coverage_pct": 60,
-        "sorghum_tons": 495,
-        "wheat_tons": 181,
-        "groundnuts_tons": 513.9,
-        "sweet_potato_tons": 2446,
-        "peas_tons": 631
+        "cooperative_coverage_pct": 60
       },
       "weather": {
-        "total_precipitation_14d_mm": 95.9,
+        "total_precipitation_14d_mm": 96.4,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.1,
-        "max_temp_c": 18.5,
-        "mean_soil_moisture_m3": 0.2573,
-        "soil_moisture_index": 55.0
+        "avg_humidity_pct": 97.0,
+        "max_temp_c": 18.8,
+        "mean_soil_moisture_m3": 0.4626,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 74.2,
+        "risk_score": 80.9,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 23.6,
-        "soil_moisture_index": 55.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:16.791557Z",
+      "updated_at": "2026-10-26T06:19:25.438898Z",
       "dispatch": [
         {
           "facility_id": "fac_04",
@@ -1264,13 +1302,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:16.791557Z",
+      "dispatch_generated_at": "2026-10-26T06:19:25.438898Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 6.7,
+        "previous_score": 74.2,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1280,37 +1318,32 @@
       "centroid_lat": -1.975,
       "centroid_lng": 29.325,
       "nirs_baseline": {
-        "maize_tons": 2304,
-        "beans_tons": 8384,
-        "irish_potatoes_tons": 5477,
-        "cassava_tons": 330,
+        "maize_tons": 6800,
+        "beans_tons": 2500,
+        "irish_potatoes_tons": 4800,
+        "cassava_tons": 700,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 25.4,
-        "cooperative_coverage_pct": 57,
-        "sorghum_tons": 1245.2,
-        "wheat_tons": 365.5,
-        "groundnuts_tons": 356.4,
-        "sweet_potato_tons": 774,
-        "peas_tons": 396
+        "cooperative_coverage_pct": 57
       },
       "weather": {
-        "total_precipitation_14d_mm": 91.8,
+        "total_precipitation_14d_mm": 144.0,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 94.9,
-        "max_temp_c": 26.0,
-        "mean_soil_moisture_m3": 0.0896,
-        "soil_moisture_index": 10.0
+        "avg_humidity_pct": 91.9,
+        "max_temp_c": 26.7,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 67.8,
-        "level": "yellow",
+        "risk_score": 81.3,
+        "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 25.4,
-        "soil_moisture_index": 10.0
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:36:19.266269Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:26.419190Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1328,7 +1361,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -1346,7 +1379,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_04",
@@ -1364,16 +1397,16 @@
           "contact_phone": "+250780000004",
           "contact_email": "burera.cold@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "recommended"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:19.266269Z",
+      "dispatch_generated_at": "2026-10-26T06:19:26.419190Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 13.5,
+        "previous_score": 67.8,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1383,37 +1416,32 @@
       "centroid_lat": -1.925,
       "centroid_lng": 29.425,
       "nirs_baseline": {
-        "maize_tons": 3581,
-        "beans_tons": 12047,
-        "irish_potatoes_tons": 1736,
-        "cassava_tons": 6816,
+        "maize_tons": 4200,
+        "beans_tons": 1800,
+        "irish_potatoes_tons": 3200,
+        "cassava_tons": 400,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 26.8,
-        "cooperative_coverage_pct": 50,
-        "sorghum_tons": 335,
-        "wheat_tons": 190,
-        "groundnuts_tons": 486.1,
-        "sweet_potato_tons": 4893,
-        "peas_tons": 452
+        "cooperative_coverage_pct": 50
       },
       "weather": {
-        "total_precipitation_14d_mm": 128.0,
+        "total_precipitation_14d_mm": 84.7,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 99.4,
-        "max_temp_c": 17.9,
-        "mean_soil_moisture_m3": 0.2496,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 99.1,
+        "max_temp_c": 18.2,
+        "mean_soil_moisture_m3": 0.4643,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 72.7,
+        "risk_score": 81.7,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 26.8,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:22.059996Z",
+      "updated_at": "2026-10-26T06:19:27.961975Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1470,13 +1498,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:22.059996Z",
+      "dispatch_generated_at": "2026-10-26T06:19:27.961975Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 9.0,
+        "previous_score": 72.7,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1486,37 +1514,32 @@
       "centroid_lat": -2.215,
       "centroid_lng": 29.125,
       "nirs_baseline": {
-        "maize_tons": 7740,
-        "beans_tons": 12577,
-        "irish_potatoes_tons": 290,
-        "cassava_tons": 15025,
+        "maize_tons": 5100,
+        "beans_tons": 2000,
+        "irish_potatoes_tons": 2900,
+        "cassava_tons": 1800,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 30.1,
-        "cooperative_coverage_pct": 44,
-        "sorghum_tons": 250,
-        "wheat_tons": 483.9,
-        "groundnuts_tons": 272,
-        "sweet_potato_tons": 1364,
-        "peas_tons": 51
+        "cooperative_coverage_pct": 44
       },
       "weather": {
-        "total_precipitation_14d_mm": 88.0,
-        "max_humidity_pct": 95,
-        "avg_humidity_pct": 90.8,
-        "max_temp_c": 23.8,
-        "mean_soil_moisture_m3": 0.1707,
-        "soil_moisture_index": 25.0
+        "total_precipitation_14d_mm": 80.5,
+        "max_humidity_pct": 94,
+        "avg_humidity_pct": 89.4,
+        "max_temp_c": 24.6,
+        "mean_soil_moisture_m3": 0.4482,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 71.3,
+        "risk_score": 82.5,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 30.1,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:27.782452Z",
+      "updated_at": "2026-10-26T06:19:30.252567Z",
       "dispatch": [
         {
           "facility_id": "fac_18",
@@ -1573,13 +1596,209 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:27.782452Z",
+      "dispatch_generated_at": "2026-10-26T06:19:30.252567Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 11.2,
+        "previous_score": 71.3,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
+    },
+    {
+      "district_id": "district_17",
+      "district_name": "Rutsiro",
+      "province": "Western",
+      "centroid_lat": -2.005,
+      "centroid_lng": 29.345,
+      "nirs_baseline": {
+        "maize_tons": 3800,
+        "beans_tons": 1500,
+        "irish_potatoes_tons": 2600,
+        "cassava_tons": 1200,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 28.7,
+        "cooperative_coverage_pct": 49
+      },
+      "weather": {
+        "total_precipitation_14d_mm": 144.0,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 91.9,
+        "max_temp_c": 26.4,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 100.0
+      },
+      "risk": {
+        "risk_score": 82.2,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 28.7,
+        "soil_moisture_index": 100.0
+      },
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:31.175706Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_17",
+          "facility_name": "Rubavu Coffee & Crop Dryer",
+          "facility_type": "drying_ground",
+          "district": "Rubavu",
+          "lat": -1.98,
+          "lng": 29.33,
+          "distance_km": 3.2,
+          "est_travel_minutes": 16,
+          "available_capacity_tons": 200.0,
+          "capacity_utilization_pct": 55.6,
+          "match_score": 76.2,
+          "contact_name": "Vincent Nsengiyumva",
+          "contact_phone": "+250780000017",
+          "contact_email": "rubavu.coffee@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_18",
+          "facility_name": "Nyamagabe Agri Hub",
+          "facility_type": "storage_center",
+          "district": "Nyamagabe",
+          "lat": -2.22,
+          "lng": 29.41,
+          "distance_km": 25.0,
+          "est_travel_minutes": 53,
+          "available_capacity_tons": 270.0,
+          "capacity_utilization_pct": 55.0,
+          "match_score": 65.5,
+          "contact_name": "Oscar Ndayisaba",
+          "contact_phone": "+250780000018",
+          "contact_email": "nyamagabe.hub@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_04",
+          "facility_name": "Burera Cold Storage Facility",
+          "facility_type": "cold_storage",
+          "district": "Burera",
+          "lat": -1.66,
+          "lng": 29.57,
+          "distance_km": 45.8,
+          "est_travel_minutes": 89,
+          "available_capacity_tons": 120.0,
+          "capacity_utilization_pct": 60.0,
+          "match_score": 53.1,
+          "contact_name": "Marie Grace Uwizeye",
+          "contact_phone": "+250780000004",
+          "contact_email": "burera.cold@agri.rw",
+          "operational_hours": "08:00-16:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:31.175706Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 11.7,
+        "previous_score": 70.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
+    },
+    {
+      "district_id": "district_18",
+      "district_name": "Karongi",
+      "province": "Western",
+      "centroid_lat": -2.05,
+      "centroid_lng": 29.3,
+      "nirs_baseline": {
+        "maize_tons": 6200,
+        "beans_tons": 2400,
+        "irish_potatoes_tons": 3500,
+        "cassava_tons": 600,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 27.2,
+        "cooperative_coverage_pct": 55
+      },
+      "weather": {
+        "total_precipitation_14d_mm": 144.0,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 91.9,
+        "max_temp_c": 26.7,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 100.0
+      },
+      "risk": {
+        "risk_score": 81.8,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 27.2,
+        "soil_moisture_index": 100.0
+      },
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:32.159447Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_17",
+          "facility_name": "Rubavu Coffee & Crop Dryer",
+          "facility_type": "drying_ground",
+          "district": "Rubavu",
+          "lat": -1.98,
+          "lng": 29.33,
+          "distance_km": 8.5,
+          "est_travel_minutes": 25,
+          "available_capacity_tons": 200.0,
+          "capacity_utilization_pct": 55.6,
+          "match_score": 73.5,
+          "contact_name": "Vincent Nsengiyumva",
+          "contact_phone": "+250780000017",
+          "contact_email": "rubavu.coffee@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_18",
+          "facility_name": "Nyamagabe Agri Hub",
+          "facility_type": "storage_center",
+          "district": "Nyamagabe",
+          "lat": -2.22,
+          "lng": 29.41,
+          "distance_km": 22.5,
+          "est_travel_minutes": 49,
+          "available_capacity_tons": 270.0,
+          "capacity_utilization_pct": 55.0,
+          "match_score": 66.7,
+          "contact_name": "Oscar Ndayisaba",
+          "contact_phone": "+250780000018",
+          "contact_email": "nyamagabe.hub@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_04",
+          "facility_name": "Burera Cold Storage Facility",
+          "facility_type": "cold_storage",
+          "district": "Burera",
+          "lat": -1.66,
+          "lng": 29.57,
+          "distance_km": 52.7,
+          "est_travel_minutes": 100,
+          "available_capacity_tons": 120.0,
+          "capacity_utilization_pct": 60.0,
+          "match_score": 49.6,
+          "contact_name": "Marie Grace Uwizeye",
+          "contact_phone": "+250780000004",
+          "contact_email": "burera.cold@agri.rw",
+          "operational_hours": "08:00-16:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:32.159447Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 10.9,
+        "previous_score": 70.9,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1589,37 +1808,32 @@
       "centroid_lat": -1.945,
       "centroid_lng": 30.085,
       "nirs_baseline": {
-        "maize_tons": 3298,
-        "beans_tons": 6631,
-        "irish_potatoes_tons": 527,
-        "cassava_tons": 3790,
+        "maize_tons": 3400,
+        "beans_tons": 1200,
+        "irish_potatoes_tons": 1800,
+        "cassava_tons": 900,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 22.5,
-        "cooperative_coverage_pct": 70,
-        "sorghum_tons": 116.9,
-        "wheat_tons": 105.6,
-        "groundnuts_tons": 129,
-        "sweet_potato_tons": 952,
-        "peas_tons": 41
+        "cooperative_coverage_pct": 70
       },
       "weather": {
-        "total_precipitation_14d_mm": 112.5,
+        "total_precipitation_14d_mm": 65.9,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.9,
-        "max_temp_c": 27.7,
-        "mean_soil_moisture_m3": 0.1973,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 98.8,
+        "max_temp_c": 26.3,
+        "mean_soil_moisture_m3": 0.4039,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 69.4,
+        "risk_score": 71.9,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 22.5,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:35.774849Z",
+      "updated_at": "2026-10-26T06:19:33.026222Z",
       "dispatch": [
         {
           "facility_id": "fac_21",
@@ -1676,13 +1890,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:35.774849Z",
+      "dispatch_generated_at": "2026-10-26T06:19:33.026222Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 2.5,
+        "previous_score": 69.4,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1692,37 +1906,32 @@
       "centroid_lat": -1.975,
       "centroid_lng": 30.135,
       "nirs_baseline": {
-        "maize_tons": 1168,
-        "beans_tons": 1370,
-        "irish_potatoes_tons": 0,
-        "cassava_tons": 912,
+        "maize_tons": 2800,
+        "beans_tons": 1000,
+        "irish_potatoes_tons": 1500,
+        "cassava_tons": 700,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 21.8,
-        "cooperative_coverage_pct": 72,
-        "sorghum_tons": 126.7,
-        "wheat_tons": 111.7,
-        "groundnuts_tons": 10,
-        "sweet_potato_tons": 489,
-        "peas_tons": 0
+        "cooperative_coverage_pct": 72
       },
       "weather": {
-        "total_precipitation_14d_mm": 117.4,
+        "total_precipitation_14d_mm": 65.2,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.6,
-        "max_temp_c": 27.4,
-        "mean_soil_moisture_m3": 0.209,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 98.8,
+        "max_temp_c": 26.0,
+        "mean_soil_moisture_m3": 0.4388,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 71.5,
+        "risk_score": 71.7,
         "level": "red",
-        "rainfall_index": 100.0,
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 21.8,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:43.422134Z",
+      "updated_at": "2026-10-26T06:19:34.042263Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -1779,13 +1988,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:43.422134Z",
+      "dispatch_generated_at": "2026-10-26T06:19:34.042263Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "stable",
+        "delta": 0.2,
+        "previous_score": 71.5,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1795,37 +2004,32 @@
       "centroid_lat": -1.955,
       "centroid_lng": 30.065,
       "nirs_baseline": {
-        "maize_tons": 679,
-        "beans_tons": 1705,
-        "irish_potatoes_tons": 60,
-        "cassava_tons": 1001,
+        "maize_tons": 1900,
+        "beans_tons": 700,
+        "irish_potatoes_tons": 1100,
+        "cassava_tons": 500,
         "harvest_window": "Aug-Sep",
         "historical_loss_rate_pct": 20.3,
-        "cooperative_coverage_pct": 75,
-        "sorghum_tons": 57.9,
-        "wheat_tons": 63.3,
-        "groundnuts_tons": 9,
-        "sweet_potato_tons": 358,
-        "peas_tons": 0
+        "cooperative_coverage_pct": 75
       },
       "weather": {
-        "total_precipitation_14d_mm": 112.5,
+        "total_precipitation_14d_mm": 65.9,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.9,
-        "max_temp_c": 27.7,
-        "mean_soil_moisture_m3": 0.1973,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 98.8,
+        "max_temp_c": 26.3,
+        "mean_soil_moisture_m3": 0.4039,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 68.8,
-        "level": "yellow",
-        "rainfall_index": 100.0,
+        "risk_score": 71.3,
+        "level": "red",
+        "rainfall_index": 75.0,
         "humidity_index": 100.0,
         "loss_rate_index": 20.3,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:36:47.005617Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:34.848465Z",
       "dispatch": [
         {
           "facility_id": "fac_21",
@@ -1843,7 +2047,7 @@
           "contact_phone": "+250780000021",
           "contact_email": "kigali.central@agri.gov.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -1861,7 +2065,7 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_03",
@@ -1879,16 +2083,16 @@
           "contact_phone": "+250780000003",
           "contact_email": "gicumbi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:47.005617Z",
+      "dispatch_generated_at": "2026-10-26T06:19:34.848465Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 2.5,
+        "previous_score": 68.8,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -1898,37 +2102,32 @@
       "centroid_lat": -2.605,
       "centroid_lng": 29.635,
       "nirs_baseline": {
-        "maize_tons": 4607,
-        "beans_tons": 12972,
-        "irish_potatoes_tons": 441,
-        "cassava_tons": 10967,
+        "maize_tons": 7800,
+        "beans_tons": 3200,
+        "irish_potatoes_tons": 3600,
+        "cassava_tons": 2100,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 29.6,
-        "cooperative_coverage_pct": 54,
-        "sorghum_tons": 1518.9,
-        "wheat_tons": 291.4,
-        "groundnuts_tons": 50,
-        "sweet_potato_tons": 2358,
-        "peas_tons": 169
+        "cooperative_coverage_pct": 54
       },
       "weather": {
-        "total_precipitation_14d_mm": 128.4,
+        "total_precipitation_14d_mm": 109.8,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 96.1,
-        "max_temp_c": 25.1,
-        "mean_soil_moisture_m3": 0.2109,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 98.4,
+        "max_temp_c": 24.5,
+        "mean_soil_moisture_m3": 0.4842,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 73.4,
+        "risk_score": 82.4,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 29.6,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:49.136636Z",
+      "updated_at": "2026-10-26T06:19:35.758794Z",
       "dispatch": [
         {
           "facility_id": "fac_13",
@@ -1985,13 +2184,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:49.136636Z",
+      "dispatch_generated_at": "2026-10-26T06:19:35.758794Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 9.0,
+        "previous_score": 73.4,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -2001,37 +2200,32 @@
       "centroid_lat": -2.525,
       "centroid_lng": 29.685,
       "nirs_baseline": {
-        "maize_tons": 5698,
-        "beans_tons": 13514,
-        "irish_potatoes_tons": 311,
-        "cassava_tons": 17925,
+        "maize_tons": 6400,
+        "beans_tons": 2600,
+        "irish_potatoes_tons": 2800,
+        "cassava_tons": 1900,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 30.4,
-        "cooperative_coverage_pct": 51,
-        "sorghum_tons": 554,
-        "wheat_tons": 285.7,
-        "groundnuts_tons": 391,
-        "sweet_potato_tons": 2106,
-        "peas_tons": 208
+        "cooperative_coverage_pct": 51
       },
       "weather": {
-        "total_precipitation_14d_mm": 107.7,
+        "total_precipitation_14d_mm": 109.4,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 96.1,
-        "max_temp_c": 25.4,
-        "mean_soil_moisture_m3": 0.2284,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 98.0,
+        "max_temp_c": 24.6,
+        "mean_soil_moisture_m3": 0.4585,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 73.6,
+        "risk_score": 82.6,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 30.4,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:51.347173Z",
+      "updated_at": "2026-10-26T06:19:36.626556Z",
       "dispatch": [
         {
           "facility_id": "fac_14",
@@ -2088,13 +2282,111 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:51.347173Z",
+      "dispatch_generated_at": "2026-10-26T06:19:36.626556Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 9.0,
+        "previous_score": 73.6,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
+    },
+    {
+      "district_id": "district_24",
+      "district_name": "Gisagara",
+      "province": "Southern",
+      "centroid_lat": -2.575,
+      "centroid_lng": 29.895,
+      "nirs_baseline": {
+        "maize_tons": 5200,
+        "beans_tons": 2100,
+        "irish_potatoes_tons": 2200,
+        "cassava_tons": 1600,
+        "harvest_window": "Jun-Jul",
+        "historical_loss_rate_pct": 31.1,
+        "cooperative_coverage_pct": 46
+      },
+      "weather": {
+        "total_precipitation_14d_mm": 116.4,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 27.8,
+        "mean_soil_moisture_m3": 0.4659,
+        "soil_moisture_index": 100.0
+      },
+      "risk": {
+        "risk_score": 82.8,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 31.1,
+        "soil_moisture_index": 100.0
+      },
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:37.540599Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_14",
+          "facility_name": "Nyanza Drying Bed",
+          "facility_type": "drying_ground",
+          "district": "Nyanza",
+          "lat": -2.52,
+          "lng": 29.68,
+          "distance_km": 24.7,
+          "est_travel_minutes": 52,
+          "available_capacity_tons": 160.0,
+          "capacity_utilization_pct": 54.3,
+          "match_score": 66.0,
+          "contact_name": "Jean Paul Habimana",
+          "contact_phone": "+250780000014",
+          "contact_email": "nyanza.drying@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_13",
+          "facility_name": "Huye Post-Harvest Center",
+          "facility_type": "storage_center",
+          "district": "Huye",
+          "lat": -2.6,
+          "lng": 29.64,
+          "distance_km": 28.5,
+          "est_travel_minutes": 59,
+          "available_capacity_tons": 310.0,
+          "capacity_utilization_pct": 55.7,
+          "match_score": 63.5,
+          "contact_name": "Paula Nyiramana",
+          "contact_phone": "+250780000013",
+          "contact_email": "huye.postharvest@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_19",
+          "facility_name": "Eastern Province Mobile Dryer Fleet",
+          "facility_type": "mobile_dryer",
+          "district": "Bugesera",
+          "lat": -2.1,
+          "lng": 30.05,
+          "distance_km": 55.6,
+          "est_travel_minutes": 105,
+          "available_capacity_tons": 1100.0,
+          "capacity_utilization_pct": 45.0,
+          "match_score": 54.2,
+          "contact_name": "Regional Agri Office",
+          "contact_phone": "+250780000019",
+          "contact_email": "east.region@agri.gov.rw",
+          "operational_hours": "06:00-18:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:37.540599Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 6.8,
+        "previous_score": 76.0,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -2104,37 +2396,32 @@
       "centroid_lat": -2.215,
       "centroid_lng": 29.405,
       "nirs_baseline": {
-        "maize_tons": 6188,
-        "beans_tons": 10330,
-        "irish_potatoes_tons": 3324,
-        "cassava_tons": 9282,
+        "maize_tons": 5800,
+        "beans_tons": 2300,
+        "irish_potatoes_tons": 3100,
+        "cassava_tons": 1400,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 28.3,
-        "cooperative_coverage_pct": 53,
-        "sorghum_tons": 1228.2,
-        "wheat_tons": 56,
-        "groundnuts_tons": 1005.9,
-        "sweet_potato_tons": 5715,
-        "peas_tons": 989
+        "cooperative_coverage_pct": 53
       },
       "weather": {
-        "total_precipitation_14d_mm": 102.2,
+        "total_precipitation_14d_mm": 85.6,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.5,
-        "max_temp_c": 22.5,
-        "mean_soil_moisture_m3": 0.2867,
-        "soil_moisture_index": 55.0
+        "avg_humidity_pct": 99.4,
+        "max_temp_c": 22.1,
+        "mean_soil_moisture_m3": 0.4685,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 75.3,
+        "risk_score": 82.1,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 28.3,
-        "soil_moisture_index": 55.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:36:54.930726Z",
+      "updated_at": "2026-10-26T06:19:38.336743Z",
       "dispatch": [
         {
           "facility_id": "fac_18",
@@ -2191,13 +2478,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:36:54.930726Z",
+      "dispatch_generated_at": "2026-10-26T06:19:38.336743Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 6.8,
+        "previous_score": 75.3,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -2207,37 +2494,32 @@
       "centroid_lat": -2.135,
       "centroid_lng": 29.835,
       "nirs_baseline": {
-        "maize_tons": 2162,
-        "beans_tons": 7198,
-        "irish_potatoes_tons": 409,
-        "cassava_tons": 11491,
+        "maize_tons": 6100,
+        "beans_tons": 2400,
+        "irish_potatoes_tons": 2500,
+        "cassava_tons": 1300,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 27.9,
-        "cooperative_coverage_pct": 56,
-        "sorghum_tons": 917.3,
-        "wheat_tons": 200.9,
-        "groundnuts_tons": 12,
-        "sweet_potato_tons": 3904,
-        "peas_tons": 115
+        "cooperative_coverage_pct": 56
       },
       "weather": {
-        "total_precipitation_14d_mm": 74.0,
+        "total_precipitation_14d_mm": 91.1,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 93.9,
-        "max_temp_c": 26.8,
-        "mean_soil_moisture_m3": 0.1941,
-        "soil_moisture_index": 25.0
+        "avg_humidity_pct": 96.5,
+        "max_temp_c": 26.4,
+        "mean_soil_moisture_m3": 0.4517,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 62.0,
-        "level": "yellow",
-        "rainfall_index": 75.0,
+        "risk_score": 82.0,
+        "level": "red",
+        "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 27.9,
-        "soil_moisture_index": 25.0
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-09T18:37:02.718966Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:39.278747Z",
       "dispatch": [
         {
           "facility_id": "fac_15",
@@ -2255,7 +2537,7 @@
           "contact_phone": "+250780000015",
           "contact_email": "muhanga.potato@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_16",
@@ -2273,7 +2555,7 @@
           "contact_phone": "+250780000016",
           "contact_email": "kamonyi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2291,16 +2573,16 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:37:02.718966Z",
+      "dispatch_generated_at": "2026-10-26T06:19:39.278747Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 20.0,
+        "previous_score": 62.0,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -2310,37 +2592,32 @@
       "centroid_lat": -2.125,
       "centroid_lng": 29.985,
       "nirs_baseline": {
-        "maize_tons": 4093,
-        "beans_tons": 9850,
-        "irish_potatoes_tons": 171,
-        "cassava_tons": 17642,
+        "maize_tons": 5400,
+        "beans_tons": 2200,
+        "irish_potatoes_tons": 2300,
+        "cassava_tons": 1500,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 29.1,
-        "cooperative_coverage_pct": 50,
-        "sorghum_tons": 154,
-        "wheat_tons": 187.8,
-        "groundnuts_tons": 288,
-        "sweet_potato_tons": 2012,
-        "peas_tons": 27
+        "cooperative_coverage_pct": 50
       },
       "weather": {
-        "total_precipitation_14d_mm": 93.2,
+        "total_precipitation_14d_mm": 81.1,
         "max_humidity_pct": 100,
-        "avg_humidity_pct": 96.0,
-        "max_temp_c": 28.8,
-        "mean_soil_moisture_m3": 0.2323,
-        "soil_moisture_index": 40.0
+        "avg_humidity_pct": 97.3,
+        "max_temp_c": 28.3,
+        "mean_soil_moisture_m3": 0.4362,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 73.3,
+        "risk_score": 82.3,
         "level": "red",
         "rainfall_index": 100.0,
         "humidity_index": 100.0,
         "loss_rate_index": 29.1,
-        "soil_moisture_index": 40.0
+        "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-09T18:37:07.432361Z",
+      "updated_at": "2026-10-26T06:19:40.139341Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -2397,13 +2674,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:37:07.432361Z",
+      "dispatch_generated_at": "2026-10-26T06:19:40.139341Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 9.0,
+        "previous_score": 73.3,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
@@ -2413,37 +2690,32 @@
       "centroid_lat": -2.045,
       "centroid_lng": 29.925,
       "nirs_baseline": {
-        "maize_tons": 5532,
-        "beans_tons": 12996,
-        "irish_potatoes_tons": 465,
-        "cassava_tons": 13154,
+        "maize_tons": 6800,
+        "beans_tons": 2700,
+        "irish_potatoes_tons": 2600,
+        "cassava_tons": 1700,
         "harvest_window": "Jun-Jul",
         "historical_loss_rate_pct": 26.5,
-        "cooperative_coverage_pct": 58,
-        "sorghum_tons": 1176.7,
-        "wheat_tons": 240.2,
-        "groundnuts_tons": 983,
-        "sweet_potato_tons": 1949,
-        "peas_tons": 60
+        "cooperative_coverage_pct": 58
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 79.8,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 96.3,
+        "max_temp_c": 26.6,
+        "mean_soil_moisture_m3": 0.4438,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.4,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 72.9,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 26.5,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-09T18:37:10.019620Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:40.996946Z",
       "dispatch": [
         {
           "facility_id": "fac_16",
@@ -2461,7 +2733,7 @@
           "contact_phone": "+250780000016",
           "contact_email": "kamonyi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_03",
@@ -2479,7 +2751,7 @@
           "contact_phone": "+250780000003",
           "contact_email": "gicumbi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2497,228 +2769,213 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-09T18:37:10.019620Z",
+      "dispatch_generated_at": "2026-10-26T06:19:40.996946Z",
       "risk_trend": {
-        "trend": "baseline",
-        "delta": 0.0,
-        "previous_score": null,
-        "previous_at": null,
-        "history_points": 1
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 31.4,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
       }
     },
     {
-      "district_id": "gakenke",
-      "district_name": "Gakenke",
-      "province": "Northern Province",
-      "centroid_lat": -1.6854,
-      "centroid_lng": 29.7823,
-      "risk": {
-        "risk_score": 38.2,
-        "level": "green",
-        "rainfall_index": 42.1,
-        "humidity_index": 55.3,
-        "loss_rate_index": 28.4,
-        "total_precipitation_14d_mm": 52.1,
-        "max_humidity_pct": 68.0,
-        "soil_moisture_index": 0.41
-      },
-      "advisory": "Gakenke - Low Risk: Monitor humidity levels. Normal harvesting conditions.",
-      "nirs_baseline": {
-        "maize_tons": 8533,
-        "beans_tons": 10228,
-        "irish_potatoes_tons": 1168,
-        "cassava_tons": 8521,
-        "sorghum_tons": 3210,
-        "wheat_tons": 1840,
-        "groundnuts_tons": 202,
-        "sweet_potato_tons": 6198,
-        "peas_tons": 655,
-        "historical_loss_rate_pct": 9.2
-      },
-      "updated_at": "2026-10-11T11:04:59Z",
-      "risk_delta": 0.0,
-      "risk_trend": "baseline",
-      "previous_risk_score": null,
-      "dispatch": []
-    },
-    {
-      "district_id": "nyamasheke",
-      "district_name": "Nyamasheke",
-      "province": "Western Province",
-      "centroid_lat": -2.3344,
-      "centroid_lng": 29.1421,
-      "risk": {
-        "risk_score": 62.7,
-        "level": "yellow",
-        "rainfall_index": 68.4,
-        "humidity_index": 72.1,
-        "loss_rate_index": 45.2,
-        "total_precipitation_14d_mm": 88.3,
-        "max_humidity_pct": 84.0,
-        "soil_moisture_index": 0.68
-      },
-      "advisory": "Nyamasheke - Moderate Risk: 88mm rain, humidity 84%. Plan drying within 48h.",
-      "nirs_baseline": {
-        "maize_tons": 5698,
-        "beans_tons": 7316,
-        "irish_potatoes_tons": 149,
-        "cassava_tons": 16573,
-        "sorghum_tons": 21,
-        "wheat_tons": 0,
-        "groundnuts_tons": 487,
-        "sweet_potato_tons": 4070,
-        "peas_tons": 76,
-        "historical_loss_rate_pct": 14.8
-      },
-      "updated_at": "2026-10-11T11:04:59Z",
-      "risk_delta": 3.2,
-      "risk_trend": "rising",
-      "previous_risk_score": 59.5,
-      "dispatch": []
-    },
-    {
-      "district_id": "nyaruguru",
+      "district_id": "district_29",
       "district_name": "Nyaruguru",
-      "province": "Southern Province",
-      "centroid_lat": -2.6821,
-      "centroid_lng": 29.5234,
-      "risk": {
-        "risk_score": 44.1,
-        "level": "green",
-        "rainfall_index": 48.2,
-        "humidity_index": 58.7,
-        "loss_rate_index": 32.1,
-        "total_precipitation_14d_mm": 61.4,
-        "max_humidity_pct": 71.0,
-        "soil_moisture_index": 0.48
-      },
-      "advisory": "Nyaruguru - Low Risk: Conditions favorable. Standard post-harvest practices apply.",
+      "province": "Southern",
+      "centroid_lat": -2.495,
+      "centroid_lng": 29.52,
       "nirs_baseline": {
-        "maize_tons": 4235,
-        "beans_tons": 8375,
-        "irish_potatoes_tons": 2526,
-        "cassava_tons": 5505,
-        "sorghum_tons": 37,
-        "wheat_tons": 188,
-        "groundnuts_tons": 0,
-        "sweet_potato_tons": 4361,
-        "peas_tons": 266,
-        "historical_loss_rate_pct": 10.4
+        "maize_tons": 4400,
+        "beans_tons": 1900,
+        "irish_potatoes_tons": 2200,
+        "cassava_tons": 900,
+        "harvest_window": "Jun-Jul",
+        "historical_loss_rate_pct": 31.5,
+        "cooperative_coverage_pct": 46
       },
-      "updated_at": "2026-10-11T11:04:59Z",
-      "risk_delta": -1.2,
-      "risk_trend": "falling",
-      "previous_risk_score": 45.3,
-      "dispatch": []
-    },
-    {
-      "district_id": "rutsiro",
-      "district_name": "Rutsiro",
-      "province": "Western Province",
-      "centroid_lat": -1.9523,
-      "centroid_lng": 29.3412,
+      "weather": {
+        "total_precipitation_14d_mm": 106.0,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 95.6,
+        "max_temp_c": 23.2,
+        "mean_soil_moisture_m3": 0.4804,
+        "soil_moisture_index": 100.0
+      },
       "risk": {
-        "risk_score": 55.8,
-        "level": "yellow",
-        "rainfall_index": 61.3,
-        "humidity_index": 66.4,
-        "loss_rate_index": 38.9,
-        "total_precipitation_14d_mm": 79.2,
-        "max_humidity_pct": 78.0,
-        "soil_moisture_index": 0.59
-      },
-      "advisory": "Rutsiro - Moderate Risk: 79mm rain over 14 days. Arrange drying within 48h.",
-      "nirs_baseline": {
-        "maize_tons": 6120,
-        "beans_tons": 4005,
-        "irish_potatoes_tons": 2951,
-        "cassava_tons": 1902,
-        "sorghum_tons": 16,
-        "wheat_tons": 0,
-        "groundnuts_tons": 2140,
-        "sweet_potato_tons": 2615,
-        "peas_tons": 469,
-        "historical_loss_rate_pct": 12.6
-      },
-      "updated_at": "2026-10-11T11:04:59Z",
-      "risk_delta": 1.8,
-      "risk_trend": "rising",
-      "previous_risk_score": 54.0,
-      "dispatch": []
-    },
-    {
-      "district_id": "karongi",
-      "district_name": "Karongi",
-      "province": "Western Province",
-      "centroid_lat": -2.0833,
-      "centroid_lng": 29.3667,
-      "risk": {
-        "risk_score": 70.5,
+        "risk_score": 82.9,
         "level": "red",
-        "rainfall_index": 76.2,
-        "humidity_index": 78.4,
-        "loss_rate_index": 58.1,
-        "total_precipitation_14d_mm": 91.8,
-        "max_humidity_pct": 100.0,
-        "soil_moisture_index": 0.72
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 31.5,
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Karongi - High Risk: 91.8mm rain, humidity 100%. Move crops to covered storage now.",
-      "nirs_baseline": {
-        "maize_tons": 6945,
-        "beans_tons": 8420,
-        "irish_potatoes_tons": 9870,
-        "cassava_tons": 9921,
-        "sorghum_tons": 0,
-        "wheat_tons": 0,
-        "groundnuts_tons": 1840,
-        "sweet_potato_tons": 7230,
-        "peas_tons": 0,
-        "historical_loss_rate_pct": 16.2
-      },
-      "updated_at": "2026-10-11T18:00:00Z",
-      "risk_delta": 2.1,
-      "risk_trend": "rising",
-      "previous_risk_score": 68.4,
-      "dispatch": []
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:41.809801Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_14",
+          "facility_name": "Nyanza Drying Bed",
+          "facility_type": "drying_ground",
+          "district": "Nyanza",
+          "lat": -2.52,
+          "lng": 29.68,
+          "distance_km": 18.0,
+          "est_travel_minutes": 41,
+          "available_capacity_tons": 160.0,
+          "capacity_utilization_pct": 54.3,
+          "match_score": 69.3,
+          "contact_name": "Jean Paul Habimana",
+          "contact_phone": "+250780000014",
+          "contact_email": "nyanza.drying@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_13",
+          "facility_name": "Huye Post-Harvest Center",
+          "facility_type": "storage_center",
+          "district": "Huye",
+          "lat": -2.6,
+          "lng": 29.64,
+          "distance_km": 17.7,
+          "est_travel_minutes": 40,
+          "available_capacity_tons": 310.0,
+          "capacity_utilization_pct": 55.7,
+          "match_score": 68.9,
+          "contact_name": "Paula Nyiramana",
+          "contact_phone": "+250780000013",
+          "contact_email": "huye.postharvest@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_18",
+          "facility_name": "Nyamagabe Agri Hub",
+          "facility_type": "storage_center",
+          "district": "Nyamagabe",
+          "lat": -2.22,
+          "lng": 29.41,
+          "distance_km": 32.9,
+          "est_travel_minutes": 66,
+          "available_capacity_tons": 270.0,
+          "capacity_utilization_pct": 55.0,
+          "match_score": 61.5,
+          "contact_name": "Oscar Ndayisaba",
+          "contact_phone": "+250780000018",
+          "contact_email": "nyamagabe.hub@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:41.809801Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 50.0,
+        "previous_score": 32.9,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
     },
     {
-      "district_id": "gisagara",
-      "district_name": "Gisagara",
-      "province": "Southern Province",
-      "centroid_lat": -2.6167,
-      "centroid_lng": 29.8333,
-      "risk": {
-        "risk_score": 76.0,
-        "level": "red",
-        "rainfall_index": 82.1,
-        "humidity_index": 84.3,
-        "loss_rate_index": 62.4,
-        "total_precipitation_14d_mm": 98.2,
-        "max_humidity_pct": 98.0,
-        "soil_moisture_index": 0.81
-      },
-      "advisory": "Gisagara - High Risk: 98mm rain, humidity 98%. Emergency storage required.",
+      "district_id": "district_30",
+      "district_name": "Nyamasheke",
+      "province": "Western",
+      "centroid_lat": -2.44,
+      "centroid_lng": 28.965,
       "nirs_baseline": {
-        "maize_tons": 6832,
-        "beans_tons": 9140,
-        "irish_potatoes_tons": 8760,
-        "cassava_tons": 11527,
-        "sorghum_tons": 1048,
-        "wheat_tons": 0,
-        "groundnuts_tons": 0,
-        "sweet_potato_tons": 5840,
-        "peas_tons": 2140,
-        "historical_loss_rate_pct": 17.8
+        "maize_tons": 4800,
+        "beans_tons": 1900,
+        "irish_potatoes_tons": 1700,
+        "cassava_tons": 1400,
+        "harvest_window": "Aug-Sep",
+        "historical_loss_rate_pct": 30.6,
+        "cooperative_coverage_pct": 47
       },
-      "updated_at": "2026-10-11T18:00:00Z",
-      "risk_delta": 3.8,
-      "risk_trend": "rising",
-      "previous_risk_score": 72.2,
-      "dispatch": []
+      "weather": {
+        "total_precipitation_14d_mm": 140.6,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.1,
+        "max_temp_c": 26.2,
+        "mean_soil_moisture_m3": 0.4901,
+        "soil_moisture_index": 100.0
+      },
+      "risk": {
+        "risk_score": 82.7,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
+        "loss_rate_index": 30.6,
+        "soil_moisture_index": 100.0
+      },
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-26T06:19:42.701847Z",
+      "dispatch": [
+        {
+          "facility_id": "fac_18",
+          "facility_name": "Nyamagabe Agri Hub",
+          "facility_type": "storage_center",
+          "district": "Nyamagabe",
+          "lat": -2.22,
+          "lng": 29.41,
+          "distance_km": 55.2,
+          "est_travel_minutes": 105,
+          "available_capacity_tons": 270.0,
+          "capacity_utilization_pct": 55.0,
+          "match_score": 50.4,
+          "contact_name": "Oscar Ndayisaba",
+          "contact_phone": "+250780000018",
+          "contact_email": "nyamagabe.hub@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_17",
+          "facility_name": "Rubavu Coffee & Crop Dryer",
+          "facility_type": "drying_ground",
+          "district": "Rubavu",
+          "lat": -1.98,
+          "lng": 29.33,
+          "distance_km": 65.3,
+          "est_travel_minutes": 122,
+          "available_capacity_tons": 200.0,
+          "capacity_utilization_pct": 55.6,
+          "match_score": 45.1,
+          "contact_name": "Vincent Nsengiyumva",
+          "contact_phone": "+250780000017",
+          "contact_email": "rubavu.coffee@agri.rw",
+          "operational_hours": "06:00-17:00",
+          "priority": "emergency"
+        },
+        {
+          "facility_id": "fac_13",
+          "facility_name": "Huye Post-Harvest Center",
+          "facility_type": "storage_center",
+          "district": "Huye",
+          "lat": -2.6,
+          "lng": 29.64,
+          "distance_km": 77.1,
+          "est_travel_minutes": 142,
+          "available_capacity_tons": 310.0,
+          "capacity_utilization_pct": 55.7,
+          "match_score": 39.2,
+          "contact_name": "Paula Nyiramana",
+          "contact_phone": "+250780000013",
+          "contact_email": "huye.postharvest@agri.rw",
+          "operational_hours": "07:00-16:00",
+          "priority": "emergency"
+        }
+      ],
+      "dispatch_generated_at": "2026-10-26T06:19:42.701847Z",
+      "risk_trend": {
+        "trend": "rising",
+        "delta": 11.3,
+        "previous_score": 71.4,
+        "previous_at": "2026-10-09T18:37:15.873258Z",
+        "history_points": 2
+      }
     }
-  ],
-  "generated_at": "2026-10-11T11:04:59Z"
+  ]
 }

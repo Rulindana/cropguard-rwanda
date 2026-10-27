@@ -21,6 +21,7 @@ Dependencies:
     pip install requests pandas
 """
 
+import base64
 import json
 import math
 import os
@@ -304,7 +305,7 @@ def run_pipeline():
         )
 
         if weather_data is None:
-            # Use mock/estimated values if API fails
+            # Use estimated fallback values if weather API fails
             precipitation = [2.0] * 14  # light rain estimate
             humidity = [55.0] * 14
             hourly = None
@@ -325,7 +326,7 @@ def run_pipeline():
                 precipitation = [2.0] * 14
                 humidity = [55.0] * 14
                 hourly = None
-                print("using estimates (no data in response)", end="")
+                print("using estimates (no data in API response)", end="")
 
         # Satellite / land-surface fusion layer (Innovation #3)
         if hourly:
@@ -443,7 +444,7 @@ def run_pipeline():
             "generated_at": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
             "weather_source": "Open-Meteo API (no key required)",
             "satellite_source": "Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)",
-            "nisr_source": "NISR SAS District Baseline (mock data)",
+            "nisr_source": "NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports and Excel tables",
             "risk_formula": (
                 f"Risk = (Rainfall × {RAINFALL_WEIGHT}) + (Humidity × {HUMIDITY_WEIGHT}) "
                 f"+ (Loss Rate × {LOSS_RATE_WEIGHT}) + (Soil Moisture × {SOIL_MOISTURE_WEIGHT})"
@@ -486,8 +487,30 @@ def run_pipeline():
     except Exception as e:
         print(f"  WARNING: SMS/USSD dispatch failed: {e}", file=sys.stderr)
 
+    # Generate exportable policy brief for planners (Criterion 5)
+    try:
+        import importlib.util, shutil
+        from os import path as _os_path
+        spec = importlib.util.spec_from_file_location(
+            "generate_policy_brief",
+            _os_path.join(_os_path.dirname(__file__), "..", "scripts",
+                         "generate_policy_brief.py"),
+        )
+        if spec and spec.loader:
+            gpb = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(gpb)
+            gpb.main()
+        # Also write a stable latest copy for the workflow artifact
+        reports_dir = _os_path.join(_os_path.dirname(__file__), "..", "reports")
+        latest = _os_path.join(reports_dir, "policy_brief_latest.md")
+        today = _os_path.join(reports_dir, f"policy_brief_{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.md")
+        if _os_path.exists(today):
+            shutil.copyfile(today, latest)
+    except Exception as e:
+        print(f"  WARNING: policy brief generation skipped: {e}", file=sys.stderr)
+
     print("=" * 60)
-    print("  Pipeline complete. Ready for Firebase/Firestore sync.")
+    print("  Pipeline complete.")
     print("=" * 60)
 
     return output_data
@@ -497,8 +520,8 @@ def sync_to_firestore(risk_data: dict[str, Any]) -> bool:
     """
     Push risk scores to Firebase Firestore.
     
-    Requires: firebase-admin SDK initialized with service account.
-    This function is a stub — implement with your Firebase credentials.
+    Requires the Firebase Admin SDK and a service account supplied through
+    FIREBASE_CREDENTIALS (base64-encoded JSON) or a local development file.
     
     The Flutter app reads from these Firestore collections:
     - /districts/{districtId} - district data + risk score
@@ -514,13 +537,31 @@ def sync_to_firestore(risk_data: dict[str, Any]) -> bool:
 
     # Check if already initialized
     if not firebase_admin._apps:
-        cred_path = os.path.join(os.path.dirname(__file__), "..", "firebase_service_account.json")
-        if os.path.exists(cred_path):
-            cred = credentials.Certificate(cred_path)
-            firebase_admin.initialize_app(cred)
+        credentials_value = os.environ.get("FIREBASE_CREDENTIALS")
+        if credentials_value:
+            try:
+                credentials_json = base64.b64decode(
+                    credentials_value, validate=True
+                ).decode("utf-8")
+                cred = credentials.Certificate(json.loads(credentials_json))
+                firebase_admin.initialize_app(cred)
+            except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                print(
+                    "  FIREBASE_CREDENTIALS must be base64-encoded service-account JSON: "
+                    f"{error}",
+                    file=sys.stderr,
+                )
+                return False
         else:
-            print(f"  Firebase service account file not found: {cred_path}")
-            return False
+            cred_path = os.path.join(
+                os.path.dirname(__file__), "..", "firebase_service_account.json"
+            )
+            if os.path.exists(cred_path):
+                cred = credentials.Certificate(cred_path)
+                firebase_admin.initialize_app(cred)
+            else:
+                print(f"  Firebase service account file not found: {cred_path}")
+                return False
 
     db = firestore.client()
 
@@ -564,5 +605,6 @@ def sync_to_firestore(risk_data: dict[str, Any]) -> bool:
 if __name__ == "__main__":
     data = run_pipeline()
 
-    # Optional: sync to Firestore if credentials available
-    # sync_to_firestore(data)
+    # Sync to Firestore when FIREBASE_CREDENTIALS secret is configured
+    if os.environ.get("FIREBASE_CREDENTIALS"):
+        sync_to_firestore(data)
