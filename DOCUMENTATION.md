@@ -730,3 +730,11 @@ CropGuard AI Platform
 | Seasonal harvest pressure | Seasonal | Season A/B/C calendar × current risk score × district area |
 
 This positions CropGuard AI not just as a farmer tool, but as **Rwanda's first continuous agricultural early-warning data infrastructure** — built on NISR's own historical data, feeding back into future NISR analysis.
+
+## Declaration of Originality & Compliance
+
+**We hereby declare that** the CropGuard AI submission is our own original work. It has **never been submitted to any other competition or entity in the past**. All applicable sources of reference have been acknowledged in full.
+
+**AI Tools Disclosure:** We used AI coding assistants as development aids to help write and debug code, in compliance with the hackathon rules. We disclose this use and take full responsibility for the submitted work, including all design decisions, implementation, accuracy, and functionality. 
+
+**License:** This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
