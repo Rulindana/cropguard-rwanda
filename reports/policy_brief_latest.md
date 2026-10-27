@@ -1,46 +1,46 @@
 # CropGuard AI — National Post-Harvest Risk Brief
 
-**Generated:** 2026-10-26T06:19:42.722522Z  
+**Generated:** 2026-10-27T08:31:06.461351Z  
 **Audience:** District agricultural planners, MINAGRI, NISR, development partners  
 **Data sources:** NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports and Excel tables · Open-Meteo API (no key required) · Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)
 
 ## 1. Situation at a glance
 
-- **27 districts RED** (emergency storage dispatch)
+- **12 districts RED** (emergency storage dispatch)
 - **3 districts YELLOW** (drying within 48 hours)
-- **0 districts GREEN** (safe harvesting)
-- **National average risk score:** 77.4 / 100
-- **Momentum vs previous run:** 27 rising, 1 falling, 2 stable (avg Δ +10.6 points)
+- **15 districts GREEN** (safe harvesting)
+- **National average risk score:** 53.6 / 100
+- **Momentum vs previous run:** 0 rising, 15 falling, 15 stable (avg Δ -22.7 points)
 
 ## 2. Priority districts (top 10 by risk)
 
 | # | District | Province | Score | Trend | Nearest facility (free capacity) | Travel |
 |---|---|---|---|---|---|---|
-| 1 | Nyaruguru | Southern | **82.9** | ▲ rising (+50.0) | 🔴 Nyanza Drying Bed (160t free) | 18.0 km / ~41 min |
-| 2 | Gisagara | Southern | **82.8** | ▲ rising (+6.8) | 🔴 Nyanza Drying Bed (160t free) | 24.7 km / ~52 min |
-| 3 | Nyamasheke | Western | **82.7** | ▲ rising (+11.3) | 🔴 Nyamagabe Agri Hub (270t free) | 55.2 km / ~105 min |
-| 4 | Nyanza | Southern | **82.6** | ▲ rising (+9.0) | 🔴 Nyanza Drying Bed (160t free) | 0.8 km / ~11 min |
-| 5 | Rusizi | Western | **82.5** | ▲ rising (+11.2) | 🔴 Nyamagabe Agri Hub (270t free) | 31.7 km / ~64 min |
-| 6 | Huye | Southern | **82.4** | ▲ rising (+9.0) | 🔴 Huye Post-Harvest Center (310t free) | 0.8 km / ~11 min |
-| 7 | Ruhango | Southern | **82.3** | ▲ rising (+9.0) | 🔴 Eastern Province Mobile Dryer Fleet (1100t free) | 7.7 km / ~23 min |
-| 8 | Rutsiro | Western | **82.2** | ▲ rising (+11.7) | 🔴 Rubavu Coffee & Crop Dryer (200t free) | 3.2 km / ~16 min |
-| 9 | Nyamagabe | Southern | **82.1** | ▲ rising (+6.8) | 🔴 Nyamagabe Agri Hub (270t free) | 0.8 km / ~11 min |
-| 10 | Muhanga | Southern | **82.0** | ▲ rising (+20.0) | 🔴 Muhanga Potato Cold Store (180t free) | 0.8 km / ~11 min |
+| 1 | Gakenke | Northern | **81.9** | → stable (+0.0) | 🔴 Rulindo Mobile Dryer Station (150t free) | 11.8 km / ~30 min |
+| 2 | Ngororero | Western | **81.7** | → stable (+0.0) | 🔴 Rubavu Coffee & Crop Dryer (200t free) | 12.2 km / ~31 min |
+| 3 | Gicumbi | Northern | **81.6** | → stable (+0.0) | 🔴 Gicumbi Cooperative Dryer (210t free) | 0.8 km / ~11 min |
+| 4 | Rubavu | Western | **81.3** | → stable (+0.0) | 🔴 Rubavu Coffee & Crop Dryer (200t free) | 0.8 km / ~11 min |
+| 5 | Burera | Northern | **81.0** | → stable (+0.0) | 🔴 Burera Cold Storage Facility (120t free) | 0.8 km / ~11 min |
+| 6 | Nyabihu | Western | **80.9** | → stable (+0.0) | 🔴 Burera Cold Storage Facility (120t free) | 13.4 km / ~33 min |
+| 7 | Rulindo | Northern | **79.7** | → stable (+0.0) | 🔴 Rulindo Mobile Dryer Station (150t free) | 0.8 km / ~11 min |
+| 8 | Musanze | Northern | **77.6** | → stable (+0.0) | 🔴 Kinigi Silo Storage Unit (640t free) | 3.4 km / ~16 min |
+| 9 | Ngoma | Eastern | **74.7** | → stable (+0.0) | 🔴 Ngoma Farmers Dryer (190t free) | 0.0 km / ~10 min |
+| 10 | Gatsibo | Eastern | **73.5** | → stable (+0.0) | 🔴 Gatsibo Maize Silo (410t free) | 0.0 km / ~10 min |
 
 ## 3. Provincial distribution
 
 | Province | Districts | Red | Yellow | Green | Avg score |
 |---|---|---|---|---|---|
-| Eastern | 7 | 4 | 3 | 0 | 70.2 |
-| Kigali | 3 | 3 | 0 | 0 | 71.6 |
-| Northern | 5 | 5 | 0 | 0 | 78.6 |
-| Southern | 8 | 8 | 0 | 0 | 81.2 |
-| Western | 7 | 7 | 0 | 0 | 81.9 |
+| Eastern | 7 | 4 | 3 | 0 | 69.8 |
+| Kigali | 3 | 0 | 0 | 3 | 30.1 |
+| Northern | 5 | 5 | 0 | 0 | 80.4 |
+| Southern | 8 | 0 | 0 | 8 | 32.0 |
+| Western | 7 | 3 | 0 | 4 | 53.1 |
 
 ## 4. Emergency dispatch capacity
 
-- **27 red districts** have a matched dispatch plan
-- **9,870 tonnes** free capacity available at the nearest facility of each red district
+- **12 red districts** have a matched dispatch plan
+- **4,210 tonnes** free capacity available at the nearest facility of each red district
 - Facilities are ranked by distance + free capacity; contacts are one tap away in the CropGuard app
 
 ## 5. Data quality assurance
@@ -51,8 +51,9 @@
 
 ## 6. Recommended actions
 
-1. **🔴 27 red districts:** activate emergency storage dispatch today — use the CropGuard dispatch plan to route harvests to the listed facilities.
+1. **🔴 12 red districts:** activate emergency storage dispatch today — use the CropGuard dispatch plan to route harvests to the listed facilities.
 2. **🟡 3 yellow districts:** mobilise drying equipment within 48 hours; prioritise districts with rising trend momentum.
+3. **🟢 15 green districts:** normal harvesting; continue monitoring at the 6-hourly cadence.
 4. **SMS/USSD subscribers** in escalated districts are alerted automatically in Kinyarwanda and English.
 5. Actions above directly support **NST2 agriculture objectives** (post-harvest loss reduction) and Vision 2050 resilient food-system goals.
 
