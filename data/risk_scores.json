@@ -1,7 +1,7 @@
 {
   "metadata": {
     "pipeline": "CropGuard AI Sync Pipeline",
-    "generated_at": "2026-10-27T08:31:06.461351Z",
+    "generated_at": "2026-10-27T08:57:28.387688Z",
     "weather_source": "Open-Meteo API (no key required)",
     "satellite_source": "Open-Meteo land-surface soil moisture (ERA5/Copernicus satellite-derived)",
     "nisr_source": "NISR Seasonal Agricultural Survey (SAS) 2013-2025 -- District baselines extracted from official NISR annual reports and Excel tables",
@@ -21,20 +21,20 @@
       "report": "data/data_quality_report.json"
     },
     "trend_summary": {
-      "rising": 0,
-      "falling": 15,
-      "stable": 15,
+      "rising": 15,
+      "falling": 4,
+      "stable": 11,
       "baseline": 0,
       "history_file": "risk_history.json",
-      "avg_delta": -22.7
+      "avg_delta": 17.2
     }
   },
   "summary": {
     "total_districts": 30,
-    "green_count": 15,
-    "yellow_count": 3,
-    "red_count": 12,
-    "avg_risk_score": 53.6
+    "green_count": 4,
+    "yellow_count": 1,
+    "red_count": 25,
+    "avg_risk_score": 70.8
   },
   "districts": [
     {
@@ -69,7 +69,7 @@
         "soil_moisture_index": 70.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:21.164011Z",
+      "updated_at": "2026-10-27T08:53:22.802751Z",
       "dispatch": [
         {
           "facility_id": "fac_02",
@@ -126,13 +126,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:21.164011Z",
+      "dispatch_generated_at": "2026-10-27T08:53:22.802751Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 77.6,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -167,7 +167,7 @@
         "soil_moisture_index": 85.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:22.085150Z",
+      "updated_at": "2026-10-27T08:53:29.170186Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -224,13 +224,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:22.085150Z",
+      "dispatch_generated_at": "2026-10-27T08:53:29.170186Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 72.5,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -265,7 +265,7 @@
         "soil_moisture_index": 85.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:23.050441Z",
+      "updated_at": "2026-10-27T08:53:32.306582Z",
       "dispatch": [
         {
           "facility_id": "fac_07",
@@ -322,13 +322,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:23.050441Z",
+      "dispatch_generated_at": "2026-10-27T08:53:32.306582Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 72.0,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -363,7 +363,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:24.079525Z",
+      "updated_at": "2026-10-27T08:53:36.603913Z",
       "dispatch": [
         {
           "facility_id": "fac_03",
@@ -420,13 +420,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:24.079525Z",
+      "dispatch_generated_at": "2026-10-27T08:53:36.603913Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 81.6,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -461,7 +461,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:25.094966Z",
+      "updated_at": "2026-10-27T08:53:49.891856Z",
       "dispatch": [
         {
           "facility_id": "fac_04",
@@ -518,13 +518,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:25.094966Z",
+      "dispatch_generated_at": "2026-10-27T08:53:49.891856Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 81.0,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -543,23 +543,23 @@
         "cooperative_coverage_pct": 54
       },
       "weather": {
-        "total_precipitation_14d_mm": 92.3,
-        "max_humidity_pct": 100,
-        "avg_humidity_pct": 97.3,
-        "max_temp_c": 23.7,
-        "mean_soil_moisture_m3": 0.3816,
-        "soil_moisture_index": 85.0
+        "total_precipitation_14d_mm": 28.0,
+        "max_humidity_pct": 55.0,
+        "avg_humidity_pct": 55.0,
+        "max_temp_c": 30.0,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 41.5
       },
       "risk": {
-        "risk_score": 79.7,
-        "level": "red",
-        "rainfall_index": 100.0,
-        "humidity_index": 100.0,
+        "risk_score": 31.7,
+        "level": "green",
+        "rainfall_index": 35.0,
+        "humidity_index": 25.0,
         "loss_rate_index": 27.8,
-        "soil_moisture_index": 85.0
+        "soil_moisture_index": 41.5
       },
-      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:26.009154Z",
+      "advisory": "Low Risk - Safe harvesting conditions",
+      "updated_at": "2026-10-27T08:54:02.160598Z",
       "dispatch": [
         {
           "facility_id": "fac_05",
@@ -577,7 +577,7 @@
           "contact_phone": "+250780000005",
           "contact_email": "rulindo.mobile@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "emergency"
+          "priority": "available"
         },
         {
           "facility_id": "fac_02",
@@ -595,7 +595,7 @@
           "contact_phone": "+250780000002",
           "contact_email": "kinigi.silo@agri.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "emergency"
+          "priority": "available"
         },
         {
           "facility_id": "fac_20",
@@ -613,16 +613,16 @@
           "contact_phone": "+250780000020",
           "contact_email": "north.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "emergency"
+          "priority": "available"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:26.009154Z",
+      "dispatch_generated_at": "2026-10-27T08:54:02.160598Z",
       "risk_trend": {
-        "trend": "stable",
-        "delta": 0.0,
+        "trend": "falling",
+        "delta": -48.0,
         "previous_score": 79.7,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -657,7 +657,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:26.899497Z",
+      "updated_at": "2026-10-27T08:54:18.967717Z",
       "dispatch": [
         {
           "facility_id": "fac_05",
@@ -714,13 +714,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:26.899497Z",
+      "dispatch_generated_at": "2026-10-27T08:54:18.967717Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 81.9,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -755,7 +755,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:27.924497Z",
+      "updated_at": "2026-10-27T08:54:23.294370Z",
       "dispatch": [
         {
           "facility_id": "fac_08",
@@ -812,13 +812,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:27.924497Z",
+      "dispatch_generated_at": "2026-10-27T08:54:23.294370Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 74.7,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -837,23 +837,23 @@
         "cooperative_coverage_pct": 52
       },
       "weather": {
-        "total_precipitation_14d_mm": 49.8,
-        "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.9,
-        "max_temp_c": 26.4,
-        "mean_soil_moisture_m3": 0.4021,
-        "soil_moisture_index": 100.0
+        "total_precipitation_14d_mm": 28.0,
+        "max_humidity_pct": 55.0,
+        "avg_humidity_pct": 55.0,
+        "max_temp_c": 30.0,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 41.5
       },
       "risk": {
-        "risk_score": 67.0,
-        "level": "yellow",
-        "rainfall_index": 55.0,
-        "humidity_index": 100.0,
+        "risk_score": 32.5,
+        "level": "green",
+        "rainfall_index": 35.0,
+        "humidity_index": 25.0,
         "loss_rate_index": 30.9,
-        "soil_moisture_index": 100.0
+        "soil_moisture_index": 41.5
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-27T08:30:28.845278Z",
+      "advisory": "Low Risk - Safe harvesting conditions",
+      "updated_at": "2026-10-27T08:54:55.164058Z",
       "dispatch": [
         {
           "facility_id": "fac_09",
@@ -871,7 +871,7 @@
           "contact_phone": "+250780000009",
           "contact_email": "kirehe.storage@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "recommended"
+          "priority": "available"
         },
         {
           "facility_id": "fac_10",
@@ -889,7 +889,7 @@
           "contact_phone": "+250780000010",
           "contact_email": "rwamagana.agri@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "recommended"
+          "priority": "available"
         },
         {
           "facility_id": "fac_08",
@@ -907,16 +907,16 @@
           "contact_phone": "+250780000008",
           "contact_email": "ngoma.dryer@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "recommended"
+          "priority": "available"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:28.845278Z",
+      "dispatch_generated_at": "2026-10-27T08:54:55.164058Z",
       "risk_trend": {
-        "trend": "stable",
-        "delta": 0.0,
+        "trend": "falling",
+        "delta": -34.5,
         "previous_score": 67.0,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -935,23 +935,23 @@
         "cooperative_coverage_pct": 56
       },
       "weather": {
-        "total_precipitation_14d_mm": 49.7,
-        "max_humidity_pct": 100,
-        "avg_humidity_pct": 98.1,
-        "max_temp_c": 26.7,
-        "mean_soil_moisture_m3": 0.3832,
-        "soil_moisture_index": 85.0
+        "total_precipitation_14d_mm": 28.0,
+        "max_humidity_pct": 55.0,
+        "avg_humidity_pct": 55.0,
+        "max_temp_c": 30.0,
+        "mean_soil_moisture_m3": 0.0,
+        "soil_moisture_index": 41.5
       },
       "risk": {
-        "risk_score": 64.3,
-        "level": "yellow",
-        "rainfall_index": 55.0,
-        "humidity_index": 100.0,
+        "risk_score": 32.1,
+        "level": "green",
+        "rainfall_index": 35.0,
+        "humidity_index": 25.0,
         "loss_rate_index": 29.4,
-        "soil_moisture_index": 85.0
+        "soil_moisture_index": 41.5
       },
-      "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-27T08:30:29.936878Z",
+      "advisory": "Low Risk - Safe harvesting conditions",
+      "updated_at": "2026-10-27T08:55:30.360943Z",
       "dispatch": [
         {
           "facility_id": "fac_10",
@@ -969,7 +969,7 @@
           "contact_phone": "+250780000010",
           "contact_email": "rwamagana.agri@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "recommended"
+          "priority": "available"
         },
         {
           "facility_id": "fac_09",
@@ -987,7 +987,7 @@
           "contact_phone": "+250780000009",
           "contact_email": "kirehe.storage@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "recommended"
+          "priority": "available"
         },
         {
           "facility_id": "fac_12",
@@ -1005,16 +1005,16 @@
           "contact_phone": "+250780000012",
           "contact_email": "gatsibo.maize@agri.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "recommended"
+          "priority": "available"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:29.936878Z",
+      "dispatch_generated_at": "2026-10-27T08:55:30.360943Z",
       "risk_trend": {
-        "trend": "stable",
-        "delta": 0.0,
+        "trend": "falling",
+        "delta": -32.2,
         "previous_score": 64.3,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1049,7 +1049,7 @@
         "soil_moisture_index": 85.0
       },
       "advisory": "Moderate Risk - Humidity high; drying equipment recommended within 48h",
-      "updated_at": "2026-10-27T08:30:31.072882Z",
+      "updated_at": "2026-10-27T08:55:34.620140Z",
       "dispatch": [
         {
           "facility_id": "fac_11",
@@ -1106,13 +1106,13 @@
           "priority": "recommended"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:31.072882Z",
+      "dispatch_generated_at": "2026-10-27T08:55:34.620140Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 64.8,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1147,7 +1147,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:33.011410Z",
+      "updated_at": "2026-10-27T08:55:43.604336Z",
       "dispatch": [
         {
           "facility_id": "fac_12",
@@ -1204,13 +1204,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:33.011410Z",
+      "dispatch_generated_at": "2026-10-27T08:55:43.604336Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 73.5,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1245,7 +1245,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:34.242352Z",
+      "updated_at": "2026-10-27T08:56:02.223942Z",
       "dispatch": [
         {
           "facility_id": "fac_04",
@@ -1302,13 +1302,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:34.242352Z",
+      "dispatch_generated_at": "2026-10-27T08:56:02.223942Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 80.9,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1327,23 +1327,23 @@
         "cooperative_coverage_pct": 57
       },
       "weather": {
-        "total_precipitation_14d_mm": 122.1,
-        "max_humidity_pct": 100,
-        "avg_humidity_pct": 94.8,
-        "max_temp_c": 26.7,
+        "total_precipitation_14d_mm": 28.0,
+        "max_humidity_pct": 55.0,
+        "avg_humidity_pct": 55.0,
+        "max_temp_c": 30.0,
         "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 100.0
+        "soil_moisture_index": 41.5
       },
       "risk": {
-        "risk_score": 81.3,
-        "level": "red",
-        "rainfall_index": 100.0,
-        "humidity_index": 100.0,
+        "risk_score": 31.1,
+        "level": "green",
+        "rainfall_index": 35.0,
+        "humidity_index": 25.0,
         "loss_rate_index": 25.4,
-        "soil_moisture_index": 100.0
+        "soil_moisture_index": 41.5
       },
-      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:35.113675Z",
+      "advisory": "Low Risk - Safe harvesting conditions",
+      "updated_at": "2026-10-27T08:56:36.466056Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1361,7 +1361,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "emergency"
+          "priority": "available"
         },
         {
           "facility_id": "fac_18",
@@ -1379,7 +1379,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "emergency"
+          "priority": "available"
         },
         {
           "facility_id": "fac_04",
@@ -1397,16 +1397,16 @@
           "contact_phone": "+250780000004",
           "contact_email": "burera.cold@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "emergency"
+          "priority": "available"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:35.113675Z",
+      "dispatch_generated_at": "2026-10-27T08:56:36.466056Z",
       "risk_trend": {
-        "trend": "stable",
-        "delta": 0.0,
+        "trend": "falling",
+        "delta": -50.2,
         "previous_score": 81.3,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1441,7 +1441,7 @@
         "soil_moisture_index": 100.0
       },
       "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
-      "updated_at": "2026-10-27T08:30:36.013272Z",
+      "updated_at": "2026-10-27T08:56:50.337696Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1498,13 +1498,13 @@
           "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:30:36.013272Z",
+      "dispatch_generated_at": "2026-10-27T08:56:50.337696Z",
       "risk_trend": {
         "trend": "stable",
         "delta": 0.0,
         "previous_score": 81.7,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1523,23 +1523,23 @@
         "cooperative_coverage_pct": 44
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 58.8,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 90.3,
+        "max_temp_c": 24.8,
+        "mean_soil_moisture_m3": 0.4425,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.2,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 73.8,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 30.1,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.361358Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:56:53.349617Z",
       "dispatch": [
         {
           "facility_id": "fac_18",
@@ -1557,7 +1557,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_17",
@@ -1575,7 +1575,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_14",
@@ -1593,16 +1593,16 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.361358Z",
+      "dispatch_generated_at": "2026-10-27T08:56:53.349617Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.6,
-        "previous_score": 73.8,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.6,
+        "previous_score": 32.2,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1621,23 +1621,23 @@
         "cooperative_coverage_pct": 49
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
+        "total_precipitation_14d_mm": 122.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 94.8,
+        "max_temp_c": 26.4,
         "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.9,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.2,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 28.7,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.370058Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:01.150603Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1655,7 +1655,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -1673,7 +1673,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_04",
@@ -1691,16 +1691,16 @@
           "contact_phone": "+250780000004",
           "contact_email": "burera.cold@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.370058Z",
+      "dispatch_generated_at": "2026-10-27T08:57:01.150603Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.2,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 31.9,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1719,23 +1719,23 @@
         "cooperative_coverage_pct": 55
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
+        "total_precipitation_14d_mm": 122.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 94.8,
+        "max_temp_c": 26.7,
         "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.5,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 81.8,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 27.2,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.377859Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:04.851038Z",
       "dispatch": [
         {
           "facility_id": "fac_17",
@@ -1753,7 +1753,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -1771,7 +1771,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_04",
@@ -1789,16 +1789,16 @@
           "contact_phone": "+250780000004",
           "contact_email": "burera.cold@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.377859Z",
+      "dispatch_generated_at": "2026-10-27T08:57:04.851038Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 81.8,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 31.5,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1817,23 +1817,23 @@
         "cooperative_coverage_pct": 70
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 67.6,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 27.0,
+        "mean_soil_moisture_m3": 0.3921,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 30.4,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 69.6,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 22.5,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 85.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.391621Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:07.010787Z",
       "dispatch": [
         {
           "facility_id": "fac_21",
@@ -1851,7 +1851,7 @@
           "contact_phone": "+250780000021",
           "contact_email": "kigali.central@agri.gov.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -1869,7 +1869,7 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_03",
@@ -1887,16 +1887,16 @@
           "contact_phone": "+250780000003",
           "contact_email": "gicumbi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.391621Z",
+      "dispatch_generated_at": "2026-10-27T08:57:07.010787Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -39.2,
-        "previous_score": 69.6,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 39.2,
+        "previous_score": 30.4,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -1915,23 +1915,23 @@
         "cooperative_coverage_pct": 72
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 78.3,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.7,
+        "max_temp_c": 26.3,
+        "mean_soil_moisture_m3": 0.4388,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 30.2,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 71.7,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 21.8,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.400806Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:09.162140Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -1949,7 +1949,7 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_21",
@@ -1967,7 +1967,7 @@
           "contact_phone": "+250780000021",
           "contact_email": "kigali.central@agri.gov.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_08",
@@ -1985,16 +1985,16 @@
           "contact_phone": "+250780000008",
           "contact_email": "ngoma.dryer@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.400806Z",
+      "dispatch_generated_at": "2026-10-27T08:57:09.162140Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.5,
-        "previous_score": 71.7,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 30.2,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2013,23 +2013,23 @@
         "cooperative_coverage_pct": 75
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 67.6,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 27.0,
+        "mean_soil_moisture_m3": 0.3921,
+        "soil_moisture_index": 85.0
       },
       "risk": {
-        "risk_score": 29.8,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 69.1,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 20.3,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 85.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.409422Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:11.821216Z",
       "dispatch": [
         {
           "facility_id": "fac_21",
@@ -2047,7 +2047,7 @@
           "contact_phone": "+250780000021",
           "contact_email": "kigali.central@agri.gov.rw",
           "operational_hours": "07:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2065,7 +2065,7 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_03",
@@ -2083,16 +2083,16 @@
           "contact_phone": "+250780000003",
           "contact_email": "gicumbi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.409422Z",
+      "dispatch_generated_at": "2026-10-27T08:57:11.821216Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -39.3,
-        "previous_score": 69.1,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 39.3,
+        "previous_score": 29.8,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2111,23 +2111,23 @@
         "cooperative_coverage_pct": 54
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 111.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 24.5,
+        "mean_soil_moisture_m3": 0.487,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.1,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.4,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 29.6,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.427039Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:13.942020Z",
       "dispatch": [
         {
           "facility_id": "fac_13",
@@ -2145,7 +2145,7 @@
           "contact_phone": "+250780000013",
           "contact_email": "huye.postharvest@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_14",
@@ -2163,7 +2163,7 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -2181,16 +2181,16 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.427039Z",
+      "dispatch_generated_at": "2026-10-27T08:57:13.942020Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.4,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 32.1,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2209,23 +2209,23 @@
         "cooperative_coverage_pct": 51
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 107.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.1,
+        "max_temp_c": 25.0,
+        "mean_soil_moisture_m3": 0.449,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.3,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.6,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 30.4,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.433341Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:15.090216Z",
       "dispatch": [
         {
           "facility_id": "fac_14",
@@ -2243,7 +2243,7 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_13",
@@ -2261,7 +2261,7 @@
           "contact_phone": "+250780000013",
           "contact_email": "huye.postharvest@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -2279,16 +2279,16 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.433341Z",
+      "dispatch_generated_at": "2026-10-27T08:57:15.090216Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.6,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 32.3,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2307,23 +2307,23 @@
         "cooperative_coverage_pct": 46
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 80.7,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 98.9,
+        "max_temp_c": 27.8,
+        "mean_soil_moisture_m3": 0.4397,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.5,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.8,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 31.1,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.437352Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:19.798010Z",
       "dispatch": [
         {
           "facility_id": "fac_14",
@@ -2341,7 +2341,7 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_13",
@@ -2359,7 +2359,7 @@
           "contact_phone": "+250780000013",
           "contact_email": "huye.postharvest@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2377,16 +2377,16 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.437352Z",
+      "dispatch_generated_at": "2026-10-27T08:57:19.798010Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.8,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 32.5,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2405,23 +2405,23 @@
         "cooperative_coverage_pct": 53
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 76.2,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 99.7,
+        "max_temp_c": 22.1,
+        "mean_soil_moisture_m3": 0.454,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.8,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 73.3,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 28.3,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.440767Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:21.397520Z",
       "dispatch": [
         {
           "facility_id": "fac_18",
@@ -2439,7 +2439,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_17",
@@ -2457,7 +2457,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_14",
@@ -2475,16 +2475,16 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.440767Z",
+      "dispatch_generated_at": "2026-10-27T08:57:21.397520Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.5,
-        "previous_score": 73.3,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 31.8,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2503,23 +2503,23 @@
         "cooperative_coverage_pct": 56
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 78.1,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 96.5,
+        "max_temp_c": 26.7,
+        "mean_soil_moisture_m3": 0.4378,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.7,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 73.2,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 27.9,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.444900Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:22.841930Z",
       "dispatch": [
         {
           "facility_id": "fac_15",
@@ -2537,7 +2537,7 @@
           "contact_phone": "+250780000015",
           "contact_email": "muhanga.potato@agri.rw",
           "operational_hours": "08:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_16",
@@ -2555,7 +2555,7 @@
           "contact_phone": "+250780000016",
           "contact_email": "kamonyi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2573,16 +2573,16 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.444900Z",
+      "dispatch_generated_at": "2026-10-27T08:57:22.841930Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.5,
-        "previous_score": 73.2,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 31.7,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2601,23 +2601,23 @@
         "cooperative_coverage_pct": 50
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 72.8,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 96.0,
+        "max_temp_c": 28.7,
+        "mean_soil_moisture_m3": 0.417,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.0,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 73.5,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 29.1,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.447985Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:24.078935Z",
       "dispatch": [
         {
           "facility_id": "fac_19",
@@ -2635,7 +2635,7 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_06",
@@ -2653,7 +2653,7 @@
           "contact_phone": "+250780000006",
           "contact_email": "bugesera.hub@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_16",
@@ -2671,16 +2671,16 @@
           "contact_phone": "+250780000016",
           "contact_email": "kamonyi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.447985Z",
+      "dispatch_generated_at": "2026-10-27T08:57:24.078935Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.5,
-        "previous_score": 73.5,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 32.0,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2699,23 +2699,23 @@
         "cooperative_coverage_pct": 58
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 73.8,
+        "max_humidity_pct": 99,
+        "avg_humidity_pct": 96.6,
+        "max_temp_c": 26.9,
+        "mean_soil_moisture_m3": 0.4343,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 31.4,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 72.9,
+        "level": "red",
+        "rainfall_index": 75.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 26.5,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.450121Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:25.344117Z",
       "dispatch": [
         {
           "facility_id": "fac_16",
@@ -2733,7 +2733,7 @@
           "contact_phone": "+250780000016",
           "contact_email": "kamonyi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_03",
@@ -2751,7 +2751,7 @@
           "contact_phone": "+250780000003",
           "contact_email": "gicumbi.coop@agri.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_19",
@@ -2769,16 +2769,16 @@
           "contact_phone": "+250780000019",
           "contact_email": "east.region@agri.gov.rw",
           "operational_hours": "06:00-18:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.450121Z",
+      "dispatch_generated_at": "2026-10-27T08:57:25.344117Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -41.5,
-        "previous_score": 72.9,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 41.5,
+        "previous_score": 31.4,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2797,23 +2797,23 @@
         "cooperative_coverage_pct": 46
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 140.3,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 95.4,
+        "max_temp_c": 23.4,
+        "mean_soil_moisture_m3": 0.4883,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.6,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.9,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 31.5,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.451929Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:26.820735Z",
       "dispatch": [
         {
           "facility_id": "fac_14",
@@ -2831,7 +2831,7 @@
           "contact_phone": "+250780000014",
           "contact_email": "nyanza.drying@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_13",
@@ -2849,7 +2849,7 @@
           "contact_phone": "+250780000013",
           "contact_email": "huye.postharvest@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_18",
@@ -2867,16 +2867,16 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.451929Z",
+      "dispatch_generated_at": "2026-10-27T08:57:26.820735Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.9,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 32.6,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     },
     {
@@ -2895,23 +2895,23 @@
         "cooperative_coverage_pct": 47
       },
       "weather": {
-        "total_precipitation_14d_mm": 28.0,
-        "max_humidity_pct": 55.0,
-        "avg_humidity_pct": 55.0,
-        "max_temp_c": 30.0,
-        "mean_soil_moisture_m3": 0.0,
-        "soil_moisture_index": 41.5
+        "total_precipitation_14d_mm": 92.2,
+        "max_humidity_pct": 100,
+        "avg_humidity_pct": 97.7,
+        "max_temp_c": 24.1,
+        "mean_soil_moisture_m3": 0.4793,
+        "soil_moisture_index": 100.0
       },
       "risk": {
-        "risk_score": 32.4,
-        "level": "green",
-        "rainfall_index": 35.0,
-        "humidity_index": 25.0,
+        "risk_score": 82.7,
+        "level": "red",
+        "rainfall_index": 100.0,
+        "humidity_index": 100.0,
         "loss_rate_index": 30.6,
-        "soil_moisture_index": 41.5
+        "soil_moisture_index": 100.0
       },
-      "advisory": "Low Risk - Safe harvesting conditions",
-      "updated_at": "2026-10-27T08:31:06.453372Z",
+      "advisory": "HIGH RISK - Heavy rainfall + peak harvest; emergency storage dispatch needed",
+      "updated_at": "2026-10-27T08:57:28.361168Z",
       "dispatch": [
         {
           "facility_id": "fac_18",
@@ -2929,7 +2929,7 @@
           "contact_phone": "+250780000018",
           "contact_email": "nyamagabe.hub@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_17",
@@ -2947,7 +2947,7 @@
           "contact_phone": "+250780000017",
           "contact_email": "rubavu.coffee@agri.rw",
           "operational_hours": "06:00-17:00",
-          "priority": "available"
+          "priority": "emergency"
         },
         {
           "facility_id": "fac_13",
@@ -2965,16 +2965,16 @@
           "contact_phone": "+250780000013",
           "contact_email": "huye.postharvest@agri.rw",
           "operational_hours": "07:00-16:00",
-          "priority": "available"
+          "priority": "emergency"
         }
       ],
-      "dispatch_generated_at": "2026-10-27T08:31:06.453372Z",
+      "dispatch_generated_at": "2026-10-27T08:57:28.361168Z",
       "risk_trend": {
-        "trend": "falling",
-        "delta": -50.3,
-        "previous_score": 82.7,
-        "previous_at": "2026-10-27T07:33:20.739884Z",
-        "history_points": 4
+        "trend": "rising",
+        "delta": 50.3,
+        "previous_score": 32.4,
+        "previous_at": "2026-10-27T08:31:06.459171Z",
+        "history_points": 5
       }
     }
   ]
